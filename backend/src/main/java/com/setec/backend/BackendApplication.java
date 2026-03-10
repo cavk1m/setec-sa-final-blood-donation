@@ -1,4 +1,4 @@
-package com.setect.backend;
+package com.setec.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
