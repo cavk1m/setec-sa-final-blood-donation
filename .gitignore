@@ -1,0 +1,21 @@
+# Node
+node_modules/
+pnpm-lock.yaml
+dist/
+.next/
+.env.local
+.env
+
+# Java / Spring Boot
+target/
+*.log
+*.class
+*.jar
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+*.iml
