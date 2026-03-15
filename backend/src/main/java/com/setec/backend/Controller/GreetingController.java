@@ -1,4 +1,4 @@
-package com.setec.backend.controller;
+package com.setec.backend.Controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
