@@ -1,0 +1,99 @@
+{
+  "hero": {
+    "badge": "Emergency Response Active in 3 Regions",
+    "title1": "Give Blood.",
+    "title2": "Give Hope.",
+    "title3": "Save Lives.",
+    "description": "HopeFlow connects blood donors, charity volunteers, and aid recipients during emergencies. Register online, receive your q-card, and help save lives in your community.",
+    "buttonDonate": "Donate Blood",
+    "buttonSupport": "Support Us",
+    "buttonFind": "Find Blood Banks"
+  },
+  "header": {
+    "home": "Home",
+    "locations": "Locations",
+    "campaigns": "Campaigns",
+    "donate": "Donate",
+    "register": "Register Now",
+    "profile": "Profile",
+    "logout": "Log out"
+  },
+  "footer": {
+    "description": "Saving lives through blood donation. Join our mission to help those in need.",
+    "quickLinks": "Quick Links",
+    "information": "Information",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "privacyPolicy": "Privacy Policy",
+    "termsConditions": "Terms & Conditions",
+    "email": "Email",
+    "phone": "Phone",
+    "followUs": "Follow us on social media",
+    "copyright": "All rights reserved.",
+    "madeWith": "Made with ❤ for life-saving donations"
+  },
+  "simpleProcess": {
+    "badge": "Simple Process",
+    "title": "How HopeFlow Works",
+    "description": "We've streamlined the donation process so you can help faster with less hassle — no long queues, no confusion.",
+    "steps": {
+      "step1": {
+        "title": "Register Online",
+        "description": "Fill in your details and complete a quick health survey from the comfort of your home."
+      },
+      "step2": {
+        "title": "Receive Queue Number",
+        "description": "Get a unique queue number sent directly to your email — no app required."
+      },
+      "step3": {
+        "title": "Visit the Center",
+        "description": "Arrive at your chosen donation center at your scheduled time — no waiting in line."
+      },
+      "step4": {
+        "title": "Make Your Impact",
+        "description": "Your donation is processed and reaches those in need within hours of your visit."
+      }
+    }
+  },
+  "emergency": {
+    "alert": {
+      "title": "Critical Blood Shortage — Type O- Urgently Needed",
+      "description": "Eastern Province hospitals are facing severe shortages. Eligible donors are needed immediately.",
+      "button": "Register as Donor"
+    },
+    "active": "Active Now",
+    "heading": "Emergency Campaigns",
+    "subheading": "Your contribution — whether blood funds, food, or time — makes a direct impact on communities in crisis.",
+    "tags": {
+      "urgent": "Urgent",
+      "food": "Food Drive",
+      "medical": "Medical"
+    },
+    "cards": {
+      "blood": {
+        "title": "Blood Drive — Eastern Province Crisis Response",
+        "subtitle": "Currently in surgery or ICU care.",
+        "current": "1,240 donors",
+        "goal": "Goal: 2,000",
+        "primary": "Donate Blood",
+        "secondary": "Fund Campaign"
+      },
+      "food": {
+        "title": "Flood Relief — Emergency Food & Clothing Drive",
+        "subtitle": "Families are displaced following the southern floods.",
+        "current": "$54,300 raised",
+        "goal": "Goal: $150,000",
+        "primary": "Donate Now",
+        "secondary": "Volunteer"
+      },
+      "medical": {
+        "title": "Pediatric Ward Medical Supply Campaign",
+        "subtitle": "Children's hospitals are facing critical shortages.",
+        "current": "$32,100 raised",
+        "goal": "Goal: $60,000",
+        "primary": "Donate Now",
+        "secondary": "Learn More"
+      }
+    }
+  }
+}
