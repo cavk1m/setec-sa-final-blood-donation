@@ -1,6 +1,5 @@
 package com.setec.backend.Model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,27 +7,21 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public abstract class BaseEntity  {
-    @Id
-    @Column(name = "objectId", insertable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long objectId;
-
-    @Column(name = "createdDate", updatable = false, columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+public abstract class BaseEntity {
+    @Column(name = "created_date", updatable = false)
     @CreationTimestamp
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
-    @Column(name = "updatedDate", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "updated_date")
     @UpdateTimestamp
-    private Date updatedDate;
+    private LocalDateTime updatedDate;
 
-    @Column(name = "Create_by")
-    private String Create_by;
-
+    @Column(name = "created_by")
+    private String createdBy;
 }
