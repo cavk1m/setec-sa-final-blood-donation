@@ -1,4 +1,5 @@
 package com.setec.backend.Model;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,11 +8,14 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "website_settings")
+@Table(name = "website_settings", indexes = {
+    @Index(name = "idx_website_settings_updated_at", columnList = "updated_at")
+})
 public class website_settings {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -19,8 +23,22 @@ public class website_settings {
     @Column(name = "id", columnDefinition = "VARCHAR(255)")
     private UUID id;
 
+    @Column(name = "hero_background_url")
     private String heroBackgroundUrl;
+    
+    @Column(name = "logo_url")
     private String logoUrl;
 
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    
+    @PrePersist
+    protected void onCreate() {
+        updatedAt = LocalDateTime.now();
+    }
+    
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
