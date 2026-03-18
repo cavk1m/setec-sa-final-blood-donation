@@ -1,0 +1,37 @@
+name: Telegram Notification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Telegram Message
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            MESSAGE="🚀 Push by ${{ github.actor }}
+📌 Repo: ${{ github.repository }}
+💬 ${{ github.event.head_commit.message }}"
+
+          elif [ "${{ github.event.action }}" = "opened" ]; then
+            MESSAGE="🆕 PR Opened by ${{ github.actor }}
+🔀 ${{ github.event.pull_request.title }}
+🔗 ${{ github.event.pull_request.html_url }}"
+
+          elif [ "${{ github.event.action }}" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            MESSAGE="✅ PR Merged by ${{ github.actor }}
+🔀 ${{ github.event.pull_request.title }}
+🔗 ${{ github.event.pull_request.html_url }}"
+          else
+            exit 0
+          fi
+
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+          -d text="$MESSAGE"
