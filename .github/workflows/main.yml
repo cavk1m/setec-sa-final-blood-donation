@@ -23,5 +23,5 @@ jobs:
           fi
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             --data-urlencode "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
-            --data-urlencode "message_thread_id=2" \
+            --data-urlencode "message_thread_id=${{ secrets.TELEGRAM_THREAD_ID }}" \
             --data-urlencode "text=$MESSAGE"
