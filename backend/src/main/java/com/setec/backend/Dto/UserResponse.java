@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -23,16 +24,31 @@ public class UserResponse {
 
     @JsonProperty("phone")
     private String phone;
+    
+    @JsonProperty("address")
+    private String address;
+    
+    @JsonProperty("date_of_birth")
+    private Date dateOfBirth;
 
     @JsonProperty("blood_type")
     private String bloodType;
 
     @JsonProperty("role")
     private String role;
+    
+    @JsonProperty("is_active")
+    private Boolean isActive;
+    
+    @JsonProperty("last_login_date")
+    private LocalDateTime lastLoginDate;
 
     @JsonProperty("created_date")
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
     @JsonProperty("updated_date")
-    private Date updatedDate;
+    private LocalDateTime updatedDate;
+    
+    @JsonProperty("profile_picture_url")
+    private String profilePictureUrl;
 }

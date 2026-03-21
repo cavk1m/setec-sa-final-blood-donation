@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,39 +27,63 @@ import java.util.UUID;
 })
 public class users extends BaseEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", columnDefinition = "VARCHAR(255)")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
-    
+
     @Column(name = "full_name", nullable = false)
-    private String full_name;
-    
+    private String fullName;
+
+    @Column(name = "date_of_birth", nullable = false)
+    private Date dateOfBirth;
+
+    @Column(name =  "address", nullable = false)
+    private String address;
+
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-    
+
     @Column(name = "phone", unique = true, nullable = false)
     private String phone;
-    
+
     @Column(name = "password_hash", nullable = false)
-    private String password_hash;
-    
+    private String passwordHash;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "blood_type")
-    private BloodType blood_type;
-    
+    private BloodType bloodType;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
 
+    @Column(name = "is_active")
+    private Boolean isActive = true;
+
+    @Column(name = "last_login_date")
+    private LocalDateTime lastLoginDate;
+    
+    @Column(name = "profile_picture_path")
+    private String profilePicturePath;
+    
+    @Column(name = "email_verified")
+    private Boolean emailVerified = false;
+    
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<blood_donations> bloodDonations;
-    
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<money_donations> moneyDonations;
-    
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<donation_queue> donationQueues;
-    
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<certificates> certificates;
+
+
 }

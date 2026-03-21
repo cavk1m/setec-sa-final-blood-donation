@@ -3,10 +3,7 @@ package com.setec.backend.Enum;
 public enum Currency {
     USD("USD"),
     EUR("EUR"),
-    GBP("GBP"),
-    KHR("KHR"),
-    THB("THB"),
-    VND("VND");
+    KHR("KHR");
 
     private final String label;
 

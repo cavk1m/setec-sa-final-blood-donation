@@ -28,14 +28,7 @@ public class website_settings {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
     
-    @PrePersist
-    protected void onCreate() {
-        updatedAt = LocalDateTime.now();
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+
 }

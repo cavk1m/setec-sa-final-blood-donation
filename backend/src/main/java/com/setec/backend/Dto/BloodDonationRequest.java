@@ -22,4 +22,8 @@ public class BloodDonationRequest {
 
     @JsonProperty("donation_date")
     private Date donationDate;
+
+//    @JsonProperty("Create_at")
+//    private Date created_at;
+
 }

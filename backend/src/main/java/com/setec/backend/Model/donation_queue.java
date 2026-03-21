@@ -57,7 +57,8 @@ public class donation_queue {
         created_at = LocalDateTime.now();
         updated_at = LocalDateTime.now();
     }
-    
+
+
     @PreUpdate
     protected void onUpdate() {
         updated_at = LocalDateTime.now();
