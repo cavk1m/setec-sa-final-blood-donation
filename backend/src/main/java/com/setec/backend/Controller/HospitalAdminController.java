@@ -6,6 +6,11 @@ import com.setec.backend.Model.Hospital;
 import com.setec.backend.Model.HospitalAdmin;
 import com.setec.backend.Security.RequirePermission;
 import com.setec.backend.Service.HospitalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +22,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/hospitals")
+@Tag(name = "Hospital Management", description = "APIs for hospital registration, management, and blood bank coordination")
+@SecurityRequirement(name = "bearerAuth")
 public class HospitalAdminController {
 
     private final HospitalService hospitalService;

@@ -10,6 +10,11 @@ import com.setec.backend.Security.RequirePermission;
 import com.setec.backend.Service.HospitalService;
 import com.setec.backend.Service.PermissionService;
 import com.setec.backend.Service.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +27,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/admin")
+@Tag(name = "Admin Management", description = "APIs for administrative operations including hospital, role, and permission management")
+@SecurityRequirement(name = "bearerAuth")
 public class AdminController {
 
     private final HospitalService hospitalService;
@@ -39,6 +46,12 @@ public class AdminController {
      */
     @GetMapping("/hospitals")
     @RequirePermission("HOSPITAL_LIST")
+    @Operation(summary = "Get all hospitals", description = "Retrieve list of all active hospitals in the system")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "List of hospitals retrieved successfully"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid JWT token"),
+        @ApiResponse(responseCode = "403", description = "Forbidden - insufficient permissions")
+    })
     public ResponseEntity<List<HospitalResponse>> getAllHospitals() {
         log.info("Fetching all active hospitals");
         List<Hospital> hospitals = hospitalService.getAllActiveHospitals();

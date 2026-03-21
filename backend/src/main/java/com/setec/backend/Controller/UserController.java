@@ -6,6 +6,11 @@ import com.setec.backend.Enum.Role;
 import com.setec.backend.Model.users;
 import com.setec.backend.Repository.UserRepository;
 import com.setec.backend.Service.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -36,6 +41,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
+@Tag(name = "User Management", description = "APIs for user registration, authentication, profile management, and account operations")
 public class UserController {
     
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -74,6 +80,12 @@ public class UserController {
      * User Registration - Step 1: Register and send OTP
      */
     @PostMapping("/register")
+    @Operation(summary = "Register new user", description = "Register a new user account and send OTP to email")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Registration successful, OTP sent to email"),
+        @ApiResponse(responseCode = "400", description = "Email or phone already registered, or validation failed"),
+        @ApiResponse(responseCode = "500", description = "Server error during registration or email sending")
+    })
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
         try {
             // Check if user already exists using safe count-based query
@@ -139,6 +151,12 @@ public class UserController {
      * User Registration - Step 2: Verify OTP and activate account
      */
     @PostMapping("/verify-otp")
+    @Operation(summary = "Verify OTP and activate account", description = "Verify the OTP code sent to email and activate the user account")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OTP verified successfully, JWT token returned"),
+        @ApiResponse(responseCode = "400", description = "Invalid or expired OTP"),
+        @ApiResponse(responseCode = "500", description = "Server error during verification")
+    })
     public ResponseEntity<?> verifyOtp(@Valid @RequestBody OtpVerificationRequest request) {
          try {
              boolean isValid = otpService.verifyOtp(request.getEmail(), request.getOtpCode());
@@ -250,6 +268,13 @@ public class UserController {
      * User Login
      */
     @PostMapping("/login")
+    @Operation(summary = "User login", description = "Authenticate user with email and password")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login successful, JWT token returned"),
+        @ApiResponse(responseCode = "400", description = "Invalid credentials or user not activated"),
+        @ApiResponse(responseCode = "401", description = "Authentication failed"),
+        @ApiResponse(responseCode = "500", description = "Server error during login")
+    })
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest request) {
         try {
             // Authenticate user

@@ -16,8 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -34,9 +32,6 @@ class UserControllerTest {
     
     @Autowired
     private MockMvc mockMvc;
-    
-    @Autowired
-    private WebApplicationContext context;
     
     @MockBean
     private UserService userService;
@@ -68,8 +63,6 @@ class UserControllerTest {
     
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-        
         // Create test user
          testUser = new users();
          testUser.setId(UUID.randomUUID());
