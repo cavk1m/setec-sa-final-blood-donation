@@ -50,9 +50,6 @@ public class UserRole extends BaseEntity {
     )
     private Set<Permission> permissions = new HashSet<>();
     
-    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<users> users = new HashSet<>();
-    
     public UserRole(RoleType roleName, String description) {
         this.roleName = roleName;
         this.description = description;
@@ -78,6 +75,6 @@ public class UserRole extends BaseEntity {
             return false;
         }
         return this.permissions.stream()
-            .anyMatch(p -> p.getPermissionType().name().equals(permissionName) && p.getIsActive());
+            .anyMatch(p -> p.getPermissionType().name().equals(permissionName) && Boolean.TRUE.equals(p.getIsActive()));
     }
 }

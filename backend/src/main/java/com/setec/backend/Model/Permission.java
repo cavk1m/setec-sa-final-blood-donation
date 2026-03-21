@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -47,7 +48,7 @@ public class Permission extends BaseEntity {
     private Boolean isActive = true;
     
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
-    private Set<UserRole> userRoles;
+    private Set<UserRole> userRoles = new HashSet<>();
     
     public Permission(PermissionType permissionType, String description, String resourceName, String action) {
         this.permissionType = permissionType;

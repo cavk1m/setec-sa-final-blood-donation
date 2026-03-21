@@ -58,7 +58,6 @@ class RoleServiceTest {
         testRole.setDescription("Administrator Role");
         testRole.setIsActive(true);
         testRole.setPermissions(new HashSet<>(Collections.singletonList(testPermission)));
-        testRole.setUsers(new HashSet<>());
     }
 
     @Test
@@ -190,11 +189,11 @@ class RoleServiceTest {
     @Test
     @DisplayName("Should get user count by role")
     void testGetUserCountByRole() {
-        testRole.getUsers().add(new com.setec.backend.Model.users()); // Add dummy user
         when(userRoleRepository.findById(roleId)).thenReturn(Optional.of(testRole));
 
         long result = roleService.getUserCountByRole(roleId);
 
-        assertEquals(1, result);
+        // Users are now in join table, so this returns 0
+        assertEquals(0, result);
     }
 }

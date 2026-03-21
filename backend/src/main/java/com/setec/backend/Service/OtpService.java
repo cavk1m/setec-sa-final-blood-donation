@@ -18,7 +18,7 @@ public class OtpService {
     private static final Logger log = LoggerFactory.getLogger(OtpService.class);
     
     private final OtpRepository otpRepository;
-    private final EmailService emailService;
+    private final EmailServiceInterface emailService;
     private final SecureRandom secureRandom;
     
     // OTP Configuration
@@ -27,7 +27,7 @@ public class OtpService {
     private static final int MAX_OTP_REQUESTS_PER_HOUR = 5;
     
     @Autowired
-    public OtpService(OtpRepository otpRepository, EmailService emailService) {
+    public OtpService(OtpRepository otpRepository, EmailServiceInterface emailService) {
         this.otpRepository = otpRepository;
         this.emailService = emailService;
         this.secureRandom = new SecureRandom();

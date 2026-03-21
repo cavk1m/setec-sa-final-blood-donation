@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,8 +82,5 @@ public class Hospital extends BaseEntity {
     private Integer totalBloodUnits = 0;
     
     @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<HospitalAdmin> admins;
-    
-    @OneToMany(mappedBy = "hospital", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<blood_donations> donations;
+    private List<HospitalAdmin> admins = new ArrayList<>();
 }

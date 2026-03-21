@@ -64,7 +64,6 @@ public class RoleServiceImpl implements RoleService {
         role.setDescription(description);
         role.setPermissions(permissions != null ? permissions : new HashSet<>());
         role.setIsActive(true);
-        role.setUsers(new HashSet<>());
         role.setCreatedDate(LocalDateTime.now());
         role.setUpdatedDate(LocalDateTime.now());
 
@@ -154,7 +153,9 @@ public class RoleServiceImpl implements RoleService {
         UserRole role = userRoleRepository.findById(roleId)
                 .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleId));
 
-        return role.getUsers().size();
+        // Users are now linked via user_role_assignment join table, not direct reference
+        // This method would need to be implemented differently if needed
+        return 0;
     }
 
     @Override

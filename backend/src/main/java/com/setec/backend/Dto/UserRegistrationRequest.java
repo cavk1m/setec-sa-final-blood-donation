@@ -1,10 +1,7 @@
 package com.setec.backend.Dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,6 +36,7 @@ public class UserRegistrationRequest {
     @JsonProperty("address")
     private String address;
     
+    @NotNull(message = "Date of birth is required")
     @Past(message = "Date of birth must be in the past")
     @JsonProperty("date_of_birth")
     private Date dateOfBirth;
