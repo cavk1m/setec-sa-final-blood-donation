@@ -12,11 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -28,6 +26,12 @@ public class JwtService {
     
     @Value("${jwt.expiration:86400000}")
     private Long jwtExpiration; // 24 hours in milliseconds
+    
+    private final PermissionService permissionService;
+    
+    public JwtService(PermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
     
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
@@ -53,6 +57,17 @@ public class JwtService {
      */
     public String extractUserRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+    
+    /**
+     * Extract user permissions from token
+     */
+    public List<String> extractPermissions(String token) {
+        return extractClaim(token, claims -> {
+            @SuppressWarnings("unchecked")
+            List<String> permissions = (List<String>) claims.get("permissions");
+            return permissions != null ? permissions : new ArrayList<>();
+        });
     }
     
     /**
@@ -89,14 +104,29 @@ public class JwtService {
     }
     
     /**
-     * Generate token for user
+     * Generate token for user with permissions and roles
      */
     public String generateToken(users user) {
-         Map<String, Object> claims = new HashMap<>();
-         claims.put("userId", user.getId().toString());
-         claims.put("role", user.getRole().toString());
-         claims.put("fullName", user.getFullName());
-         claims.put("email", user.getEmail());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId().toString());
+        claims.put("role", user.getRole().toString());
+        claims.put("fullName", user.getFullName());
+        claims.put("email", user.getEmail());
+        
+        // Add permissions to token
+        List<String> permissions = permissionService.getUserPermissions(user.getId())
+                .stream()
+                .map(permission -> permission.getPermissionType().name())
+                .collect(Collectors.toList());
+        claims.put("permissions", permissions);
+        
+        // Add user roles to token
+        if (user.getUserRoles() != null) {
+            List<String> roles = user.getUserRoles().stream()
+                    .map(userRole -> userRole.getRole().getRoleType().name())
+                    .collect(Collectors.toList());
+            claims.put("userRoles", roles);
+        }
         
         return generateToken(claims, user.getEmail());
     }

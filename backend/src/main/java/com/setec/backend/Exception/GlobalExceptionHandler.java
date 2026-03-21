@@ -206,6 +206,36 @@ public class GlobalExceptionHandler {
     }
     
     /**
+     * Handle security/permission exceptions
+     */
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ErrorResponse> handleSecurityException(SecurityException ex, HttpServletRequest request) {
+        log.warn("Security exception occurred: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = ErrorResponse.of("Access Denied")
+                .withPath(request.getRequestURI())
+                .withMethod(request.getMethod());
+        
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+    
+    /**
+     * Handle access denied exceptions from Spring Security
+     */
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+            org.springframework.security.access.AccessDeniedException ex, 
+            HttpServletRequest request) {
+        log.warn("Access denied exception occurred: {}", ex.getMessage());
+        
+        ErrorResponse errorResponse = ErrorResponse.of("You do not have permission to access this resource")
+                .withPath(request.getRequestURI())
+                .withMethod(request.getMethod());
+        
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+    
+    /**
      * Handle runtime exceptions
      */
     @ExceptionHandler(RuntimeException.class)

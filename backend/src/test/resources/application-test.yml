@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: backend-test
+  datasource:
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  h2:
+    console:
+      enabled: true
+
+server:
+  port: 8081
+
+jwt:
+  secret: myVerySecretJwtKeyForBloodDonationSystemThatIsLongEnoughForSecurity
+  expiration: 86400000
+
+file:
+  upload-dir: ${java.io.tmpdir}/uploads
+  max-size: 5242880
+
+otp:
+  expiry-minutes: 10
+  max-requests-per-hour: 5
