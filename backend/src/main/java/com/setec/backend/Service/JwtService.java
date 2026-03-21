@@ -116,14 +116,14 @@ public class JwtService {
         // Add permissions to token
         List<String> permissions = permissionService.getUserPermissions(user.getId())
                 .stream()
-                .map(permission -> permission.getPermissionType().name())
+                .map(permission -> permission.name())
                 .collect(Collectors.toList());
         claims.put("permissions", permissions);
         
         // Add user roles to token
         if (user.getUserRoles() != null) {
             List<String> roles = user.getUserRoles().stream()
-                    .map(userRole -> userRole.getRole().getRoleType().name())
+                    .map(userRole -> userRole.getRoleName().name())
                     .collect(Collectors.toList());
             claims.put("userRoles", roles);
         }

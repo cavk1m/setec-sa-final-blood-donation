@@ -6,6 +6,7 @@ import com.setec.backend.Model.users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -18,12 +19,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class JwtServiceTest {
     
+    @Mock
+    private PermissionService permissionService;
+    
     private JwtService jwtService;
     private users testUser;
     
     @BeforeEach
     void setUp() {
-        jwtService = new JwtService();
+        jwtService = new JwtService(permissionService);
         
         // Set up JWT configuration
         ReflectionTestUtils.setField(jwtService, "secret", "myVerySecretJwtKeyForBloodDonationSystemThatIsLongEnoughForSecurity");

@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Aspect
 @Component
@@ -28,7 +27,8 @@ public class RoleValidator {
 
     @Around("@annotation(requireRole)")
     public Object validateRole(ProceedingJoinPoint joinPoint, RequireRole requireRole) throws Throwable {
-        log.debug("Validating role: {}", requireRole.role());
+        String[] requiredRoleNames = requireRole.value();
+        log.debug("Validating role: {}", java.util.Arrays.toString(requiredRoleNames));
 
         // Get the current authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -47,16 +47,21 @@ public class RoleValidator {
         }
 
         users user = userOptional.get();
-        RoleType[] requiredRoles = requireRole.role();
-        
+
         // Check if user has any of the required roles
         boolean hasRole = false;
         if (user.getUserRoles() != null) {
             for (UserRole userRole : user.getUserRoles()) {
-                for (RoleType requiredRole : requiredRoles) {
-                    if (userRole.getRole().getRoleType() == requiredRole) {
-                        hasRole = true;
-                        break;
+                RoleType userRoleType = userRole.getRoleName();
+                for (String requiredRoleName : requiredRoleNames) {
+                    try {
+                        RoleType requiredRole = RoleType.valueOf(requiredRoleName);
+                        if (userRoleType == requiredRole) {
+                            hasRole = true;
+                            break;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        log.error("Invalid role name: {}", requiredRoleName);
                     }
                 }
                 if (hasRole) break;

@@ -64,4 +64,14 @@ public interface PermissionService {
      * Remove permission from a role
      */
     void removePermissionFromRole(UserRole role, Permission permission);
+
+    /**
+     * Get all permissions for a specific user
+     */
+    List<PermissionType> getUserPermissions(UUID userId);
+
+    /**
+     * Check if a user has a specific permission
+     */
+    boolean userHasPermission(UUID userId, PermissionType permissionType);
 }

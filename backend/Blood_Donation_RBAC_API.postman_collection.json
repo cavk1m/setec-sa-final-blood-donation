@@ -1,0 +1,720 @@
+{
+  "info": {
+    "_postman_id": "blood-donation-rbac-collection",
+    "name": "Blood Donation System - RBAC API",
+    "description": "Comprehensive API collection for Blood Donation Management System with Role-Based Access Control",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "item": [
+      {
+        "name": "Authentication",
+        "item": [
+          {
+            "name": "Register User",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1234567890\",\n  \"address\": \"123 Main St, City\",\n  \"dateOfBirth\": \"1990-01-15\",\n  \"password\": \"SecurePass123!\",\n  \"bloodType\": \"O_POSITIVE\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/auth/register",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "auth", "register"]
+              }
+            }
+          },
+          {
+            "name": "Login",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/auth/login",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "auth", "login"]
+              }
+            }
+          },
+          {
+            "name": "Verify OTP",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"john@example.com\",\n  \"otp\": \"123456\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/auth/verify-otp",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "auth", "verify-otp"]
+              }
+            }
+          },
+          {
+            "name": "Resend OTP",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"john@example.com\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/auth/resend-otp",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "auth", "resend-otp"]
+              }
+            }
+          },
+          {
+            "name": "Refresh Token",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"token\": \"{{jwt_token}}\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/auth/refresh-token",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "auth", "refresh-token"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Admin Management",
+        "item": [
+          {
+            "name": "Get All Hospitals",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/hospitals",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "hospitals"]
+              }
+            }
+          },
+          {
+            "name": "Get Hospital by ID",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/hospitals/{{hospital_id}}",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "hospitals", "{{hospital_id}}"]
+              }
+            }
+          },
+          {
+            "name": "Verify Hospital",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"verified\": true\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/admin/hospitals/{{hospital_id}}/verify",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "hospitals", "{{hospital_id}}", "verify"]
+              }
+            }
+          },
+          {
+            "name": "Get All Roles",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/roles",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "roles"]
+              }
+            }
+          },
+          {
+            "name": "Get Role by ID",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/roles/{{role_id}}",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "roles", "{{role_id}}"]
+              }
+            }
+          },
+          {
+            "name": "Get All Permissions",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/permissions",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "permissions"]
+              }
+            }
+          },
+          {
+            "name": "Add Permission to Role",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/roles/{{role_id}}/permissions/{{permission_id}}",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "roles", "{{role_id}}", "permissions", "{{permission_id}}"]
+              }
+            }
+          },
+          {
+            "name": "Remove Permission from Role",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/roles/{{role_id}}/permissions/{{permission_id}}",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "roles", "{{role_id}}", "permissions", "{{permission_id}}"]
+              }
+            }
+          },
+          {
+            "name": "Get Role Permissions",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/admin/roles/{{role_id}}/permissions",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "admin", "roles", "{{role_id}}", "permissions"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Hospital Management",
+        "item": [
+          {
+            "name": "Register Hospital",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"City Hospital\",\n  \"address\": \"456 Hospital Ave, City\",\n  \"city\": \"City Name\",\n  \"state\": \"State Name\",\n  \"zipCode\": \"12345\",\n  \"country\": \"Country Name\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"hospital@example.com\",\n  \"registrationNumber\": \"REG123456\",\n  \"bloodBankCoordinator\": {\n    \"name\": \"Dr. Jane Smith\",\n    \"email\": \"jane@hospital.com\",\n    \"phone\": \"+0987654321\"\n  }\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/register",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "register"]
+              }
+            }
+          },
+          {
+            "name": "Get Hospital Info",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/{{hospital_id}}",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "{{hospital_id}}"]
+              }
+            }
+          },
+          {
+            "name": "Update Hospital",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"City Hospital - Updated\",\n  \"address\": \"456 Hospital Ave, City\",\n  \"city\": \"City Name\",\n  \"state\": \"State Name\",\n  \"zipCode\": \"12345\",\n  \"country\": \"Country Name\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"hospital@example.com\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/{{hospital_id}}",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "{{hospital_id}}"]
+              }
+            }
+          },
+          {
+            "name": "Update Blood Bank Coordinator",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Dr. John Smith\",\n  \"email\": \"john@hospital.com\",\n  \"phone\": \"+0987654321\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/{{hospital_id}}/coordinator",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "{{hospital_id}}", "coordinator"]
+              }
+            }
+          },
+          {
+            "name": "Get Hospital Admins",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/{{hospital_id}}/admins",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "{{hospital_id}}", "admins"]
+              }
+            }
+          },
+          {
+            "name": "Add Hospital Admin",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"fullName\": \"Admin User\",\n  \"email\": \"admin@hospital.com\",\n  \"phone\": \"+1234567890\",\n  \"role\": \"ADMIN\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/{{hospital_id}}/admins",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "{{hospital_id}}", "admins"]
+              }
+            }
+          },
+          {
+            "name": "Deactivate Hospital Admin",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/admins/{{admin_id}}",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "admins", "{{admin_id}}"]
+              }
+            }
+          },
+          {
+            "name": "Update Blood Inventory",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"o_positive\": 50,\n  \"o_negative\": 30,\n  \"a_positive\": 40,\n  \"a_negative\": 25,\n  \"b_positive\": 35,\n  \"b_negative\": 20,\n  \"ab_positive\": 15,\n  \"ab_negative\": 10\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/{{hospital_id}}/blood-units",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "{{hospital_id}}", "blood-units"]
+              }
+            }
+          },
+          {
+            "name": "Check Hospital Verification Status",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/hospitals/{{hospital_id}}/verified",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "hospitals", "{{hospital_id}}", "verified"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "User Profile",
+        "item": [
+          {
+            "name": "Get My Profile",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/users/profile",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "users", "profile"]
+              }
+            }
+          },
+          {
+            "name": "Update Profile",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"fullName\": \"John Doe Updated\",\n  \"phone\": \"+1234567890\",\n  \"address\": \"789 New St, City\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/users/profile",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "users", "profile"]
+              }
+            }
+          },
+          {
+            "name": "Change Password",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"oldPassword\": \"SecurePass123!\",\n  \"newPassword\": \"NewSecurePass456!\"\n}"
+              },
+              "url": {
+                "raw": "http://localhost:8081/api/users/change-password",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "users", "change-password"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "RBAC System Info",
+        "item": [
+          {
+            "name": "Get All Permissions (Detailed)",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/rbac/permissions",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "rbac", "permissions"]
+              }
+            }
+          },
+          {
+            "name": "Get All Roles (Detailed)",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/rbac/roles",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "rbac", "roles"]
+              }
+            }
+          },
+          {
+            "name": "Get My Permissions",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/rbac/my-permissions",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "rbac", "my-permissions"]
+              }
+            }
+          },
+          {
+            "name": "Get My Roles",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{jwt_token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://localhost:8081/api/rbac/my-roles",
+                "protocol": "http",
+                "host": ["localhost"],
+                "port": "8081",
+                "path": ["api", "rbac", "my-roles"]
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "jwt_token",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "hospital_id",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "role_id",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "permission_id",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "admin_id",
+        "value": "",
+        "type": "string"
+      }
+    ]
+  }
+}

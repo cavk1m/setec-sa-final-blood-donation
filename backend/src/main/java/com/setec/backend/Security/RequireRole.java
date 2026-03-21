@@ -15,7 +15,7 @@ public @interface RequireRole {
     /**
      * The required role type as a string (e.g., "SUPER_ADMIN", "ADMIN")
      */
-    String value();
+    String[] value();
 
     /**
      * Whether all roles in the value array are required (AND) or just one (OR)

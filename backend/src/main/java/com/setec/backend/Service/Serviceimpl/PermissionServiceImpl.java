@@ -4,6 +4,8 @@ import com.setec.backend.Enum.PermissionType;
 import com.setec.backend.Model.Permission;
 import com.setec.backend.Model.UserRole;
 import com.setec.backend.Repository.PermissionRepository;
+import com.setec.backend.Repository.UserRepository;
+import com.setec.backend.Model.users;
 import com.setec.backend.Service.PermissionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,9 +23,11 @@ import java.util.UUID;
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
+    private final UserRepository userRepository;
 
-    public PermissionServiceImpl(PermissionRepository permissionRepository) {
+    public PermissionServiceImpl(PermissionRepository permissionRepository, UserRepository userRepository) {
         this.permissionRepository = permissionRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -119,5 +123,44 @@ public class PermissionServiceImpl implements PermissionService {
     public void removePermissionFromRole(UserRole role, Permission permission) {
         log.info("Removing permission {} from role: {}", permission.getPermissionType(), role.getRoleName());
         role.getPermissions().remove(permission);
+    }
+
+    @Override
+    public List<PermissionType> getUserPermissions(UUID userId) {
+        log.debug("Fetching permissions for user with id: {}", userId);
+        
+        Optional<users> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            log.warn("User not found with id: {}", userId);
+            return List.of();
+        }
+
+        users user = userOptional.get();
+        Set<PermissionType> permissions = new java.util.HashSet<>();
+
+        // Get permissions from all user roles
+        if (user.getUserRoles() != null) {
+            for (UserRole userRole : user.getUserRoles()) {
+                if (userRole.getPermissions() != null) {
+                    for (Permission permission : userRole.getPermissions()) {
+                        permissions.add(permission.getPermissionType());
+                    }
+                }
+            }
+        }
+
+        log.debug("Found {} permissions for user {}", permissions.size(), userId);
+        return new java.util.ArrayList<>(permissions);
+    }
+
+    @Override
+    public boolean userHasPermission(UUID userId, PermissionType permissionType) {
+        log.debug("Checking if user {} has permission: {}", userId, permissionType);
+        
+        List<PermissionType> userPermissions = getUserPermissions(userId);
+        boolean hasPermission = userPermissions.contains(permissionType);
+        
+        log.debug("User {} permission check for {}: {}", userId, permissionType, hasPermission);
+        return hasPermission;
     }
 }

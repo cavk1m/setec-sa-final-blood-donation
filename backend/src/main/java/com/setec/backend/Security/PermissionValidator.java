@@ -30,7 +30,8 @@ public class PermissionValidator {
 
     @Around("@annotation(requirePermission)")
     public Object validatePermission(ProceedingJoinPoint joinPoint, RequirePermission requirePermission) throws Throwable {
-        log.debug("Validating permission: {}", requirePermission.permission());
+        String permissionName = requirePermission.value();
+        log.debug("Validating permission: {}", permissionName);
 
         // Get the current authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -51,15 +52,20 @@ public class PermissionValidator {
         users user = userOptional.get();
 
         // Check if user has the required permission through their role
-        PermissionType requiredPermission = requirePermission.permission();
-        boolean hasPermission = permissionService.userHasPermission(user.getId(), requiredPermission);
+        try {
+            PermissionType requiredPermission = PermissionType.valueOf(permissionName);
+            boolean hasPermission = permissionService.userHasPermission(user.getId(), requiredPermission);
 
-        if (!hasPermission) {
-            log.warn("Access denied: User {} does not have permission: {}", email, requiredPermission);
-            throw new SecurityException("User does not have required permission: " + requiredPermission);
+            if (!hasPermission) {
+                log.warn("Access denied: User {} does not have permission: {}", email, requiredPermission);
+                throw new SecurityException("User does not have required permission: " + requiredPermission);
+            }
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid permission name: {}", permissionName);
+            throw new SecurityException("Invalid permission: " + permissionName);
         }
 
-        log.debug("Permission granted for user: {} - permission: {}", email, requiredPermission);
+        log.debug("Permission granted for user: {} - permission: {}", email, permissionName);
         return joinPoint.proceed();
     }
 }
