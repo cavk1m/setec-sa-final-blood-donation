@@ -24,7 +24,7 @@ class OtpServiceTest {
     private OtpRepository otpRepository;
     
     @Mock
-    private EmailService emailService;
+    private EmailServiceInterface emailService;
     
     @InjectMocks
     private OtpService otpService;
@@ -82,22 +82,23 @@ class OtpServiceTest {
     @Test
     void verifyOtp_Success() {
         // Given
-        when(otpRepository.findValidOtpByContactAndCode(eq(testEmail), eq(testOtpCode), any(LocalDateTime.class)))
+        when(otpRepository.findValidOtpNative(eq(testEmail), eq(testOtpCode), any(LocalDateTime.class)))
             .thenReturn(Optional.of(testOtpEntity));
-        when(otpRepository.save(any(otp_codes.class))).thenReturn(testOtpEntity);
+        when(otpRepository.markOtpAsVerifiedNative(eq(testEmail), eq(testOtpCode)))
+            .thenReturn(1);
         
         // When
         boolean result = otpService.verifyOtp(testEmail, testOtpCode);
         
         // Then
         assertTrue(result);
-        verify(otpRepository, times(1)).save(any(otp_codes.class));
+        verify(otpRepository, times(1)).markOtpAsVerifiedNative(eq(testEmail), eq(testOtpCode));
     }
     
     @Test
     void verifyOtp_InvalidOtp() {
         // Given
-        when(otpRepository.findValidOtpByContactAndCode(eq(testEmail), eq(testOtpCode), any(LocalDateTime.class)))
+        when(otpRepository.findValidOtpNative(eq(testEmail), eq(testOtpCode), any(LocalDateTime.class)))
             .thenReturn(Optional.empty());
         
         // When
@@ -105,7 +106,7 @@ class OtpServiceTest {
         
         // Then
         assertFalse(result);
-        verify(otpRepository, never()).save(any(otp_codes.class));
+        verify(otpRepository, never()).markOtpAsVerifiedNative(anyString(), anyString());
     }
     
     @Test

@@ -98,7 +98,6 @@ class FileUploadServiceTest {
         when(mockFile.isEmpty()).thenReturn(false);
         when(mockFile.getSize()).thenReturn(1000L);
         when(mockFile.getOriginalFilename()).thenReturn("test.txt");
-        when(mockFile.getContentType()).thenReturn("text/plain");
         
         // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
