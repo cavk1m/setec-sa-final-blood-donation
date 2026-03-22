@@ -59,7 +59,6 @@ public class RoleServiceImpl implements RoleService {
         }
 
         UserRole role = new UserRole();
-        role.setId(UUID.randomUUID());
         role.setRoleName(roleName);
         role.setDescription(description);
         role.setPermissions(permissions != null ? permissions : new HashSet<>());
@@ -165,20 +164,21 @@ public class RoleServiceImpl implements RoleService {
         // Create all permissions first
         Set<Permission> allPermissions = new HashSet<>();
         for (PermissionType perm : PermissionType.values()) {
-            if (!permissionRepository.findByPermissionType(perm).isPresent()) {
-                Permission permission = new Permission();
-                permission.setId(UUID.randomUUID());
-                permission.setPermissionType(perm);
-                permission.setDescription(perm.getDescription());
-                permission.setResourceName(perm.getResourceName());
-                permission.setAction(perm.getAction());
-                permission.setIsActive(true);
-                permission.setCreatedDate(LocalDateTime.now());
-                permission.setUpdatedDate(LocalDateTime.now());
+            Optional<Permission> existingPerm = permissionRepository.findByPermissionType(perm);
+            
+            if (existingPerm.isPresent()) {
+                allPermissions.add(existingPerm.get());
+            } else {
+                // Use the Permission constructor instead of manually setting ID
+                Permission permission = new Permission(
+                    perm,
+                    perm.getDescription(),
+                    perm.getResourceName(),
+                    perm.getAction()
+                );
                 permission = permissionRepository.save(permission);
                 allPermissions.add(permission);
-            } else {
-                allPermissions.add(permissionRepository.findByPermissionType(perm).get());
+                log.debug("Created permission: {}", perm.name());
             }
         }
 

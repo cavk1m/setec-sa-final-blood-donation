@@ -128,7 +128,7 @@ public class UserController {
             // Save user directly using repository
             users savedUser = userRepository.save(newUser);
             
-            // Generate and send OTP
+
             otpService.generateAndSendOtp(request.getEmail(), "registration");
             
             return ResponseEntity.ok(Map.of(
