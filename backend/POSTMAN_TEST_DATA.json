@@ -1,0 +1,314 @@
+{
+  "info": {
+    "name": "Blood Donation API - Test Data & Environment",
+    "description": "Sample test data and environment configurations for Blood Donation API testing",
+    "version": "1.0.0"
+  },
+  "environments": [
+    {
+      "name": "Development",
+      "values": [
+        {
+          "key": "base_url",
+          "value": "http://localhost:8081",
+          "enabled": true
+        },
+        {
+          "key": "jwt_token",
+          "value": "",
+          "enabled": true,
+          "description": "JWT token - populate after login"
+        }
+      ]
+    },
+    {
+      "name": "Production",
+      "values": [
+        {
+          "key": "base_url",
+          "value": "https://api.blooddonation.com",
+          "enabled": true
+        },
+        {
+          "key": "jwt_token",
+          "value": "",
+          "enabled": true,
+          "description": "JWT token - populate after login"
+        }
+      ]
+    }
+  ],
+  "test_data": {
+    "blood_types": [
+      "A_POSITIVE",
+      "A_NEGATIVE",
+      "B_POSITIVE",
+      "B_NEGATIVE",
+      "AB_POSITIVE",
+      "AB_NEGATIVE",
+      "O_POSITIVE",
+      "O_NEGATIVE"
+    ],
+    "sample_users": [
+      {
+        "name": "Test User 1",
+        "fullName": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "0123456789",
+        "address": "123 Main Street, New York, NY 10001",
+        "dateOfBirth": "1990-01-15",
+        "password": "Password@123",
+        "bloodType": "O_POSITIVE"
+      },
+      {
+        "name": "Test User 2",
+        "fullName": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "phone": "0987654321",
+        "address": "456 Oak Avenue, Los Angeles, CA 90001",
+        "dateOfBirth": "1992-05-20",
+        "password": "Password@456",
+        "bloodType": "A_POSITIVE"
+      },
+      {
+        "name": "Test User 3",
+        "fullName": "Bob Johnson",
+        "email": "bob.johnson@example.com",
+        "phone": "0555666777",
+        "address": "789 Pine Road, Chicago, IL 60601",
+        "dateOfBirth": "1988-12-10",
+        "password": "Password@789",
+        "bloodType": "B_NEGATIVE"
+      }
+    ],
+    "sample_hospitals": [
+      {
+        "name": "Hospital Registration 1",
+        "data": {
+          "name": "City Medical Center",
+          "email": "city.medical@example.com",
+          "phone": "0123456789",
+          "address": "123 Hospital Street",
+          "city": "New York",
+          "state": "NY",
+          "zipCode": "10001",
+          "country": "USA",
+          "registrationNumber": "REG-NY-2024-001",
+          "licenseNumber": "LIC-NY-2024-001",
+          "bloodBankCoordinatorName": "Dr. Sarah Williams",
+          "bloodBankCoordinatorEmail": "sarah.williams@hospital.com",
+          "bloodBankCoordinatorPhone": "0123456789"
+        }
+      },
+      {
+        "name": "Hospital Registration 2",
+        "data": {
+          "name": "Metro Health Hospital",
+          "email": "metro.health@example.com",
+          "phone": "0987654321",
+          "address": "456 Health Avenue",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zipCode": "90001",
+          "country": "USA",
+          "registrationNumber": "REG-CA-2024-001",
+          "licenseNumber": "LIC-CA-2024-001",
+          "bloodBankCoordinatorName": "Dr. Michael Brown",
+          "bloodBankCoordinatorEmail": "michael.brown@hospital.com",
+          "bloodBankCoordinatorPhone": "0987654321"
+        }
+      },
+      {
+        "name": "Hospital Registration 3",
+        "data": {
+          "name": "Central Care Hospital",
+          "email": "central.care@example.com",
+          "phone": "0555666777",
+          "address": "789 Care Road",
+          "city": "Chicago",
+          "state": "IL",
+          "zipCode": "60601",
+          "country": "USA",
+          "registrationNumber": "REG-IL-2024-001",
+          "licenseNumber": "LIC-IL-2024-001",
+          "bloodBankCoordinatorName": "Dr. Emily Davis",
+          "bloodBankCoordinatorEmail": "emily.davis@hospital.com",
+          "bloodBankCoordinatorPhone": "0555666777"
+        }
+      }
+    ],
+    "sample_hospital_admins": [
+      {
+        "name": "Admin for Hospital 1",
+        "data": {
+          "email": "admin1@hospital.com",
+          "fullName": "Admin One",
+          "phone": "0111111111",
+          "password": "AdminPass@123"
+        }
+      },
+      {
+        "name": "Admin for Hospital 2",
+        "data": {
+          "email": "admin2@hospital.com",
+          "fullName": "Admin Two",
+          "phone": "0222222222",
+          "password": "AdminPass@456"
+        }
+      }
+    ],
+    "blood_unit_updates": [
+      {
+        "name": "Sample Blood Units Update",
+        "data": {
+          "aPositive": 50,
+          "aNegative": 25,
+          "bPositive": 40,
+          "bNegative": 20,
+          "abPositive": 15,
+          "abNegative": 10,
+          "oPositive": 60,
+          "oNegative": 30
+        }
+      }
+    ],
+    "coordinator_update": {
+      "bloodBankCoordinatorName": "Updated Coordinator Name",
+      "bloodBankCoordinatorEmail": "updated.coordinator@hospital.com",
+      "bloodBankCoordinatorPhone": "0999999999"
+    },
+    "password_change": {
+      "currentPassword": "Password@123",
+      "newPassword": "NewPassword@456"
+    },
+    "test_otp": "123456"
+  },
+  "workflows": {
+    "user_registration_workflow": {
+      "steps": [
+        "1. POST /api/users/register with user data",
+        "2. Check email for OTP code",
+        "3. POST /api/users/verify-otp with email and OTP",
+        "4. User is now registered and email verified",
+        "5. POST /api/users/login to get JWT token"
+      ]
+    },
+    "hospital_registration_workflow": {
+      "steps": [
+        "1. POST /api/hospitals/register with hospital data",
+        "2. Save hospital ID from response",
+        "3. Admin must verify hospital: PUT /api/admin/hospitals/{id}/verify",
+        "4. Hospital can now perform operations"
+      ]
+    },
+    "admin_user_creation_workflow": {
+      "steps": [
+        "1. Have ADMIN or SUPER_ADMIN JWT token",
+        "2. GET /api/admin/hospitals to get hospital IDs",
+        "3. POST /api/hospitals/{id}/admins to add new hospital admin",
+        "4. New admin can login with provided credentials"
+      ]
+    },
+    "permission_management_workflow": {
+      "steps": [
+        "1. Have SUPER_ADMIN JWT token",
+        "2. GET /api/admin/permissions to list all permissions",
+        "3. GET /api/admin/roles to list all roles",
+        "4. POST /api/admin/roles/{roleId}/permissions/{permissionId} to add permission to role",
+        "5. DELETE /api/admin/roles/{roleId}/permissions/{permissionId} to remove permission"
+      ]
+    }
+  },
+  "error_codes": {
+    "400": "Bad Request - Invalid input or validation failed",
+    "401": "Unauthorized - Missing or invalid JWT token",
+    "403": "Forbidden - User doesn't have required permission/role",
+    "404": "Not Found - Resource not found",
+    "409": "Conflict - Email/Phone already registered",
+    "422": "Unprocessable Entity - Validation error on entity",
+    "429": "Too Many Requests - Rate limit exceeded (5 OTP requests/hour)",
+    "500": "Internal Server Error - Server error"
+  },
+  "response_examples": {
+    "successful_registration": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "message": "Registration successful. OTP sent to your email",
+        "user_id": "550e8400-e29b-41d4-a716-446655440000",
+        "email": "john.doe@example.com"
+      }
+    },
+    "login_response": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "message": "Login successful",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        "expiresIn": 86400,
+        "user": {
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "email": "john.doe@example.com",
+          "fullName": "John Doe",
+          "phone": "0123456789",
+          "bloodType": "O_POSITIVE",
+          "role": "USER",
+          "isActive": true,
+          "emailVerified": true
+        }
+      }
+    },
+    "error_response": {
+      "status": 400,
+      "body": {
+        "success": false,
+        "message": "Email already registered",
+        "error": "CONFLICT"
+      }
+    },
+    "unauthorized_response": {
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Unauthorized - Invalid or missing JWT token",
+        "error": "UNAUTHORIZED"
+      }
+    },
+    "forbidden_response": {
+      "status": 403,
+      "body": {
+        "success": false,
+        "message": "Access denied - You don't have required permission",
+        "error": "FORBIDDEN"
+      }
+    }
+  },
+  "testing_tips": {
+    "general": [
+      "Always keep the JWT token in the Authorization header: Bearer <token>",
+      "Tokens expire after 24 hours of inactivity",
+      "Use the environment variables {{base_url}}, {{jwt_token}}, etc.",
+      "OTP codes are valid for 10 minutes",
+      "Max 5 OTP requests per email per hour"
+    ],
+    "user_testing": [
+      "Test with different blood types",
+      "Verify password requirements (min 8 chars, uppercase, digit, special char)",
+      "Test profile picture upload (max 5MB)",
+      "Test password change with old password",
+      "Test account deactivation (irreversible)"
+    ],
+    "hospital_testing": [
+      "Hospital must be verified by admin before full operations",
+      "Test blood unit updates with realistic numbers",
+      "Test coordinator updates for staff changes",
+      "Admin operations require ADMIN or SUPER_ADMIN role"
+    ],
+    "admin_testing": [
+      "Need ADMIN or SUPER_ADMIN role for admin endpoints",
+      "Test role and permission management",
+      "Verify hospital approval workflow",
+      "Test hospital admin creation and management"
+    ]
+  }
+}
