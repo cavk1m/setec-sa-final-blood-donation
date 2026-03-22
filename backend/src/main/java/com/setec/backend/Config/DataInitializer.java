@@ -19,19 +19,19 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     @Override
-    @Transactional
     public void run(String... args) throws Exception {
         log.info("=== Starting Data Initialization ===");
         
         try {
             // Initialize roles with permissions
-            // RoleService handles permission creation internally
+            // RoleService handles permission creation internally with its own @Transactional
             roleService.initializeDefaultRoles();
             
             log.info("=== Data Initialization Completed Successfully ===");
         } catch (Exception e) {
-            log.error("Error during data initialization", e);
-            throw e;
+            // Log error but don't fail startup - allows API to work even if init fails
+            log.warn("Data initialization error: {}", e.getMessage());
+            log.debug("Full error:", e);
         }
     }
 }
