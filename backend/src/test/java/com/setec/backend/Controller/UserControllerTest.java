@@ -27,11 +27,18 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.test.context.ActiveProfiles;
+import com.setec.backend.Repository.*;
+
 @WebMvcTest(UserController.class)
+@ActiveProfiles("test")
 class UserControllerTest {
     
     @Autowired
     private MockMvc mockMvc;
+    
+    @MockBean
+    private UserRepository userRepository;
     
     @MockBean
     private UserService userService;
