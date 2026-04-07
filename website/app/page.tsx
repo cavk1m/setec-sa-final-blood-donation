@@ -1,9 +1,21 @@
-import Greeting from '@/lib/features/greeting/Greeting'
+import EmergencyCampaigns from "@/src/components/sections/emergency-campaigns";
+import HeroSection from "@/src/components/sections/hero-section";
+import HowItWorks from "@/src/components/sections/howIt-works";
+import NewsletterPartner from "@/src/components/sections/newsletter-partner";
+import StatsBanner from "@/src/components/sections/stats-banner";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="p-4">
-      <Greeting />
-    </div>
-  )
+    <>
+      {/* ── Page sections ──────────────────────────────────────── */}
+      <main>
+        <HeroSection />
+        <StatsBanner />
+        <EmergencyCampaigns />
+        <HowItWorks />
+        <NewsletterPartner />
+      </main>
+      {/* <HopeFlowFooter /> */}
+    </>
+  );
 }
