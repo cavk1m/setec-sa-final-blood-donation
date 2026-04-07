@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: backend-test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+    hikari:
+      pool-name: TestHikariPool
+      maximum-pool-size: 5
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    generate-ddl: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      mode: always
+
+server:
+  port: 0
+
+jwt:
+  secret: myVerySecretJwtKeyForBloodDonationSystemThatIsLongEnoughForSecurity
+  expiration: 86400000
+
+file:
+  upload-dir: ${java.io.tmpdir}/uploads
+  max-size: 5242880
+
+otp:
+  expiry-minutes: 10
+  max-requests-per-hour: 5
+
+logging:
+  level:
+    root: WARN
+    com.setec.backend: INFO
+    org.springframework.test: DEBUG
+    org.hibernate: WARN
