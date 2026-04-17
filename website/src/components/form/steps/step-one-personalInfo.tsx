@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DonorFormData, INPUT_CLS } from "@/src/definitions/register";
+import { DonorFormData, INPUT_CLS, BLOOD_TYPES } from "@/definitions/register";
 
 interface Step1PersonalInfoProps {
   data: DonorFormData;
@@ -80,17 +80,6 @@ export function Step1PersonalInfo({ data, onChange }: Step1PersonalInfoProps) {
           />
         </Field>
 
-        <Field label="Phone Number" id="phone">
-          <Input
-            id="phone"
-            type="tel"
-            placeholder="+1 (555) 000-0000"
-            className={INPUT_CLS}
-            value={data.phone}
-            onChange={(e) => onChange("phone", e.target.value)}
-          />
-        </Field>
-
         <Field label="Email Address" id="email">
           <Input
             id="email"
@@ -99,6 +88,64 @@ export function Step1PersonalInfo({ data, onChange }: Step1PersonalInfoProps) {
             className={INPUT_CLS}
             value={data.email}
             onChange={(e) => onChange("email", e.target.value)}
+          />
+        </Field>
+
+        <Field label="Phone Number" id="phone">
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="+855 (123) 456-789"
+            className={INPUT_CLS}
+            value={data.phone}
+            onChange={(e) => onChange("phone", e.target.value)}
+          />
+        </Field>
+
+        <Field label="Date of Birth" id="dob">
+          <Input
+            id="dob"
+            type="date"
+            className={INPUT_CLS}
+            value={data.dob}
+            onChange={(e) => onChange("dob", e.target.value)}
+          />
+        </Field>
+
+        <Field label="Blood Type" id="blood_type">
+          <select
+            id="blood_type"
+            className={`${INPUT_CLS} appearance-none cursor-pointer`}
+            value={data.bloodType}
+            onChange={(e) => onChange("bloodType", e.target.value)}
+          >
+            <option value="">Select blood type</option>
+            {BLOOD_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Address" id="address">
+          <Input
+            id="address"
+            placeholder="e.g. Phnom Penh"
+            className={INPUT_CLS}
+            value={data.address || ""}
+            onChange={(e) => onChange("address", e.target.value)}
+          />
+        </Field>
+
+        <Field label="Password" id="password">
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            className={INPUT_CLS}
+            value={data.password || ""}
+            onChange={(e) => onChange("password", e.target.value)}
           />
         </Field>
       </div>

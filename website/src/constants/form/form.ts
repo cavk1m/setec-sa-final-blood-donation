@@ -3,7 +3,7 @@ import {
   DonorFormData,
   RegisterRequest,
   RegisterResponse,
-} from "@/src/definitions/register";
+} from "@/definitions/register";
 
 export const INITIAL_FORM_DATA: DonorFormData = {
   firstName: "",

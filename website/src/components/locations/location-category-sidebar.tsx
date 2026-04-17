@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CategoryFilter, CATEGORIES } from "@/src/definitions/locations";
+import { CategoryFilter, CATEGORIES } from "@/definitions/locations";
 
 interface CategorySidebarProps {
   active: CategoryFilter;

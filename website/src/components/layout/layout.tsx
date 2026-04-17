@@ -1,7 +1,7 @@
-import React from 'react';
-import Header from '../shared/header';
-import { Footer } from '../shared/footer';
-import MobileBottomNav from '../shared/mobile-nav';
+import React from "react";
+import Header from "../shared/header";
+import { Footer } from "../shared/footer";
+import MobileBottomNav from "../shared/mobile-nav";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,3 +17,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     </div>
   );
 };
+function getUserInfo() {
+  throw new Error("Function not implemented.");
+}

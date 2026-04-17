@@ -1,6 +1,6 @@
 // components/campaigns-page/CampaignsGrid.tsx
 
-import { Campaign } from "@/src/definitions/campaign";
+import { Campaign } from "@/definitions/campaign";
 import { CampaignCard } from "./campaign-card";
 // import { Campaign } from "@/definitions/campaigns";
 

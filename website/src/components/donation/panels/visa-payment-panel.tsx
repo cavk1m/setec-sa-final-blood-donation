@@ -5,7 +5,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { INPUT_CLS } from "@/src/definitions/donation";
+import { INPUT_CLS } from "@/definitions/donation";
 
 interface VisaPaymentPanelProps {
   cardNumber: string;

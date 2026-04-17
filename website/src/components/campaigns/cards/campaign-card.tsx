@@ -1,7 +1,7 @@
 // components/campaigns-page/CampaignCard.tsx
 
 import { Button } from "@/components/ui/button";
-import { Campaign } from "@/src/definitions/campaign";
+import { Campaign } from "@/definitions/campaign";
 // import { Campaign } from "@/definitions/campaign";
 
 interface CampaignCardProps {

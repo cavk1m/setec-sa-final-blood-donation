@@ -4,23 +4,47 @@
 import {
   DonorFormData,
   INITIAL_FORM_DATA,
-  RegisterResponse,
-  submitRegistration,
-} from "@/src/definitions/register";
+  convertBloodTypeToApi,
+} from "@/definitions/register";
 import { useState } from "react";
 import { StepIndicator } from "../stepIndicator";
 import { Step1PersonalInfo } from "../steps/step-one-personalInfo";
 import { Step2DonationHealth } from "../steps/step-two-donation-health";
 import { Step3Confirmation } from "../steps/step-three-confirmation";
+import { StepOtpVerification } from "../steps/step-otp-verification";
 import { FormNav } from "../form-nav";
 import { InfoBento } from "../Info-bento";
+import { useRegister } from "@/hooks/use-auth";
+import { RegisterRequest } from "@/definitions/auth";
+
+// Mock registration response (temporary - will be replaced with real donation API)
+interface MockRegistrationResponse {
+  message: string;
+  queue: {
+    id: string;
+    queue_number: number;
+    status: string;
+    location: {
+      id: string;
+      name: string;
+      address: string;
+    };
+    created_at: string;
+  };
+}
 
 export function DonorRegistrationPage() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<DonorFormData>(INITIAL_FORM_DATA);
-  const [result, setResult] = useState<RegisterResponse | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [result, setResult] = useState<MockRegistrationResponse | null>(null);
+  const [otpError, setOtpError] = useState<string | null>(null);
+
+  // Use auth register hook for user registration
+  const {
+    mutate: registerUser,
+    isPending: submitting,
+    error: registerError,
+  } = useRegister();
 
   const onChange = (key: keyof DonorFormData, value: any) =>
     setData((prev) => ({ ...prev, [key]: value }));
@@ -30,39 +54,76 @@ export function DonorRegistrationPage() {
     setData(INITIAL_FORM_DATA);
     setResult(null);
     setStep(1);
+    setOtpError(null);
   };
 
-  /** Step 1 → 2: just advance */
-  const handleStep1Next = () => setStep(2);
-
-  /** Step 2 → 3: call API */
-  const handleStep2Submit = async () => {
-    setSubmitting(true);
-    setSubmitError(null);
+  /** Step 1 → 2: register user via auth API (include all personal info) */
+  const handleStep1Submit = async () => {
     try {
-      const payload = {
-        location_id: data.location_id,
-        answers: Object.entries(data.answers).map(([question_id, answer]) => ({
-          question_id,
-          answer,
-        })),
+      // Prepare registration data for auth API
+      const registerPayload: RegisterRequest = {
+        full_name: `${data.firstName} ${data.lastName}`,
+        email: data.email,
+        phone: data.phone,
+        address: data.address || "Phnom Penh",
+        date_of_birth: data.dob,
+        password: data.password || "",
+        blood_type: convertBloodTypeToApi(data.bloodType) as
+          | "A_POSITIVE"
+          | "A_NEGATIVE"
+          | "B_POSITIVE"
+          | "B_NEGATIVE"
+          | "AB_POSITIVE"
+          | "AB_NEGATIVE"
+          | "O_POSITIVE"
+          | "O_NEGATIVE",
       };
-      const res = await submitRegistration(payload);
-      setResult(res);
-      setStep(3);
-    } catch {
-      setSubmitError("Submission failed. Please try again.");
-    } finally {
-      setSubmitting(false);
+
+      // Call the auth register API
+      registerUser(registerPayload, {
+        onSuccess: (response) => {
+          // Go to OTP verification step
+          setStep(2);
+        },
+      });
+    } catch (error) {
+      console.error("Error during registration:", error);
     }
   };
 
-  const handleNext = step === 1 ? handleStep1Next : handleStep2Submit;
+  /** Step 2 → 3: OTP verified, move to health questions */
+  const handleOtpVerified = () => {
+    setStep(3);
+  };
+
+  /** Step 3 → 4: Health answers collected, show confirmation */
+  const handleStep3Submit = () => {
+    // Mock the donation queue response (will be replaced with real donation API later)
+    const mockResponse: MockRegistrationResponse = {
+      message: "Registration successful! Added to queue.",
+      queue: {
+        id: "queue-" + Date.now(),
+        queue_number: Math.floor(Math.random() * 100) + 1,
+        status: "waiting",
+        location: {
+          id: data.location_id,
+          name: "Blood Donation Center", // Static for now
+          address: "123 Main Street",
+        },
+        created_at: new Date().toISOString(),
+      },
+    };
+    setResult(mockResponse);
+    setStep(4);
+  };
+
+  const handleNext =
+    step === 1 ? handleStep1Submit : step === 3 ? handleStep3Submit : () => {};
 
   return (
     <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-20 py-12">
-      {/* Page heading — hidden on step 3 */}
-      {step < 3 && (
+      {/* Page heading — hidden on step 4 */}
+      {step < 4 && (
         <div className="text-center mb-10 max-w-2xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#670017] mb-3 tracking-tight">
             Register as a Blood Donor
@@ -86,21 +147,35 @@ export function DonorRegistrationPage() {
               <Step1PersonalInfo data={data} onChange={onChange} />
             )}
             {step === 2 && (
+              <StepOtpVerification
+                email={data.email}
+                onOtpVerified={handleOtpVerified}
+                onError={setOtpError}
+              />
+            )}
+            {step === 3 && (
               <Step2DonationHealth data={data} onChange={onChange} />
             )}
-            {step === 3 && result && (
+            {step === 4 && result && (
               <Step3Confirmation result={result} onReset={onReset} />
             )}
 
             {/* API submit error */}
-            {submitError && (
+            {registerError && (
               <p className="mt-4 text-sm text-red-600 text-center font-sans">
-                {submitError}
+                {registerError.message ||
+                  "Registration failed. Please try again."}
               </p>
             )}
 
-            {/* Nav — steps 1 & 2 only */}
-            {step < 3 && (
+            {otpError && (
+              <p className="mt-4 text-sm text-red-600 text-center font-sans">
+                {otpError}
+              </p>
+            )}
+
+            {/* Nav — steps 1 & 3 only */}
+            {(step === 1 || step === 3) && (
               <FormNav
                 step={step}
                 submitting={submitting}
@@ -111,8 +186,8 @@ export function DonorRegistrationPage() {
           </div>
         </div>
 
-        {/* Info bento — steps 1 & 2 only */}
-        {step < 3 && <InfoBento />}
+        {/* Info bento — steps 1, 2 & 3 only */}
+        {step < 4 && <InfoBento />}
       </div>
     </div>
   );

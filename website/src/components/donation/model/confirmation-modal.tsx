@@ -1,7 +1,7 @@
 // components/donation-page/ConfirmationModal.tsx
 
 import { Button } from "@/components/ui/button";
-import { DonationReceipt } from "@/src/definitions/donation";
+import { DonationReceipt } from "@/definitions/donation";
 
 interface ConfirmationModalProps {
   receipt: DonationReceipt;

@@ -15,7 +15,7 @@ import {
   DonationFormData,
   DonationReceipt,
   INITIAL_FORM,
-} from "@/src/definitions/donation";
+} from "@/definitions/donation";
 
 // ── Mock submit ───────────────────────────────────────────────────────────────
 async function mockSubmitDonation(

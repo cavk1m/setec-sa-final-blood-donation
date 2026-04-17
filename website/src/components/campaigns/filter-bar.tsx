@@ -1,7 +1,7 @@
 // components/campaigns-page/FilterBar.tsx
 
 import { cn } from "@/lib/utils";
-import { CampaignFilter, FILTER_TABS } from "@/src/definitions/campaign";
+import { CampaignFilter, FILTER_TABS } from "@/definitions/campaign";
 // import { CampaignFilter, FILTER_TABS } from "@/definitions/campaigns";
 
 interface FilterBarProps {

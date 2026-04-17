@@ -17,11 +17,10 @@ import { cn } from "@/lib/utils";
 import {
   DonorFormData,
   INPUT_CLS,
-  BLOOD_TYPES,
   DONATION_CENTERS,
   ApiQuestion,
   fetchQuestions,
-} from "@/src/definitions/register";
+} from "@/definitions/register";
 
 interface Step2DonationHealthProps {
   data: DonorFormData;
@@ -96,38 +95,6 @@ export function Step2DonationHealth({
           Donation Details
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <Field label="Blood Type (if known)">
-            <Select
-              value={data.bloodType}
-              onValueChange={(v) => onChange("bloodType", v)}
-            >
-              <SelectTrigger className={cn(INPUT_CLS, "cursor-pointer")}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-[#e0bfbf] rounded-xl shadow-xl">
-                {BLOOD_TYPES.map((t) => (
-                  <SelectItem
-                    key={t}
-                    value={t}
-                    className="text-sm cursor-pointer focus:bg-[#ffdada]"
-                  >
-                    {t}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field label="Date of Birth" id="dob">
-            <Input
-              id="dob"
-              type="date"
-              className={INPUT_CLS}
-              value={data.dob}
-              onChange={(e) => onChange("dob", e.target.value)}
-            />
-          </Field>
-
           <Field label="Donation Center">
             <Select
               value={data.location_id}

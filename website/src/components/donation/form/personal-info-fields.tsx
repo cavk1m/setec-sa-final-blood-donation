@@ -1,7 +1,7 @@
 // components/donation-page/PersonalInfoFields.tsx
 
 import { Input } from "@/components/ui/input";
-import { INPUT_CLS } from "@/src/definitions/donation";
+import { INPUT_CLS } from "@/definitions/donation";
 
 interface PersonalInfoFieldsProps {
   fullName: string;

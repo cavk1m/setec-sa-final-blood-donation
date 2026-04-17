@@ -1,1 +1,1 @@
-export type { LocationCenter } from "@/src/definitions/locations";
+export type { LocationCenter } from "@/definitions/locations";

@@ -1,7 +1,7 @@
 // components/donor-registration/Step3Confirmation.tsx
 
 import { Button } from "@/components/ui/button";
-import { RegisterResponse } from "@/src/definitions/register";
+import { RegisterResponse } from "@/definitions/register";
 
 interface Step3ConfirmationProps {
   result: RegisterResponse;

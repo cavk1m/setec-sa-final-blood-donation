@@ -6,7 +6,7 @@ import { CampaignsHero } from "./campaigns-hero";
 import { FilterBar } from "./filter-bar";
 import { CampaignsGrid } from "./cards/campaign-grid";
 import { VolunteerCTA } from "./volunteer-cta";
-import { CampaignFilter, CAMPAIGNS } from "@/src/definitions/campaign";
+import { CampaignFilter, CAMPAIGNS } from "@/definitions/campaign";
 
 export function CampaignsPage() {
   const [activeFilter, setActiveFilter] = useState<CampaignFilter>("all");

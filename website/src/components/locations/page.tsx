@@ -5,7 +5,7 @@ import { useState } from "react";
 import { LocationsHero } from "./location-hero";
 import { CategorySidebar } from "./location-category-sidebar";
 import { LocationsGrid } from "./cards/location-grid";
-import { CategoryFilter, LOCATION_CENTERS } from "@/src/definitions/locations";
+import { CategoryFilter, LOCATION_CENTERS } from "@/definitions/locations";
 
 export function LocationsPage() {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");

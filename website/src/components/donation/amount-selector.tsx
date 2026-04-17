@@ -6,7 +6,7 @@ import {
   DonationAmount,
   PRESET_AMOUNTS,
   INPUT_CLS,
-} from "@/src/definitions/donation";
+} from "@/definitions/donation";
 
 interface AmountSelectorProps {
   amount: DonationAmount;

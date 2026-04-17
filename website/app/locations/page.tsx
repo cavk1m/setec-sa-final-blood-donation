@@ -1,4 +1,4 @@
-import LocationsPage from "@/src/components/locations/page";
+﻿import LocationsPage from "@/components/locations/page";
 
 export default function LocationsRoutePage() {
   return <LocationsPage />;

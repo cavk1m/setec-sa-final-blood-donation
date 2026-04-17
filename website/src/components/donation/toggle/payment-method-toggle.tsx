@@ -1,7 +1,7 @@
 // components/donation-page/PaymentMethodToggle.tsx
 
 import { cn } from "@/lib/utils";
-import { PaymentMethod } from "@/src/definitions/donation";
+import { PaymentMethod } from "@/definitions/donation";
 
 interface PaymentMethodToggleProps {
   selected: PaymentMethod;

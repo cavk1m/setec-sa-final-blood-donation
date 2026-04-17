@@ -45,6 +45,8 @@ export interface DonorFormData {
   lastName: string;
   phone: string;
   email: string;
+  address?: string;
+  password?: string;
   // Step 2 — Donation details
   bloodType: string;
   dob: string;
@@ -59,7 +61,9 @@ export const INITIAL_FORM_DATA: DonorFormData = {
   lastName: "",
   phone: "",
   email: "",
-  bloodType: "Unknown",
+  address: "Phnom Penh",
+  password: "",
+  bloodType: "O+",
   dob: "",
   location_id: "loc-uuid-1234",
   visitDate: "",
@@ -68,17 +72,28 @@ export const INITIAL_FORM_DATA: DonorFormData = {
 
 // ─── Static constants ─────────────────────────────────────────────────────────
 
-export const BLOOD_TYPES = [
-  "Unknown",
-  "A+",
-  "A-",
-  "B+",
-  "B-",
-  "O+",
-  "O-",
-  "AB+",
-  "AB-",
-];
+// Blood type mapping: display name → API enum value
+export const BLOOD_TYPE_MAP = {
+  "O+": "O_POSITIVE",
+  "O-": "O_NEGATIVE",
+  "A+": "A_POSITIVE",
+  "A-": "A_NEGATIVE",
+  "B+": "B_POSITIVE",
+  "B-": "B_NEGATIVE",
+  "AB+": "AB_POSITIVE",
+  "AB-": "AB_NEGATIVE",
+} as const;
+
+export const BLOOD_TYPES = Object.keys(BLOOD_TYPE_MAP) as Array<
+  keyof typeof BLOOD_TYPE_MAP
+>;
+
+// Helper function to convert display value to API value
+export const convertBloodTypeToApi = (displayValue: string): string => {
+  return (
+    BLOOD_TYPE_MAP[displayValue as keyof typeof BLOOD_TYPE_MAP] || displayValue
+  );
+};
 
 export const DONATION_CENTERS: { id: string; name: string; address: string }[] =
   [
@@ -106,8 +121,9 @@ export const DONATION_CENTERS: { id: string; name: string; address: string }[] =
 
 export const REGISTRATION_STEPS = [
   { id: 1, label: "Personal Info" },
-  { id: 2, label: "Donation & Health" },
-  { id: 3, label: "Confirmation" },
+  { id: 2, label: "Verify Email" },
+  { id: 3, label: "Donation & Health" },
+  { id: 4, label: "Confirmation" },
 ] as const;
 
 // Shared Tailwind input class
