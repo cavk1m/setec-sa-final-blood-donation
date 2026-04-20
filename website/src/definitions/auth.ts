@@ -64,3 +64,35 @@ export interface ProfileResponse {
   phoneNumber?: string;
   createdAt: string;
 }
+
+export interface UpdateProfileRequest {
+  full_name?: string;
+  phone?: string;
+  blood_type?: 
+    | "A_POSITIVE"
+    | "A_NEGATIVE"
+    | "B_POSITIVE"
+    | "B_NEGATIVE"
+    | "AB_POSITIVE"
+    | "AB_NEGATIVE"
+    | "O_POSITIVE"
+    | "O_NEGATIVE";
+}
+
+export interface UpdateProfileResponse {
+  success: boolean;
+  message: string;
+  user: {
+    id: string;
+    fullName: string;
+    email: string;
+    phone?: string;
+    bloodType?: string;
+  };
+}
+
+export interface UploadProfilePictureResponse {
+  success: boolean;
+  message: string;
+  profilePictureUrl: string;
+}

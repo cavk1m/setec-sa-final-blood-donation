@@ -53,9 +53,7 @@ export function DesktopNavItem({
   const textCls = scrolled
     ? "text-[#1c1b1f] hover:bg-[#ffdada]/60"
     : "text-white hover:bg-white/10";
-  const activeCls = scrolled
-    ? "text-[#670017]"
-    : "text-[#ffdada]";
+  const activeCls = scrolled ? "text-[#670017]" : "text-[#ffdada]";
 
   if ("children" in item && item.children) {
     return (
@@ -98,8 +96,9 @@ export function DesktopNavItem({
       <NavigationMenuLink
         asChild
         className={cn(
-          navigationMenuTriggerStyle(),
-          "bg-transparent text-sm font-semibold font-sans transition-colors",
+          "px-4 py-2 rounded-lg text-sm font-semibold font-sans transition-colors",
+          "bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent",
+          "outline-none focus:outline-none ",
           isActive ? activeCls : textCls,
         )}
       >

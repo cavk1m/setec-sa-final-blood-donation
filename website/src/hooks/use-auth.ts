@@ -5,6 +5,10 @@ import {
   RegisterResponse,
   LoginData,
   LoginResponse,
+  UpdateProfileRequest,
+  UpdateProfileResponse,
+  UploadProfilePictureResponse,
+  ProfileResponse,
 } from "@/definitions/auth";
 import {
   SendOtpData,
@@ -74,6 +78,74 @@ export const useLogin = (): UseMutationResult<
       const response = await axiosInstance.post<LoginResponse>(
         `${authEndpoint}login`,
         data,
+      );
+      return response.data;
+    },
+  });
+};
+
+export const useUpdateProfile = (): UseMutationResult<
+  UpdateProfileResponse,
+  Error,
+  { data: UpdateProfileRequest; token: string }
+> => {
+  return useMutation({
+    mutationFn: async ({ data, token }) => {
+      const response = await axiosInstance.put<UpdateProfileResponse>(
+        "/api/users/profile",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      return response.data;
+    },
+  });
+};
+
+export const useGetProfile = (): UseMutationResult<
+  ProfileResponse,
+  Error,
+  string
+> => {
+  return useMutation({
+    mutationFn: async (token: string) => {
+      const response = await axiosInstance.get<ProfileResponse>(
+        "/api/auth/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      return response.data;
+    },
+  });
+};
+
+export const useUploadProfilePicture = (): UseMutationResult<
+  UploadProfilePictureResponse,
+  Error,
+  { file: File; token: string }
+> => {
+  return useMutation({
+    mutationFn: async ({ file, token }) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await axiosInstance.post<UploadProfilePictureResponse>(
+        "/api/users/profile/picture",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        },
       );
       return response.data;
     },
