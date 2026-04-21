@@ -1,5 +1,3 @@
-// components/donor-registration/Step2DonationHealth.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -21,6 +19,7 @@ import {
   ApiQuestion,
   fetchQuestions,
 } from "@/definitions/register";
+import { useGetSurveyQuestions } from "@/hooks/use-survey";
 
 interface Step2DonationHealthProps {
   data: DonorFormData;
@@ -53,35 +52,24 @@ export function Step2DonationHealth({
   data,
   onChange,
 }: Step2DonationHealthProps) {
-  const [questions, setQuestions] = useState<ApiQuestion[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   // Fetch questions on mount
+  const {
+    data: surveyData,
+    isLoading: loading,
+    error,
+  } = useGetSurveyQuestions();
+  const questions = surveyData?.questions || [];
+
+  // Seed answers with "no" for any question not yet answered
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    fetchQuestions()
-      .then((qs) => {
-        if (cancelled) return;
-        setQuestions(qs);
-        // Seed answers with "no" for any question not yet answered
-        const seed: Record<string, "yes" | "no"> = { ...data.answers };
-        qs.forEach((q) => {
-          if (!(q.id in seed)) seed[q.id] = "no";
-        });
-        onChange("answers", seed);
-      })
-      .catch(() => {
-        if (!cancelled) setError("Failed to load health questions.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+    if (questions.length > 0) {
+      const seed: Record<string, "yes" | "no"> = { ...data.answers };
+      questions.forEach((q) => {
+        if (!(q.id in seed)) seed[q.id] = "no";
       });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+      onChange("answers", seed);
+    }
+  }, [questions]); // Only depend on questions to avoid infinite loops
 
   const setAnswer = (questionId: string, value: "yes" | "no") => {
     onChange("answers", { ...data.answers, [questionId]: value });
@@ -158,7 +146,7 @@ export function Step2DonationHealth({
 
         {/* Error state */}
         {error && !loading && (
-          <p className="text-sm text-red-600 font-sans py-4">{error}</p>
+          <p className="text-sm text-red-600 font-sans py-4">{error.message}</p>
         )}
 
         {/* Questions */}

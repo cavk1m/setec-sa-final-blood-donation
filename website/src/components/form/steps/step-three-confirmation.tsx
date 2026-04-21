@@ -1,5 +1,3 @@
-// components/donor-registration/Step3Confirmation.tsx
-
 import { Button } from "@/components/ui/button";
 import { RegisterResponse } from "@/definitions/register";
 

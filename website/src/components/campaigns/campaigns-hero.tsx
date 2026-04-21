@@ -1,5 +1,3 @@
-// components/campaigns-page/CampaignsHero.tsx
-
 interface CampaignsHeroProps {
   totalActive: number;
 }

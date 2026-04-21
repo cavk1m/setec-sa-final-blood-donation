@@ -1,6 +1,3 @@
-// components/donation-page/DonationPage.tsx
-// Drop inside your existing layout — no header or footer included.
-
 "use client";
 
 import { useState } from "react";

@@ -1,5 +1,3 @@
-// components/donation-page/PersonalInfoFields.tsx
-
 import { Input } from "@/components/ui/input";
 import { INPUT_CLS } from "@/definitions/donation";
 

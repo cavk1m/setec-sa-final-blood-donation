@@ -1,4 +1,3 @@
-// components/campaigns-page/EmergencyBanner.tsx
 "use client";
 
 import { useState } from "react";

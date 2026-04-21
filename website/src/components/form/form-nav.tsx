@@ -1,5 +1,3 @@
-// components/donor-registration/FormNav.tsx
-
 import { Button } from "@/components/ui/button";
 
 interface FormNavProps {

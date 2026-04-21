@@ -1,4 +1,3 @@
-// components/campaigns-page/CampaignsPage.tsx
 "use client";
 
 import { useState } from "react";

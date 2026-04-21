@@ -1,5 +1,3 @@
-// components/locations-page/LocationCard.tsx
-
 import { Button } from "@/components/ui/button";
 import { LocationCenter } from "./types";
 // import { LocationCenter } from "./types";

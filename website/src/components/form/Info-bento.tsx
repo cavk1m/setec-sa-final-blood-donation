@@ -1,5 +1,3 @@
-// components/donor-registration/InfoBento.tsx
-
 export function InfoBento() {
   return (
     <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">

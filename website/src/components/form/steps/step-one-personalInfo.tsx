@@ -1,5 +1,3 @@
-// components/donor-registration/Step1PersonalInfo.tsx
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DonorFormData, INPUT_CLS, BLOOD_TYPES } from "@/definitions/register";

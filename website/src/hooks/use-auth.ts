@@ -9,6 +9,14 @@ import {
   UpdateProfileResponse,
   UploadProfilePictureResponse,
   ProfileResponse,
+  DeactivateAccountResponse,
+  DeleteProfilePictureResponse,
+  ChangePasswordResponse,
+  ChangePasswordRequest,
+  ForgotPasswordResponse,
+  ForgotPasswordData,
+  ResetPasswordResponse,
+  ResetPasswordData,
 } from "@/definitions/auth";
 import {
   SendOtpData,
@@ -44,7 +52,7 @@ export const useSendOtp = (): UseMutationResult<
   return useMutation({
     mutationFn: async (data: SendOtpData) => {
       const response = await axiosInstance.post<SendOtpResponse>(
-        "/api/auth/send-otp",
+        `${authEndpoint}send-otp`,
         data,
       );
       return response.data;
@@ -114,7 +122,7 @@ export const useGetProfile = (): UseMutationResult<
   return useMutation({
     mutationFn: async (token: string) => {
       const response = await axiosInstance.get<ProfileResponse>(
-        "/api/auth/profile",
+        `${authEndpoint}profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -146,6 +154,130 @@ export const useUploadProfilePicture = (): UseMutationResult<
             "Content-Type": "multipart/form-data",
           },
         },
+      );
+      return response.data;
+    },
+  });
+};
+
+// ─── Delete Profile Picture ───────────────────────────────────────────────
+
+export const useDeleteProfilePicture = (): UseMutationResult<
+  DeleteProfilePictureResponse,
+  Error,
+  string
+> => {
+  return useMutation({
+    mutationFn: async (token: string) => {
+      const response = await axiosInstance.delete<DeleteProfilePictureResponse>(
+        `${authEndpoint}profile/picture`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      return response.data;
+    },
+  });
+};
+
+// ─── Change Password ──────────────────────────────────────────────────────
+
+export const useChangePassword = (): UseMutationResult<
+  ChangePasswordResponse,
+  Error,
+  { data: ChangePasswordRequest; token: string }
+> => {
+  return useMutation({
+    mutationFn: async ({ data, token }) => {
+      const response = await axiosInstance.post<ChangePasswordResponse>(
+        `${authEndpoint}change-password`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      return response.data;
+    },
+  });
+};
+
+// ─── Forgot Password ──────────────────────────────────────────────────────
+
+export const useForgotPassword = (): UseMutationResult<
+  ForgotPasswordResponse,
+  Error,
+  ForgotPasswordData
+> => {
+  return useMutation({
+    mutationFn: async (data: ForgotPasswordData) => {
+      const response = await axiosInstance.post<ForgotPasswordResponse>(
+        `${authEndpoint}forgot-password`,
+        data,
+      );
+      return response.data;
+    },
+  });
+};
+
+// ─── Reset Password ───────────────────────────────────────────────────────
+
+export const useResetPassword = (): UseMutationResult<
+  ResetPasswordResponse,
+  Error,
+  ResetPasswordData
+> => {
+  return useMutation({
+    mutationFn: async (data: ResetPasswordData) => {
+      const response = await axiosInstance.post<ResetPasswordResponse>(
+        `${authEndpoint}reset-password`,
+        data,
+      );
+      return response.data;
+    },
+  });
+};
+
+// ─── Deactivate Account ───────────────────────────────────────────────────
+
+export const useDeactivateAccount = (): UseMutationResult<
+  DeactivateAccountResponse,
+  Error,
+  string
+> => {
+  return useMutation({
+    mutationFn: async (token: string) => {
+      const response = await axiosInstance.delete<DeactivateAccountResponse>(
+        "/api/account",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      return response.data;
+    },
+  });
+};
+
+// ─── Resend OTP ───────────────────────────────────────────────────────────
+
+export const useResendOtp = (): UseMutationResult<
+  SendOtpResponse,
+  Error,
+  SendOtpData
+> => {
+  return useMutation({
+    mutationFn: async (data: SendOtpData) => {
+      const response = await axiosInstance.post<SendOtpResponse>(
+        `${authEndpoint}resend-otp`,
+        data,
       );
       return response.data;
     },

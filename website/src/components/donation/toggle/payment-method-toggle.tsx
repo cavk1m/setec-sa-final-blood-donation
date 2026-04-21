@@ -1,5 +1,3 @@
-// components/donation-page/PaymentMethodToggle.tsx
-
 import { cn } from "@/lib/utils";
 import { PaymentMethod } from "@/definitions/donation";
 

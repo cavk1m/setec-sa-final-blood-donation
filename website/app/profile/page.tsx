@@ -5,9 +5,20 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { getUserInfo, useAuthStore } from "@/hooks/zustand/use-auth-store";
-import { useUpdateProfile, useGetProfile, useUploadProfilePicture } from "@/hooks/use-auth";
+import {
+  useUpdateProfile,
+  useGetProfile,
+  useUploadProfilePicture,
+  useChangePassword,
+} from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
@@ -32,7 +43,8 @@ export default function ProfilePage() {
 
   // API mutation
   const { mutate: updateProfileMutation, isPending } = useUpdateProfile();
-  const { mutate: fetchProfile, isPending: isFetchingProfile } = useGetProfile();
+  const { mutate: fetchProfile, isPending: isFetchingProfile } =
+    useGetProfile();
   const { mutate: uploadPictureMutation, isPending: isUploadingPicture } =
     useUploadProfilePicture();
 
@@ -40,41 +52,150 @@ export default function ProfilePage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>(profilePictureUrl);
 
-  // Redirect to home if not logged in
+  // Password change state
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+
+  const {
+    mutate: changePasswordMutation,
+    isPending: isChangingPasswordPending,
+  } = useChangePassword();
+
+  const handleChangePassword = () => {
+    setPasswordError(null);
+    setPasswordSuccess(null);
+
+    if (!currentPassword.trim()) {
+      setPasswordError("Current password is required.");
+      return;
+    }
+    if (!newPassword.trim()) {
+      setPasswordError("New password is required.");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError("New password must be at least 6 characters.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+
+    const userToken = user?.token;
+    if (!userToken) {
+      setPasswordError("Authentication token missing.");
+      return;
+    }
+
+    changePasswordMutation(
+      {
+        data: {
+          current_password: currentPassword,
+          new_password: newPassword,
+        },
+        token: userToken,
+      },
+      {
+        onSuccess: (response) => {
+          setPasswordSuccess(
+            response.message || "Password changed successfully!",
+          );
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+          setIsChangingPassword(false);
+
+          setTimeout(() => {
+            setPasswordSuccess(null);
+          }, 3000);
+        },
+        onError: (error: any) => {
+          const errorMsg =
+            error?.response?.data?.message ||
+            error?.message ||
+            "Failed to change password.";
+          setPasswordError(errorMsg);
+        },
+      },
+    );
+  };
+
   useEffect(() => {
     if (!user) {
       router.push("/");
       return;
     }
 
-    // Fetch the full profile data when page loads
+    // Fetch the full profile data when user changes (login/registration)
     if (user.token) {
       fetchProfile(user.token, {
         onSuccess: (response) => {
-          // Update store and form state with fetched profile
+          console.log("Profile fetched:", response);
+
+          // ✅ FIX: Extract from response.user and use snake_case
           const mappedProfile = {
-            full_name: response.fullName,
-            email: response.email,
-            phone: response.phoneNumber,
-            date_of_birth: response.dateOfBirth,
+            full_name: response.user.full_name,
+            email: response.user.email,
+            phone: response.user.phone,
+            date_of_birth: response.user.date_of_birth,
+            profile_picture_url: response.user.profile_picture_uri, // ← Note: backend uses profile_picture_uri
           };
 
           setProfile(mappedProfile as any);
-          setFullName(response.fullName || "");
-          setPhone(response.phoneNumber || "");
-          setDateOfBirth(response.dateOfBirth || "");
+          setFullName(response.user.full_name || "");
+          setPhone(response.user.phone || "");
+          setDateOfBirth(response.user.date_of_birth || "");
+
+          setPreviewUrl(response.user.profile_picture_uri || "");
         },
         onError: (error: any) => {
           console.error("Failed to fetch profile:", error);
-          // Don't show error to user, just log it
         },
       });
     }
-  }, [user, router, fetchProfile, setProfile]);
+  }, [user, router]); // ← Remove fetchProfile and setProfile
 
+  useEffect(() => {
+    if (profile?.profile_picture_url) {
+      setProfilePictureUrl(profile.profile_picture_url);
+      setPreviewUrl(profile.profile_picture_url);
+    }
+  }, [profile?.profile_picture_url]);
+
+  // const handleSaveProfile = () => {
+  //   setErrorMessage(null);
+  //   setSuccessMessage(null);
+
+  //   const userToken = user?.token;
+  //   if (!userToken) {
+  //     setErrorMessage("Authentication token missing. Please log in again.");
+  //     return;
+  //   }
   const handleSaveProfile = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
+
+    // ✅ ADD THIS VALIDATION
+    if (!fullName.trim()) {
+      setErrorMessage("Full name is required.");
+      return;
+    }
+
+    if (!phone.trim()) {
+      setErrorMessage("Phone number is required.");
+      return;
+    }
+
+    // ✅ ADD THIS VALIDATION FOR BLOOD TYPE
+    if (!bloodType || bloodType === "") {
+      setErrorMessage("Please select a blood type.");
+      return;
+    }
 
     const userToken = user?.token;
     if (!userToken) {
@@ -90,13 +211,35 @@ export default function ProfilePage() {
           onSuccess: (response) => {
             // Update profile picture URL
             setProfilePictureUrl(response.profilePictureUrl);
-            setProfile({
-              ...profile,
-              full_name: fullName,
-              phone: phone,
-              blood_type: bloodType,
-              profile_picture_url: response.profilePictureUrl,
-            } as any);
+            setPreviewUrl(response.profilePictureUrl);
+
+            if (user?.token) {
+              fetchProfile(user.token, {
+                onSuccess: (profileResponse) => {
+                  console.log("🔍 fetchProfile response:", profileResponse);
+                  console.log(
+                    "🔍 profile_picture_uri:",
+                    profileResponse.user.profile_picture_uri,
+                  );
+                  const updatedProfile = {
+                    full_name: profileResponse.user.full_name,
+                    email: profileResponse.user.email,
+                    phone: profileResponse.user.phone,
+                    date_of_birth: profileResponse.user.date_of_birth,
+                    profile_picture_url:
+                      profileResponse.user.profile_picture_uri,
+                  };
+                  // ✅ Make sure this updates the store (triggers localStorage)
+                  setProfile(updatedProfile as any);
+
+                  // ✅ Also sync local state
+                  setPreviewUrl(profileResponse.user.profile_picture_uri || "");
+                  setProfilePictureUrl(
+                    profileResponse.user.profile_picture_uri || "",
+                  );
+                },
+              });
+            }
 
             // Then update other profile fields
             updateProfileMutation(
@@ -247,31 +390,31 @@ export default function ProfilePage() {
                     />
                   ) : (
                     <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#670017] to-[#8c1127] flex items-center justify-center border-4 border-[#670017]">
-                      <span className="text-3xl font-black text-white">{initials}</span>
+                      <span className="text-3xl font-black text-white">
+                        {initials}
+                      </span>
                     </div>
                   )}
 
-                  {isEditing && (
-                    <label className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="2"
-                        className="w-6 h-6"
-                      >
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="17 8 12 3 7 8" />
-                        <line x1="12" y1="3" x2="12" y2="15" />
-                      </svg>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                      />
-                    </label>
-                  )}
+                  <label className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      className="w-6 h-6"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
 
                 <div>
@@ -349,9 +492,13 @@ export default function ProfilePage() {
         {/* Profile Details Card */}
         <Card className="border-0 shadow-lg mb-6 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-[#670017]">Profile Information</CardTitle>
+            <CardTitle className="text-[#670017]">
+              Profile Information
+            </CardTitle>
             <CardDescription>
-              {isEditing ? "Edit your profile details below" : "View your profile information"}
+              {isEditing
+                ? "Edit your profile details below"
+                : "View your profile information"}
             </CardDescription>
           </CardHeader>
 
@@ -359,7 +506,9 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Full Name */}
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">Full Name</Label>
+                <Label className="text-sm font-bold text-[#584141]">
+                  Full Name
+                </Label>
                 {isEditing ? (
                   <Input
                     value={fullName}
@@ -376,13 +525,19 @@ export default function ProfilePage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">Email Address</Label>
-                <div className="p-3 bg-gray-50 rounded-lg text-gray-700">{user.email}</div>
+                <Label className="text-sm font-bold text-[#584141]">
+                  Email Address
+                </Label>
+                <div className="p-3 bg-gray-50 rounded-lg text-gray-700">
+                  {user.email}
+                </div>
               </div>
 
               {/* Phone */}
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">Phone Number</Label>
+                <Label className="text-sm font-bold text-[#584141]">
+                  Phone Number
+                </Label>
                 {isEditing ? (
                   <Input
                     value={phone}
@@ -399,7 +554,9 @@ export default function ProfilePage() {
 
               {/* Blood Type */}
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">Blood Type</Label>
+                <Label className="text-sm font-bold text-[#584141]">
+                  Blood Type
+                </Label>
                 {isEditing ? (
                   <select
                     value={bloodType}
@@ -425,7 +582,9 @@ export default function ProfilePage() {
 
               {/* Date of Birth */}
               <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">Date of Birth</Label>
+                <Label className="text-sm font-bold text-[#584141]">
+                  Date of Birth
+                </Label>
                 {isEditing ? (
                   <Input
                     type="date"
@@ -446,16 +605,107 @@ export default function ProfilePage() {
         </Card>
 
         {/* Account Actions Card */}
+        {/* Account Actions Card */}
         <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-[#670017]">Account Actions</CardTitle>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="space-y-4">
+            {/* Change Password Section */}
+            {!isChangingPassword ? (
+              <Button
+                onClick={() => setIsChangingPassword(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold w-full"
+              >
+                Change Password
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm font-bold text-[#584141]">
+                    Current Password
+                  </Label>
+                  <Input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                    className="border-[#e0bfbf] focus:border-[#670017]"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-sm font-bold text-[#584141]">
+                    New Password
+                  </Label>
+                  <Input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    className="border-[#e0bfbf] focus:border-[#670017]"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-sm font-bold text-[#584141]">
+                    Confirm New Password
+                  </Label>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    className="border-[#e0bfbf] focus:border-[#670017]"
+                  />
+                </div>
+
+                {passwordError && (
+                  <p className="text-sm text-red-600 font-medium">
+                    {passwordError}
+                  </p>
+                )}
+                {passwordSuccess && (
+                  <p className="text-sm text-green-600 font-medium">
+                    ✓ {passwordSuccess}
+                  </p>
+                )}
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleChangePassword}
+                    disabled={isChangingPasswordPending}
+                    className="bg-green-600 hover:bg-green-700 text-white rounded-full font-bold flex-1"
+                  >
+                    {isChangingPasswordPending
+                      ? "Changing..."
+                      : "Change Password"}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setIsChangingPassword(false);
+                      setCurrentPassword("");
+                      setNewPassword("");
+                      setConfirmPassword("");
+                      setPasswordError(null);
+                      setPasswordSuccess(null);
+                    }}
+                    variant="outline"
+                    className="rounded-full font-bold flex-1"
+                    disabled={isChangingPasswordPending}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Sign Out Button */}
             <Button
               onClick={handleLogout}
               variant="destructive"
-              className="bg-red-600 hover:bg-red-700 text-white rounded-full font-bold w-full sm:w-auto"
+              className="bg-red-600 hover:bg-red-700 text-white rounded-full font-bold w-full"
             >
               Sign Out
             </Button>

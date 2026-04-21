@@ -1,5 +1,3 @@
-// components/donor-registration/StepIndicator.tsx
-
 import { cn } from "@/lib/utils";
 import { REGISTRATION_STEPS } from "@/definitions/register";
 

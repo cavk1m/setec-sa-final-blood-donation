@@ -1,27 +1,32 @@
-// components/form/steps/step-otp-verification.tsx
 "use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useVerifyOtp } from "@/hooks/use-auth";
+import { useVerifyOtp, useLogin, useResendOtp } from "@/hooks/use-auth";
+import { useAuthStore } from "@/hooks/zustand/use-auth-store";
 
 interface StepOtpVerificationProps {
   email: string;
+  password: string;
   onOtpVerified: () => void;
   onError?: (error: string) => void;
 }
 
 export function StepOtpVerification({
   email,
+  password,
   onOtpVerified,
   onError,
 }: StepOtpVerificationProps) {
   const [otp, setOtp] = useState("");
   const [showError, setShowError] = useState(false);
 
-  const { mutate: verifyOtp, isPending } = useVerifyOtp();
+  const { mutate: verifyOtp, isPending: isVerifying } = useVerifyOtp();
+  const { mutate: login, isPending: isLoggingIn } = useLogin();
+  const { mutate: resendOtp, isPending: isResending } = useResendOtp();
+  const setUser = useAuthStore((s) => s.setUser);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +41,23 @@ export function StepOtpVerification({
       { email, otp_code: otp },
       {
         onSuccess: () => {
-          onOtpVerified();
+          login(
+            { email, password },
+            {
+              onSuccess: (loginResponse) => {
+                // Save token + user data to auth store
+                setUser(loginResponse);
+                onOtpVerified();
+              },
+              onError: (loginError) => {
+                const errorMsg =
+                  loginError?.message ||
+                  "Login failed after OTP verification. Please try again.";
+                setShowError(true);
+                onError?.(errorMsg);
+              },
+            },
+          );
         },
         onError: (error) => {
           const errorMessage =
@@ -47,6 +68,8 @@ export function StepOtpVerification({
       },
     );
   };
+
+  const isPending = isVerifying || isLoggingIn;
 
   return (
     <div className="space-y-6">
@@ -86,14 +109,23 @@ export function StepOtpVerification({
         </div>
 
         <Button
+          onClick={() => resendOtp({ email })}
+          variant="outline"
+          disabled={isResending}
+          className="w-full"
+        >
+          {isResending ? "Sending..." : "Resend OTP"}
+        </Button>
+
+        <Button
           type="submit"
           disabled={isPending || !otp}
           className="w-full bg-[#670017] hover:bg-[#5a0014] text-white py-2 rounded-lg font-semibold"
         >
-          {isPending ? "Verifying..." : "Verify Code"}
+          {isPending ? "Verifying & signing in..." : "Verify Code"}
         </Button>
 
-        <p className="text-xs text-[#584141] text-center">
+        {/* <p className="text-xs text-[#584141] text-center">
           Didn't receive the code?{" "}
           <button
             type="button"
@@ -102,7 +134,7 @@ export function StepOtpVerification({
           >
             Resend
           </button>
-        </p>
+        </p> */}
       </form>
     </div>
   );

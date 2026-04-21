@@ -1,5 +1,3 @@
-// components/donation-page/CampaignInfo.tsx
-
 interface CampaignInfoProps {
   badge?: string;
   title: string;

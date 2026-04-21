@@ -1,4 +1,3 @@
-// components/locations-page/LocationsGrid.tsx
 "use client";
 
 import { LocationCard } from "./location-card";

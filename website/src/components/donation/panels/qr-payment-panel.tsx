@@ -1,5 +1,3 @@
-// components/donation-page/QRPaymentPanel.tsx
-
 import { Button } from "@/components/ui/button";
 
 interface QRPaymentPanelProps {

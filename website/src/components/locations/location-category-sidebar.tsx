@@ -1,4 +1,3 @@
-// components/locations-page/CategorySidebar.tsx
 "use client";
 
 import { useState } from "react";

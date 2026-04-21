@@ -1,5 +1,3 @@
-// components/donation-page/AmountSelector.tsx
-
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {

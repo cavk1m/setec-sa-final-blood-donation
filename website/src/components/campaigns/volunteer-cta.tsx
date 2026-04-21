@@ -1,5 +1,3 @@
-// components/campaigns-page/VolunteerCTA.tsx
-
 import { Button } from "@/components/ui/button";
 
 export function VolunteerCTA() {

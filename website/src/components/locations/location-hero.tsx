@@ -1,4 +1,3 @@
-// components/locations-page/LocationsHero.tsx
 "use client";
 
 import { useState } from "react";

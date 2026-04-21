@@ -216,6 +216,8 @@ import { useRegister } from "@/hooks/use-auth";
 import { RegisterRequest } from "@/definitions/auth";
 import { getUserInfo } from "@/hooks/zustand/use-auth-store";
 
+import { useDonationRegister } from "@/hooks/use-donation";
+import { DonationRegisterRequest } from "@/definitions/donation";
 // Temporary mock shape — replace with real donation queue API response
 interface MockQueueResponse {
   message: string;
@@ -281,6 +283,8 @@ export function DonorRegistrationPage() {
         data.bloodType,
       ) as RegisterRequest["blood_type"],
     };
+
+    console.log("Register payload:", payload);
 
     registerUser(payload, {
       // RegisterResponse: { userId, email, message } — no token
@@ -389,10 +393,19 @@ export function DonorRegistrationPage() {
                 </p>
               </>
             )}
+            {/* 
+            {!isLoginMode && step === 2 && (
+              <StepOtpVerification
+                email={data.email}
+                onOtpVerified={handleOtpVerified}
+                onError={setOtpError}
+              />
+            )} */}
 
             {!isLoginMode && step === 2 && (
               <StepOtpVerification
                 email={data.email}
+                password={data.password || ""}
                 onOtpVerified={handleOtpVerified}
                 onError={setOtpError}
               />
