@@ -1,12 +1,4 @@
-// import Greeting from '@/lib/features/greeting/Greeting'
 
-// export default function Home() {
-//   return (
-//     <main className="p-6">
-//       <Greeting />
-//     </main>
-//   )
-// }
 'use client';
 
 import { useState } from 'react';
@@ -22,6 +14,7 @@ import StatsRow from '@/src/components/stats-row';
 import CampaignProgress from '@/src/components/campaign/campaign-progress';
 import DonationsTrendChart from '@/src/components/queue/donations-trend-chart';
 import RecentQueueTable from '@/src/components/queue/recent-queuetable';
+
 
 const MOCK_QUEUE = [
   { id: '1', donor: 'Sophea Chan',    bloodType: 'A+', status: 'waiting',    time: '09:00 AM' },

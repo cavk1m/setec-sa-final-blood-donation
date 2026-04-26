@@ -284,14 +284,14 @@ export default function QueueTable({
 
   return (
     <>
-      <Card
-        style={{
-          borderRadius: 16,
-          border: "1px solid #e3e8f9",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-        }}
-        bodyStyle={{ padding: 0 }}
-      >
+     <Card
+  style={{
+    borderRadius: 16,
+    border: "1px solid #e3e8f9",
+    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+  }}
+  styles={{ body: { padding: 0 } }}
+>
         {/* Header */}
         <div
           style={{

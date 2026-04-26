@@ -40,7 +40,7 @@ export default function CompleteDrawer({
       open={open}
       onClose={onCancel}
       placement="right"
-      width={420}
+      size="default"
       title={null}
       closable={false}
       styles={{
