@@ -1,4 +1,5 @@
-import type { QueueEntry, QueueStatus } from '@/types/dashboard';
+import { QueueEntry, QueueStatus } from "../types/dashboard";
+
 
 export const BLOOD_TYPE_STYLE: Record<
   string,
@@ -15,14 +16,20 @@ export const BLOOD_TYPE_STYLE: Record<
 };
 
 export function formatQueueTime(input: string | Date) {
-  const d = typeof input === 'string' ? new Date(input) : input;
-  if (Number.isNaN(d.getTime())) return typeof input === 'string' ? input : '';
+  if (typeof input === "string") {
+    const timeLike = input.match(/^\d{1,2}:\d{2}(\s?[AP]M)?$/i);
+    if (timeLike) return input;
+  }
 
-  // Local time formatting for display-only.
-  return d.toLocaleString(undefined, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const d = typeof input === "string" ? new Date(input) : input;
+  if (Number.isNaN(d.getTime())) return typeof input === "string" ? input : "";
+
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC",
+  }).format(d);
 }
 
 export function getSurveyColor(score: number) {

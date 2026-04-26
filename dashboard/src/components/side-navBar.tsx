@@ -6,24 +6,20 @@ import {
   SafetyCertificateOutlined, NotificationOutlined, TeamOutlined,
   SettingOutlined, PlusCircleFilled, QuestionCircleOutlined, LogoutOutlined,
 } from '@ant-design/icons';
+import { usePathname, useRouter } from 'next/navigation';
 import AppButton from '@/src/components/ui/app-button';
 
 const { Sider } = Layout;
 const { Text } = Typography;
 
-interface SideNavBarProps {
-  activeKey?: string;
-  onMenuClick?: (key: string) => void;
-}
-
 const navItems = [
-  { key: 'overview',     icon: <DashboardOutlined />,        label: 'Overview'        },
-  { key: 'queue',        icon: <UnorderedListOutlined />,     label: 'Donation Queue'  },
-  { key: 'locations',    icon: <EnvironmentOutlined />,       label: 'Locations'       },
-  { key: 'certificates', icon: <SafetyCertificateOutlined />, label: 'Certificates'    },
-  { key: 'campaigns',    icon: <NotificationOutlined />,      label: 'Campaigns'       },
-  { key: 'users',        icon: <TeamOutlined />,              label: 'Users'           },
-  { key: 'settings',     icon: <SettingOutlined />,           label: 'Settings'        },
+  { key: '',     icon: <DashboardOutlined />,        label: 'Overview'       },
+  { key: 'queue',        icon: <UnorderedListOutlined />,     label: 'Donation Queue' },
+  { key: 'locations',    icon: <EnvironmentOutlined />,       label: 'Locations'      },
+  { key: 'certificates', icon: <SafetyCertificateOutlined />, label: 'Certificates'   },
+  { key: 'campaigns',    icon: <NotificationOutlined />,      label: 'Campaigns'      },
+  { key: 'users',        icon: <TeamOutlined />,              label: 'Users'          },
+  { key: 'settings',     icon: <SettingOutlined />,           label: 'Settings'       },
 ];
 
 const bottomItems = [
@@ -31,7 +27,11 @@ const bottomItems = [
   { key: 'logout',  icon: <LogoutOutlined />,         label: 'Logout'  },
 ];
 
-export default function SideNavBar({ activeKey = 'overview', onMenuClick }: SideNavBarProps) {
+export default function SideNavBar() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const activeKey = pathname.split('/')[1] || 'overview';
+
   return (
     <Sider
       width={260}
@@ -62,7 +62,7 @@ export default function SideNavBar({ activeKey = 'overview', onMenuClick }: Side
         theme="dark"
         mode="inline"
         selectedKeys={[activeKey]}
-        onClick={({ key }) => onMenuClick?.(key)}
+        onClick={({ key }) => router.push(`/${key}`)}
         items={navItems}
         style={{ background: 'transparent', border: 'none' }}
       />
@@ -81,6 +81,7 @@ export default function SideNavBar({ activeKey = 'overview', onMenuClick }: Side
             theme="dark"
             mode="inline"
             selectedKeys={[]}
+            onClick={({ key }) => router.push(`/${key}`)}
             items={bottomItems}
             style={{ background: 'transparent', border: 'none' }}
           />
