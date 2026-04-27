@@ -32,7 +32,7 @@ const CHANNEL_CONFIG: Record<
   "in-app": {
     label: "In-App",
     icon: <MessageOutlined />,
-    color: "#b51822",
+    color: "#ef4444",
     bg: "#fff1f2",
     border: "#ffdad7",
   },

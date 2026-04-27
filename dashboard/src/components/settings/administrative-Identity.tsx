@@ -25,7 +25,7 @@ export default function AdministrativeIdentity() {
         border: "1px solid #e3e8f9",
         marginBottom: 24,
       }}
-      bodyStyle={{ padding: 32 }}
+      styles={{ body: { padding: 32 } }}
     >
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
@@ -98,8 +98,8 @@ export default function AdministrativeIdentity() {
           icon={<SaveOutlined />}
           style={{
             borderRadius: 10,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
             fontWeight: 700,
             height: 44,
             paddingInline: 28,

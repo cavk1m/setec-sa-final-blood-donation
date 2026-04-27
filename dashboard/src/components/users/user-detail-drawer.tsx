@@ -248,7 +248,7 @@ export default function UserDetailDrawer({
                   padding: 0,
                   height: "auto",
                   boxShadow: "none",
-                  color: "#b51822",
+                  color: "#ef4444",
                   fontWeight: 700,
                 }}
               />
@@ -367,7 +367,7 @@ export default function UserDetailDrawer({
                     style={{
                       width: 48,
                       height: 48,
-                      background: i === 0 ? "#b51822" : "#475569",
+                      background: i === 0 ? "#ef4444" : "#475569",
                       borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
@@ -430,8 +430,8 @@ export default function UserDetailDrawer({
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
           }}
         />
       </div>

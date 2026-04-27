@@ -53,10 +53,10 @@ export default function SettingsSideNav({
               cursor: "pointer",
               background: isActive ? "#fff" : "transparent",
               borderLeft: isActive
-                ? "4px solid #b51822"
+                ? "4px solid #ef4444"
                 : "4px solid transparent",
               boxShadow: isActive ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
-              color: isActive ? "#b51822" : "#5d5c74",
+              color: isActive ? "#ef4444" : "#5d5c74",
               fontWeight: isActive ? 700 : 500,
               fontSize: 14,
               transition: "all 0.15s",
@@ -65,7 +65,7 @@ export default function SettingsSideNav({
             }}
           >
             <span
-              style={{ fontSize: 18, color: isActive ? "#b51822" : "#94a3b8" }}
+              style={{ fontSize: 18, color: isActive ? "#ef4444" : "#94a3b8" }}
             >
               {item.icon}
             </span>

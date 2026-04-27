@@ -99,7 +99,7 @@ export default function QueueTable({
           style={{
             fontWeight: 900,
             fontSize: 20,
-            color: "#b51822",
+            color: "#ef4444",
             opacity: r.status !== "waiting" ? 0.3 : 1,
           }}
         >
@@ -309,7 +309,7 @@ export default function QueueTable({
             <span
               style={{
                 background: "#fee2e2",
-                color: "#b51822",
+                color: "#ef4444",
                 fontSize: 10,
                 fontWeight: 800,
                 padding: "2px 8px",

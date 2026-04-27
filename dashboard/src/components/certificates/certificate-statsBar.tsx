@@ -20,7 +20,7 @@ export default function CertificateStatsBar({
         {/* Total Issued */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{
               borderRadius: 16,
               border: "1px solid #e3e8f9",
@@ -61,7 +61,7 @@ export default function CertificateStatsBar({
               <span
                 style={{
                   background: "#ffdad7",
-                  color: "#b51822",
+                  color: "#ef4444",
                   fontSize: 10,
                   fontWeight: 700,
                   padding: "3px 8px",
@@ -77,7 +77,7 @@ export default function CertificateStatsBar({
         {/* Pending Print */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{
               borderRadius: 16,
               border: "1px solid #e3e8f9",
@@ -134,7 +134,7 @@ export default function CertificateStatsBar({
         {/* Top Location */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{
               borderRadius: 16,
               border: "1px solid #e3e8f9",
@@ -173,11 +173,11 @@ export default function CertificateStatsBar({
         {/* Storage Usage */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{
               borderRadius: 16,
               border: "none",
-              background: "#b51822",
+              background: "#ef4444",
               height: "100%",
             }}
           >
@@ -198,7 +198,7 @@ export default function CertificateStatsBar({
               percent={65}
               showInfo={false}
               strokeColor="#ffffff"
-              trailColor="rgba(255,255,255,0.25)"
+              railColor="rgba(255,255,255,0.25)"
               size={["100%", 6]}
               style={{ marginBottom: 8 }}
             />

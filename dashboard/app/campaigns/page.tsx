@@ -35,7 +35,7 @@ export default function CampaignsPage() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#b51822",
+          colorPrimary: "#ef4444",
           colorBgContainer: "#ffffff",
           colorBgLayout: "#f9f9ff",
           colorBorder: "#e3e8f9",
@@ -82,7 +82,7 @@ export default function CampaignsPage() {
           }}
         />
 
-        <Layout style={{ marginLeft: 260 }}>
+        <Layout style={{ marginLeft: 280 }}>
           {/* Top bar */}
           <Header
             style={{
@@ -130,10 +130,10 @@ export default function CampaignsPage() {
                       fontWeight: 700,
                       fontSize: 13,
                       background: filter === tab.key ? "#fff" : "transparent",
-                      color: filter === tab.key ? "#b51822" : "#5d5c74",
+                      color: filter === tab.key ? "#ef4444" : "#5d5c74",
                       borderBottom:
                         filter === tab.key
-                          ? "2px solid #b51822"
+                          ? "2px solid #ef4444"
                           : "2px solid transparent",
                       transition: "all 0.15s",
                     }}
@@ -153,8 +153,8 @@ export default function CampaignsPage() {
                 icon={<PlusOutlined style={{ fontSize: 20 }} />}
                 title="Create Campaign"
                 style={{
-                  background: "#b51822",
-                  borderColor: "#b51822",
+                  background: "#ef4444",
+                  borderColor: "#ef4444",
                   width: 44,
                   height: 44,
                   boxShadow: "0 4px 12px rgba(181,24,34,0.3)",

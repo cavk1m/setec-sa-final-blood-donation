@@ -25,7 +25,7 @@ export default function WebsiteBranding() {
         border: "1px solid #e3e8f9",
         marginBottom: 24,
       }}
-      bodyStyle={{ padding: 32 }}
+      styles={{ body: { padding: 32 } }}
     >
       {/* Header */}
       <div
@@ -79,7 +79,7 @@ export default function WebsiteBranding() {
             style={{
               height: 192,
               borderRadius: 12,
-              border: `2px dashed ${dragOver ? "#b51822" : "#e4beba"}`,
+              border: `2px dashed ${dragOver ? "#ef4444" : "#e4beba"}`,
               background: dragOver ? "#fff1f2" : "#ffdad720",
               display: "flex",
               flexDirection: "column",
@@ -90,7 +90,7 @@ export default function WebsiteBranding() {
               transition: "all 0.2s",
             }}
           >
-            <CloudUploadOutlined style={{ fontSize: 28, color: "#b51822" }} />
+            <CloudUploadOutlined style={{ fontSize: 28, color: "#ef4444" }} />
             {bannerFile ? (
               <Text style={{ fontWeight: 600, color: "#16a34a", fontSize: 13 }}>
                 {bannerFile}
@@ -149,7 +149,7 @@ export default function WebsiteBranding() {
                 boxShadow: "inset 0 2px 4px rgba(0,0,0,0.04)",
               }}
             >
-              <span style={{ fontSize: 40, color: "#b51822" }}>🩸</span>
+              <span style={{ fontSize: 40, color: "#ef4444" }}>🩸</span>
             </div>
             <Space direction="vertical" size={10} style={{ flex: 1 }}>
               <AppButton
@@ -173,7 +173,7 @@ export default function WebsiteBranding() {
                 style={{
                   borderRadius: 8,
                   fontWeight: 600,
-                  color: "#b51822",
+                  color: "#ef4444",
                   borderColor: "#ffdad7",
                   background: "#fff1f2",
                   fontSize: 13,
