@@ -27,8 +27,8 @@ const VARIANT_STYLE: Record<
   default: { color: "#475569", bg: "#f1f3ff", border: "#e3e8f9" },
   primary: {
     color: "#ffffff",
-    bg: "#b51822",
-    border: "#b51822",
+    bg: "#ef4444",
+    border: "#ef4444",
     shadow: "0 4px 14px rgba(181,24,34,0.3)",
   },
   danger: {
@@ -84,7 +84,7 @@ export default function CircleButton({
   size = "md",
   tooltip,
   badge = false,
-  badgeColor = "#b51822",
+  badgeColor = "#ef4444",
   onClick,
   loading,
   disabled,

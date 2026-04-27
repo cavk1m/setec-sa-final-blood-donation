@@ -64,12 +64,11 @@ export default function AddLocationDrawer({
       open={open}
       onClose={onCancel}
       placement="right"
-      width={480}
       title={null}
       closable={false}
       styles={{
         body: { padding: 0 },
-        wrapper: { boxShadow: "-4px 0 24px rgba(0,0,0,0.1)" },
+        wrapper: { width: 480, boxShadow: "-4px 0 24px rgba(0,0,0,0.1)" },
       }}
     >
       {/* Header */}
@@ -290,7 +289,7 @@ export default function AddLocationDrawer({
                 if (file) handleFileSelect(file);
               }}
               style={{
-                border: `2px dashed ${dragOver ? "#b51822" : "#e3e8f9"}`,
+                border: `2px dashed ${dragOver ? "#ef4444" : "#e3e8f9"}`,
                 borderRadius: 16,
                 padding: "32px 24px",
                 textAlign: "center",
@@ -396,8 +395,8 @@ export default function AddLocationDrawer({
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
           }}
         >
           Save Location

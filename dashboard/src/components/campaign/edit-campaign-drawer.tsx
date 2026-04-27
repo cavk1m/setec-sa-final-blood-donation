@@ -102,7 +102,7 @@ export default function EditCampaignDrawer({
               justifyContent: "center",
             }}
           >
-            <EditOutlined style={{ color: "#b51822", fontSize: 18 }} />
+            <EditOutlined style={{ color: "#ef4444", fontSize: 18 }} />
           </div>
           <div>
             <Title level={5} style={{ margin: 0, fontWeight: 700 }}>
@@ -141,7 +141,7 @@ export default function EditCampaignDrawer({
           <Text style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>
             Current Progress
           </Text>
-          <Text style={{ fontSize: 12, fontWeight: 700, color: "#b51822" }}>
+          <Text style={{ fontSize: 12, fontWeight: 700, color: "#ef4444" }}>
             {pct}%
           </Text>
         </div>
@@ -157,7 +157,7 @@ export default function EditCampaignDrawer({
             style={{
               height: "100%",
               width: `${pct}%`,
-              background: "#b51822",
+              background: "#ef4444",
               borderRadius: 999,
               transition: "width 0.3s",
             }}
@@ -309,8 +309,8 @@ export default function EditCampaignDrawer({
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
           }}
         >
           Save Changes

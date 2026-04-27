@@ -86,7 +86,7 @@ export default function ViewCampaignDrawer({
             >
               <EyeOutlined
                 style={{
-                  color: isComplete ? "#5d5c74" : "#b51822",
+                  color: isComplete ? "#5d5c74" : "#ef4444",
                   fontSize: 20,
                 }}
               />
@@ -97,7 +97,7 @@ export default function ViewCampaignDrawer({
                 style={{
                   margin: 0,
                   fontWeight: 700,
-                  color: isComplete ? "#161c27" : "#b51822",
+                  color: isComplete ? "#161c27" : "#ef4444",
                 }}
               >
                 Campaign Details
@@ -148,7 +148,7 @@ export default function ViewCampaignDrawer({
             <Tag
               style={{
                 background: isComplete ? "#d4e4fa" : "#ffdad7",
-                color: isComplete ? "#39485a" : "#b51822",
+                color: isComplete ? "#39485a" : "#ef4444",
                 border: "none",
                 fontWeight: 700,
                 fontSize: 11,
@@ -188,7 +188,7 @@ export default function ViewCampaignDrawer({
               marginBottom: 8,
             }}
           >
-            <Text style={{ fontWeight: 700, fontSize: 22, color: "#b51822" }}>
+            <Text style={{ fontWeight: 700, fontSize: 22, color: "#ef4444" }}>
               ${campaign.raised.toLocaleString()}
             </Text>
             <Text
@@ -205,8 +205,8 @@ export default function ViewCampaignDrawer({
           <Progress
             percent={pct}
             showInfo={false}
-            strokeColor={isComplete ? "#677689" : "#b51822"}
-            trailColor="#f1f3ff"
+            strokeColor={isComplete ? "#677689" : "#ef4444"}
+            railColor="#f1f3ff"
             size={["100%", 10]}
             style={{ margin: "0 0 8px" }}
           />
@@ -215,7 +215,7 @@ export default function ViewCampaignDrawer({
               style={{
                 fontSize: 12,
                 fontWeight: 700,
-                color: isComplete ? "#16a34a" : "#b51822",
+                color: isComplete ? "#16a34a" : "#ef4444",
               }}
             >
               {pct}% achieved
@@ -385,8 +385,8 @@ export default function ViewCampaignDrawer({
             style={{
               fontWeight: 700,
               borderRadius: 999,
-              background: "#b51822",
-              borderColor: "#b51822",
+              background: "#ef4444",
+              borderColor: "#ef4444",
             }}
           >
             Edit Campaign

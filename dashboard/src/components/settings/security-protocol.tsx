@@ -31,7 +31,7 @@ export default function SecurityProtocol() {
         border: "1px solid #e3e8f9",
         marginBottom: 24,
       }}
-      bodyStyle={{ padding: 32 }}
+      styles={{ body: { padding: 32 } }}
     >
       {/* Header */}
       <div
@@ -54,7 +54,7 @@ export default function SecurityProtocol() {
             flexShrink: 0,
           }}
         >
-          <SafetyOutlined style={{ fontSize: 22, color: "#b51822" }} />
+          <SafetyOutlined style={{ fontSize: 22, color: "#ef4444" }} />
         </div>
         <div>
           <Title level={5} style={{ margin: "0 0 2px", fontWeight: 700 }}>
@@ -150,8 +150,8 @@ export default function SecurityProtocol() {
           onClick={handleSubmit}
           style={{
             borderRadius: 10,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
             fontWeight: 700,
             height: 48,
             paddingInline: 32,

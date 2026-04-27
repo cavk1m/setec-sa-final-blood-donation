@@ -22,7 +22,7 @@ export interface LocationItem {
 }
 
 const DONATION_TYPE_STYLE: Record<string, { color: string; bg: string }> = {
-  "WHOLE BLOOD": { color: "#b51822", bg: "#fff1f2" },
+  "WHOLE BLOOD": { color: "#ef4444", bg: "#fff1f2" },
   "PLASMA ONLY": { color: "#2563eb", bg: "#eff6ff" },
   PLATELETS: { color: "#7c3aed", bg: "#f5f3ff" },
 };
@@ -99,7 +99,7 @@ export default function LocationCard({
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
         overflow: "hidden",
       }}
-      bodyStyle={{ padding: 24 }}
+      styles={{ body: { padding: 24 } }}
       hoverable
     >
       {/* Top row — icon + type badge */}
@@ -215,7 +215,7 @@ export default function LocationCard({
             style={{
               fontSize: 20,
               fontWeight: 900,
-              color: "#b51822",
+              color: "#ef4444",
               lineHeight: 1,
             }}
           >

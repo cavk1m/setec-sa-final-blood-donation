@@ -36,7 +36,7 @@ export default function SettingsPage() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#b51822",
+          colorPrimary: "#ef4444",
           colorBgContainer: "#ffffff",
           colorBgLayout: "#f9f9ff",
           colorBorder: "#e3e8f9",
@@ -83,7 +83,7 @@ export default function SettingsPage() {
           }}
         />
 
-        <Layout style={{ marginLeft: 260 }}>
+        <Layout style={{ marginLeft: 280 }}>
           <TopAppBar />
 
           <Content
@@ -213,7 +213,7 @@ export default function SettingsPage() {
                         fontWeight: 700,
                         background: "#ffdad7",
                         borderColor: "#ffdad7",
-                        color: "#b51822",
+                        color: "#ef4444",
                         fontSize: 12,
                       }}
                     />

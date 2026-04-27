@@ -330,8 +330,8 @@ export default function EditUserDrawer({
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
           }}
         />
       </div>

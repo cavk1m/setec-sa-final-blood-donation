@@ -216,7 +216,7 @@ export default function CompleteDrawer({
               >
                 Queue Number
               </Text>
-              <Text style={{ fontWeight: 700, fontSize: 14, color: "#b51822" }}>
+              <Text style={{ fontWeight: 700, fontSize: 14, color: "#ef4444" }}>
                 #{String(entry.queue_number).padStart(2, "0")}
               </Text>
             </div>

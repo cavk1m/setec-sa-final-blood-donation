@@ -32,39 +32,66 @@ export default function DonationsTrendChart({ data = MOCK_TREND }: DonationsTren
     xField: 'date',
     yField: 'value',
     smooth: true,
-    color: '#b51822',
-    areaStyle: { fill: 'l(270) 0:#ffffff 0.5:#ffb3b3 1:#b51822', fillOpacity: 0.3 },
-    line: { color: '#b51822', size: 3 },
-    point: { size: 5, shape: 'circle', style: { fill: '#ffffff', stroke: '#b51822', lineWidth: 2 } },
+    color: '#ef4444',
+    areaStyle: { 
+      fill: 'l(270) 0:#ffffff 0.5:rgba(239, 68, 68, 0.1) 1:rgba(239, 68, 68, 0.2)', 
+      fillOpacity: 1 
+    },
+    line: { color: '#ef4444', size: 3.5 },
+    point: { 
+      size: 4, 
+      shape: 'circle', 
+      style: { fill: '#fff', stroke: '#ef4444', lineWidth: 2 } 
+    },
     xAxis: {
       tickLine: null,
       line: null,
-      label: { style: { fill: '#94a3b8', fontSize: 10, fontWeight: 700 } },
+      label: { style: { fill: 'rgba(0,0,0,0.3)', fontSize: 11, fontWeight: 500 } },
     },
     yAxis: {
-      grid: { line: { style: { stroke: '#f1f3ff', lineWidth: 1 } } },
-      label: { style: { fill: '#94a3b8', fontSize: 10 } },
+      grid: { line: { style: { stroke: 'rgba(0,0,0,0.03)', lineWidth: 1, lineDash: [4, 4] } } },
+      label: { style: { fill: 'rgba(0,0,0,0.3)', fontSize: 11 } },
     },
     tooltip: {
-      formatter: (d: { date: string; value: number }) => ({ name: 'Units Collected', value: d.value }),
+      formatter: (d: { date: string; value: number }) => ({ name: 'Donations', value: d.value }),
+      domStyles: {
+        'g2-tooltip': {
+          borderRadius: '12px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+          border: '1px solid rgba(0,0,0,0.05)',
+          padding: '12px'
+        }
+      }
     },
   };
 
   return (
-    <Card style={{ borderRadius: 12, border: '1px solid #e3e8f9' }} styles={{ body: { padding: 32 } }}>
+    <Card 
+      style={{ 
+        borderRadius: 20, 
+        border: '1px solid rgba(0,0,0,0.04)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+        background: '#fff'
+      }} 
+      styles={{ body: { padding: 32 } }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
         <div>
-          <Title level={5} style={{ margin: 0, fontWeight: 700 }}>Donations Trend</Title>
-          <Text style={{ color: '#5d5c74', fontSize: 14 }}>Operational throughput for the current month.</Text>
+          <Title level={4} style={{ margin: 0, fontWeight: 700, fontSize: 20, letterSpacing: '-0.02em' }}>Donations Trend</Title>
+          <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14 }}>Daily blood units collected across centers.</Text>
         </div>
-        <Space size={8} align="center">
-          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#b51822' }} />
-          <Text style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Units Collected
-          </Text>
-        </Space>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
+            <Text style={{ fontSize: 12, fontWeight: 600, color: 'rgba(0,0,0,0.6)' }}>Current Period</Text>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(0,0,0,0.1)' }} />
+            <Text style={{ fontSize: 12, fontWeight: 600, color: 'rgba(0,0,0,0.6)' }}>Previous Period</Text>
+          </div>
+        </div>
       </div>
-      <Area {...config} height={250} />
+      <Area {...config} height={300} />
     </Card>
   );
 }

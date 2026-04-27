@@ -20,7 +20,7 @@ export default function CertificatesPage() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#b51822',
+          colorPrimary: '#ef4444',
           colorBgContainer: '#ffffff',
           colorBgLayout: '#f9f9ff',
           colorBorder: '#e3e8f9',
@@ -46,7 +46,7 @@ export default function CertificatesPage() {
           }}
         />
 
-        <Layout style={{ marginLeft: 260 }}>
+        <Layout style={{ marginLeft: 280 }}>
           <TopAppBar />
           <Content style={{ padding: 32, background: '#f1f3ff' }}>
             <div style={{ marginBottom: 24 }}>

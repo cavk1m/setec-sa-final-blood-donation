@@ -17,7 +17,7 @@ export default function UsersPage() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#b51822",
+          colorPrimary: "#ef4444",
           colorBgContainer: "#ffffff",
           colorBgLayout: "#f9f9ff",
           colorBorder: "#e3e8f9",
@@ -64,7 +64,7 @@ export default function UsersPage() {
           }}
         />
 
-        <Layout style={{ marginLeft: 260 }}>
+        <Layout style={{ marginLeft: 280 }}>
           <Header
             style={{
               background: "rgba(249,249,255,0.85)",

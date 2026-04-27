@@ -90,12 +90,12 @@ export default function DeleteCampaignDrawer({
                 justifyContent: "center",
               }}
             >
-              <DeleteOutlined style={{ color: "#b51822", fontSize: 22 }} />
+              <DeleteOutlined style={{ color: "#ef4444", fontSize: 22 }} />
             </div>
             <div>
               <Title
                 level={5}
-                style={{ margin: 0, fontWeight: 700, color: "#b51822" }}
+                style={{ margin: 0, fontWeight: 700, color: "#ef4444" }}
               >
                 Delete Campaign
               </Title>
@@ -162,7 +162,7 @@ export default function DeleteCampaignDrawer({
             }}
           >
             <Text style={{ fontSize: 12, color: "#94a3b8" }}>Progress</Text>
-            <Text style={{ fontSize: 12, fontWeight: 700, color: "#b51822" }}>
+            <Text style={{ fontSize: 12, fontWeight: 700, color: "#ef4444" }}>
               {pct}%
             </Text>
           </div>
@@ -179,7 +179,7 @@ export default function DeleteCampaignDrawer({
               style={{
                 height: "100%",
                 width: `${pct}%`,
-                background: "#b51822",
+                background: "#ef4444",
                 borderRadius: 999,
               }}
             />
@@ -254,7 +254,7 @@ export default function DeleteCampaignDrawer({
               {i === 2 ? (
                 <ExclamationCircleFilled
                   style={{
-                    color: "#b51822",
+                    color: "#ef4444",
                     fontSize: 15,
                     flexShrink: 0,
                     marginTop: 1,
@@ -302,7 +302,7 @@ export default function DeleteCampaignDrawer({
             style={{
               fontSize: 13,
               fontWeight: 700,
-              color: "#b51822",
+              color: "#ef4444",
               background: "#fff1f2",
               padding: "4px 10px",
               borderRadius: 6,
@@ -395,8 +395,8 @@ export default function DeleteCampaignDrawer({
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: isConfirmed ? "#b51822" : "#f1f3ff",
-            borderColor: isConfirmed ? "#b51822" : "#f1f3ff",
+            background: isConfirmed ? "#ef4444" : "#f1f3ff",
+            borderColor: isConfirmed ? "#ef4444" : "#f1f3ff",
             color: isConfirmed ? "#fff" : "#94a3b8",
             transition: "all 0.2s",
           }}

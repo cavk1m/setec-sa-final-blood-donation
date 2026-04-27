@@ -195,7 +195,7 @@ export default function CertificateTable({
         border: "1px solid #e3e8f9",
         overflow: "hidden",
       }}
-      bodyStyle={{ padding: 0 }}
+      styles={{ body: { padding: 0 } }}
     >
       {/* Card header */}
       <div

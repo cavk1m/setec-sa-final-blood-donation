@@ -27,49 +27,80 @@ interface CampaignProgressProps {
 
 export default function CampaignProgress({ data = MOCK_CAMPAIGNS, onViewAll }: CampaignProgressProps) {
   return (
-    <Card style={{ borderRadius: 12, border: '1px solid #e3e8f9', height: '100%' }} styles={{ body: { padding: 24 } }}>
+    <Card 
+      style={{ 
+        borderRadius: 20, 
+        border: '1px solid rgba(0,0,0,0.04)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+        background: '#fff',
+        height: '100%'
+      }} 
+      styles={{ body: { padding: 32 } }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <Title level={5} style={{ margin: 0, fontWeight: 700 }}>Campaign Progress</Title>
+        <div>
+          <Title level={4} style={{ margin: 0, fontWeight: 700, fontSize: 20, letterSpacing: '-0.02em' }}>Campaign Progress</Title>
+          <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14 }}>Real-time event tracking.</Text>
+        </div>
         <ActionButton
           variant="custom"
           size="sm"
-          label="View all →"
+          label="View all"
           onClick={onViewAll}
           style={{
-            background: 'transparent',
+            background: 'rgba(239, 68, 68, 0.05)',
             border: 'none',
-            height: 'auto',
-            padding: 0,
+            height: 32,
+            padding: '0 12px',
+            borderRadius: 8,
             boxShadow: 'none',
-            color: '#b51822',
-            fontWeight: 700,
+            color: '#ef4444',
+            fontWeight: 600,
           }}
         />
       </div>
 
-      <Space orientation="vertical" size={24} style={{ width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {data.map((c) => {
           const pct = Math.round((c.raised / c.goal) * 100);
           return (
             <div key={c.id}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <div>
-                  <Text style={{ fontWeight: 700, fontSize: 14, display: 'block' }}>{c.name}</Text>
+                  <Text style={{ fontWeight: 600, fontSize: 15, display: 'block', color: '#161c27' }}>{c.name}</Text>
                   <Space size={4} align="center">
-                    <EnvironmentOutlined style={{ fontSize: 11, color: '#94a3b8' }} />
-                    <Text style={{ fontSize: 11, color: '#94a3b8' }}>{c.location}</Text>
+                    <EnvironmentOutlined style={{ fontSize: 11, color: 'rgba(0,0,0,0.3)' }} />
+                    <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.3)', fontWeight: 500 }}>{c.location}</Text>
                   </Space>
                 </div>
-                <Text style={{ fontSize: 12, fontWeight: 900, whiteSpace: 'nowrap' }}>
-                  ${c.raised.toLocaleString()}
-                  <Text style={{ fontWeight: 400, color: '#94a3b8' }}> / {(c.goal / 1000).toFixed(0)}k</Text>
+                <div style={{ textAlign: 'right' }}>
+                  <Text style={{ display: 'block', fontWeight: 800, fontSize: 16, color: '#ef4444' }}>{pct}%</Text>
+                  <Text style={{ fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase' }}>Reached</Text>
+                </div>
+              </div>
+              <Progress 
+                percent={pct} 
+                showInfo={false} 
+                strokeColor={{
+                  '0%': '#ef4444',
+                  '100%': '#f43f5e',
+                }}
+                railColor="rgba(0,0,0,0.03)"
+                size={['100%', 8]}
+                strokeLinecap="round"
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+                <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', fontWeight: 500 }}>
+                  Goal: {(c.goal / 1000).toFixed(0)}k Units
+                </Text>
+                <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', fontWeight: 500 }}>
+                  Collected: {c.raised.toLocaleString()}
                 </Text>
               </div>
-              <Progress percent={pct} showInfo={false} strokeColor="#b51822" railColor="#f1f3ff" size={['100%', 6]} />
             </div>
           );
         })}
-      </Space>
+      </div>
     </Card>
   );
 }

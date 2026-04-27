@@ -35,7 +35,7 @@ export default function DashboardPage() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary:       '#b51822',
+          colorPrimary:       '#ef4444',
           colorBgContainer:   '#ffffff',
           colorBgLayout:      '#f9f9ff',
           colorBorder:        '#e3e8f9',
@@ -46,87 +46,88 @@ export default function DashboardPage() {
         },
       }}
     >
-      <Layout style={{ minHeight: '100vh' }}>
+      <Layout style={{ minHeight: '100vh', background: '#f8fafc' }}>
 
         <SideNavBar
           activeKey={activeMenu}
-          onMenuClick={(key) => {
-            if (key === 'queue') {
-              router.push('/queue');
-              return;
-            }
-            if (key === 'locations') {
-              router.push('/locations');
-              return;
-            }
-            if (key === 'certificates') {
-              router.push('/certificates');
-              return;
-            }
-            if (key === 'campaigns') {
-              router.push('/campaigns');
-              return;
-            }
-            if (key === 'users') {
-              router.push('/users');
-              return;
-            }
-            if (key === 'settings') {
-              router.push('/settings');
-              return;
-            }
-            setActiveMenu(key);
-          }}
         />
 
-        <Layout style={{ marginLeft: 260 }}>
+        <Layout style={{ marginLeft: 280, background: 'transparent' }}>
           <TopAppBar />
 
-          <Content style={{ padding: 32 }}>
+          <Content style={{ padding: '40px 48px' }}>
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40 }}>
               <div>
-                <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-1px' }}>
+                <Title level={1} style={{ margin: 0, fontWeight: 800, fontSize: 36, letterSpacing: '-0.04em', color: '#0f172a' }}>
                   Pulse Overview
                 </Title>
-                <Text type="secondary">Real-time clinical operational data for BloodConnect.</Text>
+                <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 16, fontWeight: 500 }}>
+                  Real-time clinical operational data for <span style={{ color: '#ef4444', fontWeight: 700 }}>BloodConnect</span>.
+                </Text>
               </div>
-              <Space>
-                <Button icon={<CalendarOutlined />} style={{ fontWeight: 700, borderRadius: 8 }}>Last 30 Days</Button>
-                <Button icon={<DownloadOutlined />} style={{ fontWeight: 700, borderRadius: 8 }}>Export Report</Button>
+              <Space size={12}>
+                <Button 
+                  icon={<CalendarOutlined />} 
+                  style={{ 
+                    height: 44, padding: '0 20px', borderRadius: 12, fontWeight: 600,
+                    border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                  }}
+                >
+                  Last 30 Days
+                </Button>
+                <Button 
+                  type="primary"
+                  icon={<DownloadOutlined />} 
+                  style={{ 
+                    height: 44, padding: '0 20px', borderRadius: 12, fontWeight: 600,
+                    background: '#ef4444', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)'
+                  }}
+                >
+                  Export Report
+                </Button>
               </Space>
             </div>
 
-            {/* Stats */}
-            <div style={{ marginBottom: 32 }}>
+            {/* Stats Row */}
+            <div style={{ marginBottom: 40 }}>
               <StatsRow />
             </div>
 
             {/* Queue + Campaigns */}
             <Row gutter={[32, 32]} style={{ marginBottom: 32 }}>
-              <Col xs={24} lg={14}>
+              <Col xs={24} lg={15}>
                 <RecentQueueTable
                   data={MOCK_QUEUE}
                   onComplete={(id) => console.log('complete', id)}
                   onSkip={(id) => console.log('skip', id)}
                 />
               </Col>
-              <Col xs={24} lg={10}>
+              <Col xs={24} lg={9}>
                 <CampaignProgress />
               </Col>
             </Row>
 
             {/* Chart */}
-            <DonationsTrendChart />
+            <div style={{ marginBottom: 48 }}>
+              <DonationsTrendChart />
+            </div>
 
           </Content>
         </Layout>
 
         <FloatButton
-          icon={<PlusOutlined />}
+          icon={<PlusOutlined style={{ color: '#fff', fontSize: 24 }} />}
           type="primary"
-          style={{ right: 32, bottom: 32 }}
+          style={{ 
+            right: 48, 
+            bottom: 48, 
+            width: 64, 
+            height: 64, 
+            background: '#ef4444',
+            boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)'
+          }}
         />
 
       </Layout>

@@ -266,7 +266,7 @@ export default function UsersTable() {
           <Button
             type="text"
             shape="circle"
-            icon={<EyeOutlined style={{ color: "#b51822", fontSize: 18 }} />}
+            icon={<EyeOutlined style={{ color: "#ef4444", fontSize: 18 }} />}
             onClick={() => setSelectedUser(r)}
           />
         </Tooltip>
@@ -320,7 +320,7 @@ export default function UsersTable() {
                   fontSize: 11,
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
-                  background: roleFilter === tab.key ? "#b51822" : "#e3e8f9",
+                  background: roleFilter === tab.key ? "#ef4444" : "#e3e8f9",
                   color: roleFilter === tab.key ? "#fff" : "#5d5c74",
                   boxShadow:
                     roleFilter === tab.key
@@ -341,8 +341,8 @@ export default function UsersTable() {
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
             height: 40,
             paddingInline: 24,
             boxShadow: "0 4px 12px rgba(181,24,34,0.25)",
@@ -376,7 +376,7 @@ export default function UsersTable() {
           border: "1px solid #e3e8f9",
           overflow: "hidden",
         }}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
       >
         <Table
           columns={columns}

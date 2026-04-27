@@ -16,7 +16,7 @@ export default function QueueStatsBar() {
           style={{
             borderRadius: 12,
             border: '1px solid #e3e8f9',
-            borderLeft: '4px solid #b51822',
+            borderLeft: '4px solid #ef4444',
           }}
         >
           <Text
