@@ -22,6 +22,8 @@ public class locations {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "VARCHAR(255)")
+    @org.hibernate.annotations.JdbcTypeCode(java.sql.Types.VARCHAR)
+
     private UUID id;
     
     @Column(name = "name", nullable = false)

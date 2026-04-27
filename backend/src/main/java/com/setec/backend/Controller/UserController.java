@@ -657,6 +657,7 @@ public class UserController {
          response.setPhone(user.getPhone());
          response.setAddress(user.getAddress());
          response.setDateOfBirth(user.getDateOfBirth());
+        response.setProfilePictureUrl(user.getProfilePicturePath());
          response.setBloodType(user.getBloodType() != null ? user.getBloodType().toString() : null);
          response.setRole(user.getRole().toString());
          response.setIsActive(user.getIsActive());
@@ -664,9 +665,9 @@ public class UserController {
          response.setCreatedDate(user.getCreatedDate());
          response.setUpdatedDate(user.getUpdatedDate());
         
-        if (user.getProfilePicturePath() != null) {
-            response.setProfilePictureUrl("/uploads/" + user.getProfilePicturePath());
-        }
+        // if (user.getProfilePicturePath() != null) {
+        //     response.setProfilePictureUrl("/uploads/" + user.getProfilePicturePath());
+        // }
         
         return response;
     }

@@ -61,4 +61,7 @@ public class HospitalAdmin extends BaseEntity {
     
     @Column(name = "is_super_admin")
     private Boolean isSuperAdmin = false;
+
+    @Column(name = "location_id", columnDefinition = "UUID")  // ADD THIS
+    private UUID locationId;
 }

@@ -27,4 +27,6 @@ public interface EmailServiceInterface {
      * @param fullName user's full name
      */
     void sendPasswordChangeNotification(String email, String fullName);
+
+    void sendDonationQueueEmail(String email, String fullName, int queueNumber, String locationName);
 }

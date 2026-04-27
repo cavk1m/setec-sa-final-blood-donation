@@ -91,6 +91,63 @@ public class EmailService implements EmailServiceInterface {
             // Don't throw exception for notification email failure
         }
     }
+
+    // ADD HERE - after sendPasswordChangeNotification method
+@Override
+public void sendDonationQueueEmail(String toEmail, String fullName, int queueNumber, String locationName) {
+    try {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setTo(toEmail);
+        helper.setSubject("Your Donation Queue Number - Blood Donation System");
+        helper.setText(buildDonationQueueEmailContent(fullName, queueNumber, locationName), true);
+        helper.setFrom("bunthengseng9@gmail.com");
+        mailSender.send(message);
+        log.info("Donation queue email sent to: {}", toEmail);
+    } catch (MessagingException e) {
+        log.error("Failed to send donation queue email to {}: {}", toEmail, e.getMessage());
+    }
+}
+
+private String buildDonationQueueEmailContent(String fullName, int queueNumber, String locationName) {
+    return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    .container { max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; }
+                    .header { background-color: #dc3545; color: white; padding: 20px; text-align: center; }
+                    .content { padding: 20px; background-color: #f8f9fa; }
+                    .queue-box { background-color: white; border: 2px solid #dc3545; border-radius: 8px;
+                                 padding: 20px; text-align: center; margin: 20px 0; }
+                    .queue-number { font-size: 48px; font-weight: bold; color: #dc3545; }
+                    .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🩸 Blood Donation System</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Hello, %s!</h2>
+                        <p>You have successfully registered for blood donation at <strong>%s</strong>.</p>
+                        <div class="queue-box">
+                            <p>Your Queue Number</p>
+                            <div class="queue-number">%d</div>
+                        </div>
+                        <p>Please arrive on time and bring this queue number with you.</p>
+                        <p>Thank you for saving lives!</p>
+                    </div>
+                    <div class="footer">
+                        <p>Blood Donation System - Saving Lives Together</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(fullName, locationName, queueNumber);
+}
+
     
     private String getSubject(String purpose) {
         return switch (purpose.toLowerCase()) {
