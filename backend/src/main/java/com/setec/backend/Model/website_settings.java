@@ -15,20 +15,24 @@ import java.util.UUID;
     @Index(name = "idx_website_settings_updated_at", columnList = "updated_at")
 })
 public class website_settings {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", columnDefinition = "VARCHAR(255)")
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
 
     @Column(name = "hero_background_url")
     private String heroBackgroundUrl;
-    
+
     @Column(name = "logo_url")
     private String logoUrl;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    
-
+    @PrePersist
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

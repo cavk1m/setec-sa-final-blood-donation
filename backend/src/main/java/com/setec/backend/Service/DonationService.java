@@ -47,33 +47,32 @@ public class DonationService {
         }
 
         // Get next queue number
-        Integer maxQueueNum = queueRepository.findMaxQueueNumberByLocationId(locationId);
+        UUID locationUUID = UUID.fromString(locationId);
+        Integer maxQueueNum = queueRepository.findMaxQueueNumberByLocationId(locationUUID);
         Integer nextQueueNum = (maxQueueNum != null) ? maxQueueNum + 1 : 1;
 
         // Create queue entry
-        DonationQueue queue = DonationQueue.builder()
-            .id(UUID.randomUUID().toString())
-            .userId(userId)
-            .locationId(locationId)
-            .queueNumber(nextQueueNum)
-            .status("waiting")
-            .surveyScore(score)
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
-            .build();
+       DonationQueue queue = DonationQueue.builder()
+    .userId(userId)
+    .locationId(locationUUID)
+    .queueNumber(nextQueueNum)
+    .status("waiting")  // ← lowercase
+    .surveyScore(score)
+    .createdAt(LocalDateTime.now())
+    .updatedAt(LocalDateTime.now())
+    .build();
 
         queueRepository.save(queue);
 
         // Send confirmation email
         try {
             users user = userRepository.findById(userId).orElse(null);
-            locations location = locationRepository
-                .findById(UUID.fromString(locationId)).orElse(null);
+            locations location = locationRepository.findById(locationUUID).orElse(null);
 
             if (user != null && location != null) {
                 emailService.sendDonationQueueEmail(
                     user.getEmail(),
-                  user.getFullName(),
+                    user.getFullName(),
                     queue.getQueueNumber(),
                     location.getName()
                 );

@@ -20,9 +20,13 @@ import java.util.UUID;
     @Index(name = "idx_blood_donations_created_at", columnList = "created_at")
 })
 public class blood_donations {
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.UUID)
+    // @Column(name = "id", columnDefinition = "VARCHAR(255)")
+    // private UUID id;
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", columnDefinition = "VARCHAR(255)")
+    @Column(name = "id", columnDefinition = "UUID")
     private UUID id;
     
     @ManyToOne(fetch = FetchType.LAZY)

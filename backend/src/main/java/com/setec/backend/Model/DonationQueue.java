@@ -16,27 +16,30 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DonationQueue {
-    @Id
-    private String id;  // varchar255
-    
-    @Column(name = "user_id")
-    private UUID userId;  // Link to users table
-    
-    @Column(name = "location_id")
-    private String locationId;  // varchar255
-    
-    @Column(name = "queue_number")
-    private Integer queueNumber;  // int
-    
-    @Column(name = "status")
-    private String status;  // "waiting", "in_progress", "completed", "failed"
 
-      @Column(name = "survey_score")
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
+    private UUID id;
+
+    @Column(name = "user_id")
+    private UUID userId;
+
+    @Column(name = "location_id")
+    private UUID locationId;
+
+    @Column(name = "queue_number")
+    private Integer queueNumber;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "survey_score")
     private Integer surveyScore;
-    
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
