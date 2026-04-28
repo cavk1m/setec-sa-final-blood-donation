@@ -49,10 +49,10 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
       cancelText: 'Stay',
       okButtonProps: { 
         danger: true, 
-        style: { borderRadius: 8, fontWeight: 600 } 
+        style: { borderRadius: 10, fontWeight: 700, textTransform: 'uppercase', fontSize: 12, letterSpacing: '0.05em' } 
       },
       cancelButtonProps: { 
-        style: { borderRadius: 8, fontWeight: 600 } 
+        style: { borderRadius: 10, fontWeight: 700, textTransform: 'uppercase', fontSize: 12, letterSpacing: '0.05em' } 
       },
       onOk() {
         document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Lax';
@@ -70,6 +70,7 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
         position: 'fixed',
         left: 0, top: 0, bottom: 0,
         zIndex: 1000,
+        borderRight: '1px solid rgba(255,255,255,0.04)',
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '24px 16px' }}>
@@ -86,22 +87,22 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
             background: '#ef4444',
             borderRadius: 12,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+            boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)'
           }}>
             <span style={{ fontSize: 24 }}>🩸</span>
           </div>
           <div>
-            <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.03em' }}>
+            <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.04em' }}>
               BloodConnect
             </Title>
-            <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Admin Console
             </Text>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
           {navItems.map((item) => {
             const isActive = activeKey === item.key;
             return (
@@ -114,25 +115,28 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
                   alignItems: 'center',
                   gap: 12,
                   padding: '14px 16px',
-                  borderRadius: 12,
+                  borderRadius: 14,
                   cursor: 'pointer',
-                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                  background: isActive ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
-                  color: isActive ? '#fff' : 'rgba(255,255,255,0.6)',
+                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: isActive ? 'rgba(239, 68, 68, 0.12)' : 'transparent',
+                  color: isActive ? '#fff' : 'rgba(255,255,255,0.5)',
                   position: 'relative',
+                  border: isActive ? '1px solid rgba(239, 68, 68, 0.2)' : '1px solid transparent',
                 }}
               >
                 <span style={{ 
                   fontSize: 20, 
-                  color: isActive ? '#ef4444' : 'rgba(255,255,255,0.3)',
-                  transition: 'all 0.25s ease'
+                  color: isActive ? '#ef4444' : 'rgba(255,255,255,0.25)',
+                  transition: 'all 0.25s ease',
+                  display: 'flex',
                 }}>
                   {item.icon}
                 </span>
                 <span style={{ 
-                  fontSize: 15, 
+                  fontSize: 14, 
                   fontWeight: isActive ? 700 : 500,
-                  transition: 'all 0.25s ease'
+                  letterSpacing: '0.01em',
+                  transition: 'all 0.2s ease'
                 }}>
                   {item.label}
                 </span>
@@ -144,7 +148,7 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
                     height: 24,
                     background: '#ef4444',
                     borderRadius: '0 4px 4px 0',
-                    boxShadow: '0 0 12px rgba(239, 68, 68, 0.5)'
+                    boxShadow: '0 0 12px rgba(239, 68, 68, 0.6)'
                   }} />
                 )}
               </div>
@@ -153,25 +157,26 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
         </div>
 
         {/* Bottom Section */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24 }}>
           <div 
             onClick={() => router.push('/campaigns')}
             style={{
               padding: '16px',
               background: '#ef4444',
-              borderRadius: 14,
+              borderRadius: 16,
               cursor: 'pointer',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 8,
-              boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
+              gap: 10,
+              boxShadow: '0 8px 24px rgba(239, 68, 68, 0.35)',
+              border: '1px solid rgba(255,255,255,0.1)'
             }}
             className="new-campaign-btn"
           >
             <PlusCircleFilled style={{ color: '#fff', fontSize: 18 }} />
-            <Text style={{ color: '#fff', fontWeight: 800, fontSize: 14, letterSpacing: '0.02em' }}>New Campaign</Text>
+            <Text style={{ color: '#fff', fontWeight: 800, fontSize: 13, letterSpacing: '0.05em', textTransform: 'uppercase' }}>New Campaign</Text>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -180,12 +185,13 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
               className="nav-item logout"
               style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
-                borderRadius: 10, cursor: 'pointer', transition: 'all 0.2s ease',
-                color: 'rgba(255,255,255,0.4)'
+                borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s ease',
+                color: 'rgba(255,255,255,0.4)',
+                border: '1px solid transparent'
               }}
             >
-              <LogoutOutlined style={{ fontSize: 20 }} />
-              <span style={{ fontSize: 14, fontWeight: 600 }}>Logout</span>
+              <LogoutOutlined style={{ fontSize: 18 }} />
+              <span style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Logout</span>
             </div>
           </div>
         </div>
@@ -193,23 +199,26 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
 
       <style>{`
         .nav-item:hover {
-          background: rgba(255,255,255,0.03) !important;
+          background: rgba(255,255,255,0.04) !important;
           color: #fff !important;
+          border-color: rgba(255,255,255,0.06) !important;
         }
         .nav-item:hover span {
           color: #ef4444 !important;
         }
         .nav-item.active:hover {
-          background: rgba(239, 68, 68, 0.15) !important;
+          background: rgba(239, 68, 68, 0.18) !important;
+          border-color: rgba(239, 68, 68, 0.3) !important;
         }
         .new-campaign-btn:hover {
-          background: #dc2626 !important;
+          background: #f87171 !important;
           transform: translateY(-2px);
-          boxShadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+          boxShadow: 0 12px 30px rgba(239, 68, 68, 0.45) !important;
         }
         .logout:hover {
-          background: rgba(239, 68, 68, 0.08) !important;
+          background: rgba(239, 68, 68, 0.1) !important;
           color: #ef4444 !important;
+          border-color: rgba(239, 68, 68, 0.2) !important;
         }
       `}</style>
     </Sider>

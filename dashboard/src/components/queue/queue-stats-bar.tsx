@@ -17,10 +17,11 @@ export default function QueueStatsBar() {
       <Col xs={24} sm={12} lg={6}>
         <Card
           style={{ 
-            borderRadius: 20, 
-            border: '1px solid rgba(0,0,0,0.04)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            background: '#fff'
+            borderRadius: 24, 
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+            background: '#fff',
+            height: '100%'
           }}
           styles={{ body: { padding: '24px' } }}
           hoverable
@@ -39,9 +40,9 @@ export default function QueueStatsBar() {
               background: 'rgba(34, 197, 94, 0.08)', 
               color: '#22c55e', 
               fontSize: 11, 
-              fontWeight: 700, 
-              padding: '4px 8px', 
-              borderRadius: 99, 
+              fontWeight: 800, 
+              padding: '4px 10px', 
+              borderRadius: 8, 
               display: 'flex', 
               alignItems: 'center', 
               gap: 4 
@@ -49,8 +50,8 @@ export default function QueueStatsBar() {
               <ArrowDownOutlined style={{ fontSize: 10 }} /> 12%
             </div>
           </div>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>Avg. Wait Time</Text>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 28, letterSpacing: '-0.03em' }}>14 mins</Title>
+          <Text style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block', marginBottom: 4 }}>Avg. Wait Time</Text>
+          <Title level={2} style={{ margin: 0, fontWeight: 900, fontSize: 32, letterSpacing: '-0.04em', color: '#0f172a' }}>14 mins</Title>
         </Card>
       </Col>
 
@@ -58,10 +59,11 @@ export default function QueueStatsBar() {
       <Col xs={24} sm={12} lg={6}>
         <Card
           style={{ 
-            borderRadius: 20, 
-            border: '1px solid rgba(0,0,0,0.04)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            background: '#fff'
+            borderRadius: 24, 
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+            background: '#fff',
+            height: '100%'
           }}
           styles={{ body: { padding: '24px' } }}
           hoverable
@@ -79,16 +81,18 @@ export default function QueueStatsBar() {
             <div style={{ 
               background: 'rgba(139, 92, 246, 0.08)', 
               color: '#8b5cf6', 
-              fontSize: 11, 
-              fontWeight: 700, 
-              padding: '4px 8px', 
-              borderRadius: 99
+              fontSize: 10, 
+              fontWeight: 800, 
+              padding: '4px 10px', 
+              borderRadius: 8,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
             }}>
               ACTIVE
             </div>
           </div>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>In Process</Text>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 28, letterSpacing: '-0.03em' }}>08</Title>
+          <Text style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block', marginBottom: 4 }}>In Process</Text>
+          <Title level={2} style={{ margin: 0, fontWeight: 900, fontSize: 32, letterSpacing: '-0.04em', color: '#0f172a' }}>08</Title>
         </Card>
       </Col>
 
@@ -96,10 +100,11 @@ export default function QueueStatsBar() {
       <Col xs={24} sm={12} lg={6}>
         <Card
           style={{ 
-            borderRadius: 20, 
-            border: '1px solid rgba(0,0,0,0.04)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            background: '#fff'
+            borderRadius: 24, 
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+            background: '#fff',
+            height: '100%'
           }}
           styles={{ body: { padding: '24px' } }}
           hoverable
@@ -115,18 +120,20 @@ export default function QueueStatsBar() {
               <AlertOutlined style={{ fontSize: 22 }} />
             </div>
             <div style={{ 
-              background: 'rgba(239, 68, 68, 0.08)', 
+              background: '#fee2e2', 
               color: '#ef4444', 
-              fontSize: 11, 
-              fontWeight: 700, 
-              padding: '4px 8px', 
-              borderRadius: 99
+              fontSize: 10, 
+              fontWeight: 800, 
+              padding: '4px 10px', 
+              borderRadius: 8,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
             }}>
               PRIORITY
             </div>
           </div>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>Urgent Requests</Text>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 28, letterSpacing: '-0.03em' }}>03</Title>
+          <Text style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block', marginBottom: 4 }}>Urgent Requests</Text>
+          <Title level={2} style={{ margin: 0, fontWeight: 900, fontSize: 32, letterSpacing: '-0.04em', color: '#0f172a' }}>03</Title>
         </Card>
       </Col>
 
@@ -134,10 +141,11 @@ export default function QueueStatsBar() {
       <Col xs={24} sm={12} lg={6}>
         <Card
           style={{ 
-            borderRadius: 20, 
-            border: '1px solid rgba(0,0,0,0.04)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-            background: '#fff'
+            borderRadius: 24, 
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+            background: '#fff',
+            height: '100%'
           }}
           styles={{ body: { padding: '24px' } }}
           hoverable
@@ -155,16 +163,18 @@ export default function QueueStatsBar() {
             <div style={{ 
               background: 'rgba(34, 197, 94, 0.08)', 
               color: '#22c55e', 
-              fontSize: 11, 
-              fontWeight: 700, 
-              padding: '4px 8px', 
-              borderRadius: 99
+              fontSize: 10, 
+              fontWeight: 800, 
+              padding: '4px 10px', 
+              borderRadius: 8,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
             }}>
               TARGET
             </div>
           </div>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>Efficiency Score</Text>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 28, letterSpacing: '-0.03em' }}>98.2%</Title>
+          <Text style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'block', marginBottom: 4 }}>Efficiency Score</Text>
+          <Title level={2} style={{ margin: 0, fontWeight: 900, fontSize: 32, letterSpacing: '-0.04em', color: '#0f172a' }}>98.2%</Title>
         </Card>
       </Col>
 

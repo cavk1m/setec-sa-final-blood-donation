@@ -219,7 +219,7 @@ export default function AuthForm() {
               <Input placeholder="Enter your email.." style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", height: 48, borderRadius: 12 }} />
             </Form.Item>
             <Form.Item name="password" label={<Text style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>Password</Text>} rules={[{ required: true }]} style={{ marginBottom: 8 }}>
-              <Input.Password placeholder="**********" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", height: 48, borderRadius: 12 }} />
+              <Input placeholder="**********" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", height: 48, borderRadius: 12 }} />
             </Form.Item>
             <div style={{ textAlign: "right", marginBottom: 32 }}>
               <Link onClick={() => setView("forgot-password")} style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Forgot Password?</Link>
@@ -366,7 +366,7 @@ export default function AuthForm() {
           {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 24, background: "rgba(255,0,0,0.1)", border: "none", color: "#ff4d4f" }} />}
           <Form layout="vertical" onFinish={handleResetPassword} requiredMark={false} size="large">
             <Form.Item name="password" label={<Text style={{ color: "#fff" }}>New Password</Text>} rules={[{ required: true, min: 6 }]}>
-              <Input.Password placeholder="••••••••" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", height: 48, borderRadius: 12 }} />
+              <Input placeholder="••••••••" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", height: 48, borderRadius: 12 }} />
             </Form.Item>
            
             <Button type="primary" htmlType="submit" loading={loading} block style={{ height: 48, borderRadius: 12, background: "#fff", color: "#000", border: "none", fontWeight: 700, marginTop: 12 }}>Update Password</Button>
