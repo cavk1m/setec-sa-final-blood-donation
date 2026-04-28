@@ -17,11 +17,10 @@ import RecentQueueTable from '@/src/components/queue/recent-queuetable';
 
 
 const MOCK_QUEUE = [
-  { id: '1', donor: 'Sophea Chan',    bloodType: 'A+', status: 'waiting',    time: '09:00 AM' },
-  { id: '2', donor: 'Ratanak Lim',    bloodType: 'O-', status: 'in-progress', time: '09:15 AM' },
-  { id: '3', donor: 'Bopha Srey',     bloodType: 'B+', status: 'waiting',    time: '09:30 AM' },
-  { id: '4', donor: 'Dara Pich',      bloodType: 'AB+', status: 'completed', time: '08:45 AM' },
-  { id: '5', donor: 'Kunthea Meas',   bloodType: 'O+', status: 'waiting',    time: '09:45 AM' },
+  { id: '1', donor: 'Sophea Chan',    bloodType: 'A+', status: 'in-progress', time: '10:45 AM' },
+  { id: '2', donor: 'Ratanak Lim',    bloodType: 'O-', status: 'waiting',     time: '11:12 AM' },
+  { id: '3', donor: 'Bory Thul',      bloodType: 'B+', status: 'completed',   time: '09:30 AM' },
+  { id: '4', donor: 'Sreymom Keo',    bloodType: 'AB+', status: 'waiting',    time: '11:35 AM' },
 ];
 
 const { Content } = Layout;
@@ -64,7 +63,7 @@ export default function DashboardPage() {
                   Pulse Overview
                 </Title>
                 <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 16, fontWeight: 500 }}>
-                  Real-time clinical operational data for <span style={{ color: '#ef4444', fontWeight: 700 }}>BloodConnect</span>.
+                  Real-time clinical operational data for <span style={{ color: '#ef4444', fontWeight: 700 }}>BloodConnect</span>
                 </Text>
               </div>
               <Space size={12}>
@@ -95,23 +94,23 @@ export default function DashboardPage() {
               <StatsRow />
             </div>
 
-            {/* Queue + Campaigns */}
+            {/* Middle Row: Trend + Campaigns */}
             <Row gutter={[32, 32]} style={{ marginBottom: 32 }}>
-              <Col xs={24} lg={15}>
-                <RecentQueueTable
-                  data={MOCK_QUEUE}
-                  onComplete={(id) => console.log('complete', id)}
-                  onSkip={(id) => console.log('skip', id)}
-                />
+              <Col xs={24} lg={16}>
+                <DonationsTrendChart />
               </Col>
-              <Col xs={24} lg={9}>
+              <Col xs={24} lg={8}>
                 <CampaignProgress />
               </Col>
             </Row>
 
-            {/* Chart */}
+            {/* Bottom Row: Queue */}
             <div style={{ marginBottom: 48 }}>
-              <DonationsTrendChart />
+              <RecentQueueTable
+                data={MOCK_QUEUE}
+                onComplete={(id) => console.log('complete', id)}
+                onSkip={(id) => console.log('skip', id)}
+              />
             </div>
 
           </Content>

@@ -151,7 +151,7 @@ export default function WebsiteBranding() {
             >
               <span style={{ fontSize: 40, color: "#ef4444" }}>🩸</span>
             </div>
-            <Space direction="vertical" size={10} style={{ flex: 1 }}>
+            <Space orientation="vertical" size={10} style={{ flex: 1 }}>
               <AppButton
                 block
                 icon={<UploadOutlined />}

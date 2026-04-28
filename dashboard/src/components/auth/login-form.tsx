@@ -8,24 +8,17 @@ import {
   Button,
   Typography,
   Alert,
-  Row,
-  Col,
 } from "antd";
 import {
-  MailOutlined,
-  LockOutlined,
   ArrowLeftOutlined,
   UserOutlined,
-  PhoneOutlined,
-  EnvironmentOutlined,
-  CalendarOutlined,
-  CheckCircleOutlined,
   GoogleOutlined,
   FacebookFilled,
   AppleFilled,
   SafetyOutlined,
+  CheckCircleOutlined,
 } from "@ant-design/icons";
-import { loginUser, registerUser, forgotPassword, resetPassword, verifyOtp } from "@/src/features/auth/auth.api";
+import { loginUser, forgotPassword, resetPassword } from "@/src/features/auth/auth.api";
 
 const { Title, Text, Link } = Typography;
 
@@ -117,18 +110,11 @@ export default function AuthForm() {
   const handleOtpSubmit = async () => {
     const code = otpDigits.join("");
     if (code.length < 6) return;
-    setLoading(true);
-    setError(null);
-    try {
-      // Verify OTP immediately for feedback
-      await verifyOtp(resetEmail, code);
-      setOtpCode(code);
-      setView("new-password");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid OTP code. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    // Store the code and move to next step.
+    // The actual OTP validation (correct vs incorrect) happens when the user submits
+    // the new password via the reset-password endpoint.
+    setOtpCode(code);
+    setView("new-password");
   };
 
   const handleLogin = async (values: any) => {
@@ -182,6 +168,11 @@ export default function AuthForm() {
       await resetPassword(resetEmail, otpCode, values.password);
       setSuccessMessage("Password has been reset successfully. You can now sign in with your new password.");
       setView("success");
+      
+      // Navigate to login after 3 seconds
+      setTimeout(() => {
+        setView("login");
+      }, 2000);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to reset password. Please try again.");
     } finally {
@@ -285,7 +276,7 @@ export default function AuthForm() {
             </Text>
           </div>
 
-          {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 20, background: "rgba(255,0,0,0.1)", border: "none" }} />}
+          {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 20, background: "rgba(255,0,0,0.1)", border: "none", color: "#ff4d4f" }} />}
 
           {/* Individual OTP digit boxes */}
           <div style={{ display: "flex", gap: 10, justifyContent: "center", marginBottom: 28 }}>
@@ -347,20 +338,20 @@ export default function AuthForm() {
           </Button>
 
           <div style={{ textAlign: "center", marginTop: 20 }}>
-            <Text style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Didn&apos;t receive the code? </Text>
-            {resendTimer > 0 ? (
-              <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, fontWeight: 600 }}>Resend in {resendTimer}s</Text>
-            ) : (
-              <Link
-                onClick={() => {
-                  setOtpDigits(["", "", "", "", "", ""]);
-                  handleForgotPassword({ email: resetEmail });
-                }}
-                style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600, fontSize: 13 }}
-              >
-                Resend
-              </Link>
-            )}
+              <Text style={{ color: "rgba(255,255,255,0.3)", fontSize: 13 }}>Didn&apos;t receive the code? </Text>
+              {resendTimer > 0 ? (
+                <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, fontWeight: 600 }}>Resend in {resendTimer}s</Text>
+              ) : (
+                <Link
+                  onClick={() => {
+                    setOtpDigits(["", "", "", "", "", ""]);
+                    handleForgotPassword({ email: resetEmail });
+                  }}
+                  style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600, fontSize: 13 }}
+                >
+                  Resend
+                </Link>
+              )}
           </div>
         </>
       )}
@@ -377,24 +368,7 @@ export default function AuthForm() {
             <Form.Item name="password" label={<Text style={{ color: "#fff" }}>New Password</Text>} rules={[{ required: true, min: 6 }]}>
               <Input.Password placeholder="••••••••" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", height: 48, borderRadius: 12 }} />
             </Form.Item>
-            <Form.Item 
-              name="confirm" 
-              label={<Text style={{ color: "#fff" }}>Confirm Password</Text>} 
-              dependencies={['password']}
-              rules={[
-                { required: true },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('Passwords do not match!'));
-                  },
-                }),
-              ]}
-            >
-              <Input.Password placeholder="••••••••" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", color: "#fff", height: 48, borderRadius: 12 }} />
-            </Form.Item>
+           
             <Button type="primary" htmlType="submit" loading={loading} block style={{ height: 48, borderRadius: 12, background: "#fff", color: "#000", border: "none", fontWeight: 700, marginTop: 12 }}>Update Password</Button>
           </Form>
         </>
@@ -404,7 +378,8 @@ export default function AuthForm() {
         <div style={{ textAlign: "center", padding: "20px 0" }}>
           <CheckCircleOutlined style={{ fontSize: 64, color: "#52c41a", marginBottom: 24 }} />
           <Title level={2} style={{ color: "#fff", fontWeight: 700, margin: "0 0 12px" }}>Success!</Title>
-          <Text style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 16, marginBottom: 32 }}>{successMessage}</Text>
+          <Text style={{ display: "block", color: "rgba(255,255,255,0.5)", fontSize: 16, marginBottom: 12 }}>{successMessage}</Text>
+          <Text style={{ display: "block", color: "rgba(255,255,255,0.3)", fontSize: 14, marginBottom: 24 }}>Redirecting to login in 3 seconds...</Text>
           <Button type="primary" size="large" onClick={() => setView("login")} block style={{ height: 48, borderRadius: 12, background: "#fff", color: "#000", border: "none", fontWeight: 700 }}>Return to sign in</Button>
         </div>
       )}

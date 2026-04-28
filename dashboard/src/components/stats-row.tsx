@@ -52,11 +52,8 @@ export default function StatsRow() {
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>Total Donors</Text>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em' }}>1,284</Title>
-            <Text style={{ fontSize: 12, color: 'rgba(0,0,0,0.3)' }}>since last month</Text>
-          </div>
+          <Text style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginBottom: 4 }}>Total Donors</Text>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em' }}>1,284</Title>
         </div>
       </Card>
 
@@ -84,24 +81,22 @@ export default function StatsRow() {
           <div style={{ 
             background: 'rgba(239, 68, 68, 0.08)', 
             color: '#ef4444', 
-            fontSize: 12, 
-            fontWeight: 700, 
-            padding: '4px 10px', 
+            fontSize: 10, 
+            fontWeight: 800, 
+            padding: '4px 12px', 
             borderRadius: 99, 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 6 
+            gap: 6,
+            letterSpacing: '0.05em'
           }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />
             LIVE
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>Donations Today</Text>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em' }}>47</Title>
-            <Text style={{ fontSize: 12, color: 'rgba(0,0,0,0.3)' }}>+5 in last hour</Text>
-          </div>
+          <Text style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginBottom: 4 }}>Donations Today</Text>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em' }}>47</Title>
         </div>
       </Card>
 
@@ -126,31 +121,22 @@ export default function StatsRow() {
           }}>
             <NotificationOutlined style={{ fontSize: 24 }} />
           </div>
-          <div style={{ 
-            background: 'rgba(245, 158, 11, 0.08)', 
-            color: '#f59e0b', 
-            fontSize: 12, 
-            fontWeight: 700, 
-            padding: '4px 10px', 
-            borderRadius: 99
-          }}>
-            5 ACTIVE
-          </div>
+          <Text style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.45)' }}>Goal: 5,000</Text>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>Campaign Goal</Text>
-          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em', marginBottom: 12 }}>84%</Title>
-          <Progress 
-            percent={84} 
-            showInfo={false} 
-            strokeColor={{
-              '0%': '#f59e0b',
-              '100%': '#ef4444',
-            }} 
-            railColor="rgba(0,0,0,0.03)" 
-            size={['100%', 8]} 
-            strokeLinecap="round"
-          />
+          <Text style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginBottom: 4 }}>Campaign Goal</Text>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 12 }}>
+            <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em' }}>84%</Title>
+            <Progress 
+              percent={84} 
+              showInfo={false} 
+              strokeColor="#ef4444"
+              railColor="rgba(0,0,0,0.04)" 
+              size={['100%', 8]} 
+              strokeLinecap="round"
+              style={{ flex: 1, marginBottom: 6 }}
+            />
+          </div>
         </div>
       </Card>
 
@@ -167,8 +153,8 @@ export default function StatsRow() {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div style={{ 
-            background: 'rgba(139, 92, 246, 0.08)', 
-            color: '#8b5cf6', 
+            background: 'rgba(22, 163, 74, 0.08)', 
+            color: '#16a34a', 
             borderRadius: 14, 
             width: 48, height: 48,
             display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -176,22 +162,20 @@ export default function StatsRow() {
             <SafetyCertificateOutlined style={{ fontSize: 24 }} />
           </div>
           <div style={{ 
-            background: 'rgba(139, 92, 246, 0.08)', 
-            color: '#8b5cf6', 
-            fontSize: 12, 
-            fontWeight: 700, 
-            padding: '4px 10px', 
-            borderRadius: 99
+            background: 'rgba(22, 163, 74, 0.08)', 
+            color: '#16a34a', 
+            fontSize: 10, 
+            fontWeight: 800, 
+            padding: '4px 12px', 
+            borderRadius: 99,
+            display: 'flex', alignItems: 'center', gap: 6
           }}>
-            VERIFIED
+            <span style={{ fontSize: 14 }}>✓</span> COMPLIANCE VERIFIED
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <Text style={{ fontSize: 13, fontWeight: 600, color: 'rgba(0,0,0,0.45)', marginBottom: 4 }}>Certificates Issued</Text>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em' }}>932</Title>
-            <Text style={{ fontSize: 12, color: 'rgba(0,0,0,0.3)' }}>compliance ready</Text>
-          </div>
+          <Text style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginBottom: 4 }}>Certificates Issued</Text>
+          <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: 32, letterSpacing: '-0.03em' }}>932</Title>
         </div>
       </Card>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Layout, ConfigProvider } from "antd";
+import { Layout, ConfigProvider, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import SideNavBar from "../side-navBar";
 import TopAppBar from "../top-bar";
@@ -9,9 +9,8 @@ import QueueStatsBar from "./queue-stats-bar";
 import QueueTable from "./queue-table";
 import { QueueEntry } from "@/src/types/dashboard";
 
-// import type { QueueEntry } from '@/types/dashboard';
-
 const { Content } = Layout;
+const { Title, Text } = Typography;
 
 const MOCK_QUEUE: QueueEntry[] = [
   {
@@ -110,7 +109,6 @@ const SKIP_QUEUE_MOCK = {
 };
 
 export default function QueuePage() {
-  const [activeMenu, setActiveMenu] = useState("queue");
   const [queue, setQueue] = useState(MOCK_QUEUE);
   const router = useRouter();
 
@@ -127,67 +125,24 @@ export default function QueuePage() {
     );
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#ef4444",
-          colorBgContainer: "#ffffff",
-          colorBgLayout: "#f9f9ff",
-          colorBorder: "#e3e8f9",
-          colorText: "#161c27",
-          colorTextSecondary: "#5d5c74",
-          borderRadius: 8,
-          fontFamily: "Inter, sans-serif",
-        },
-      }}
-    >
-      <Layout style={{ minHeight: "100vh" }}>
-        <SideNavBar
-          activeKey={activeMenu}
-          onMenuClick={(key) => {
-            if (key === "overview") {
-              router.push("/");
-              return;
-            }
-            if (key === "queue") {
-              router.push("/queue");
-              return;
-            }
-            if (key === "locations") {
-              router.push("/locations");
-              return;
-            }
-            if (key === "certificates") {
-              router.push("/certificates");
-              return;
-            }
-            if (key === "campaigns") {
-              router.push("/campaigns");
-              return;
-            }
-            if (key === "users") {
-              router.push("/users");
-              return;
-            }
-            if (key === "settings") {
-              router.push("/settings");
-              return;
-            }
-            setActiveMenu(key);
-          }}
-        />
-        <Layout style={{ marginLeft: 280 }}>
-          <TopAppBar />
-          <Content style={{ padding: 32, background: "#f1f3ff" }}>
-            <QueueStatsBar />
-            <QueueTable
-              data={queue}
-              onComplete={handleComplete}
-              onSkip={handleSkip}
-            />
-          </Content>
-        </Layout>
+    <Layout style={{ minHeight: "100vh", background: "#f8fafc" }}>
+      <SideNavBar activeKey="queue" />
+      <Layout style={{ marginLeft: 280, background: 'transparent' }}>
+        <TopAppBar />
+        <Content style={{ padding: '32px 48px', minHeight: 280 }}>
+          <div style={{ marginBottom: 32 }}>
+            <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-0.03em' }}>Donation Queue</Title>
+            <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 15 }}>Monitor and manage real-time donor check-ins.</Text>
+          </div>
+          
+          <QueueStatsBar />
+          <QueueTable
+            data={queue}
+            onComplete={handleComplete}
+            onSkip={handleSkip}
+          />
+        </Content>
       </Layout>
-    </ConfigProvider>
+    </Layout>
   );
 }
