@@ -7,91 +7,25 @@ import UsersTable from "@/src/components/users/users-table";
 import { useRouter } from "next/navigation";
 
 const { Content, Header } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
+
+import TopAppBar from "@/src/components/top-bar";
 
 export default function UsersPage() {
-  const [activeMenu, setActiveMenu] = useState("users");
-  const router = useRouter();
-
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#ef4444",
-          colorBgContainer: "#ffffff",
-          colorBgLayout: "#f9f9ff",
-          colorBorder: "#e3e8f9",
-          colorText: "#161c27",
-          colorTextSecondary: "#5d5c74",
-          borderRadius: 8,
-          fontFamily: "Inter, sans-serif",
-        },
-      }}
-    >
-      <Layout style={{ minHeight: "100vh" }}>
-        <SideNavBar
-          activeKey={activeMenu}
-          onMenuClick={(key) => {
-            if (key === "overview") {
-              router.push("/");
-              return;
-            }
-            if (key === "queue") {
-              router.push("/queue");
-              return;
-            }
-            if (key === "locations") {
-              router.push("/locations");
-              return;
-            }
-            if (key === "certificates") {
-              router.push("/certificates");
-              return;
-            }
-            if (key === "campaigns") {
-              router.push("/campaigns");
-              return;
-            }
-            if (key === "users") {
-              router.push("/users");
-              return;
-            }
-            if (key === "settings") {
-              router.push("/settings");
-              return;
-            }
-            setActiveMenu(key);
-          }}
-        />
+    <Layout style={{ minHeight: "100vh", background: "#f8fafc" }}>
+      <SideNavBar activeKey="users" />
+      <Layout style={{ marginLeft: 280, background: 'transparent' }}>
+        <TopAppBar />
+        <Content style={{ padding: '32px 48px', minHeight: 280 }}>
+          <div style={{ marginBottom: 32 }}>
+            <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-0.03em' }}>User Directory</Title>
+            <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 15 }}>Manage platform administrators, donors, and organizations.</Text>
+          </div>
 
-        <Layout style={{ marginLeft: 280 }}>
-          <Header
-            style={{
-              background: "rgba(249,249,255,0.85)",
-              backdropFilter: "blur(12px)",
-              borderBottom: "1px solid #e3e8f9",
-              padding: "0 32px",
-              display: "flex",
-              alignItems: "center",
-              position: "sticky",
-              top: 0,
-              zIndex: 100,
-              height: 64,
-            }}
-          >
-            <Title
-              level={4}
-              style={{ margin: 0, fontWeight: 800, letterSpacing: "-0.5px" }}
-            >
-              Users
-            </Title>
-          </Header>
-
-          <Content style={{ padding: 32, background: "#f9f9ff" }}>
-            <UsersTable />
-          </Content>
-        </Layout>
+          <UsersTable />
+        </Content>
       </Layout>
-    </ConfigProvider>
+    </Layout>
   );
 }

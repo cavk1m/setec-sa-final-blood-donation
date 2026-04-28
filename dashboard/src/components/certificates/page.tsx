@@ -9,58 +9,27 @@ import CertificateStatsBar from './certificate-statsBar';
 import CertificateTable from './certificate-table';
 
 const { Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export default function CertificatesPage() {
-  const router = useRouter();
-  const [activeMenu, setActiveMenu] = useState('certificates');
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#ef4444',
-          colorBgContainer: '#ffffff',
-          colorBgLayout: '#f9f9ff',
-          colorBorder: '#e3e8f9',
-          colorText: '#161c27',
-          colorTextSecondary: '#5d5c74',
-          borderRadius: 8,
-          fontFamily: 'Inter, sans-serif',
-        },
-      }}
-    >
-      <Layout style={{ minHeight: '100vh' }}>
-        <SideNavBar
-          activeKey={activeMenu}
-          onMenuClick={(key) => {
-            if (key === 'overview') return router.push('/');
-            if (key === 'queue') return router.push('/queue');
-            if (key === 'locations') return router.push('/locations');
-            if (key === 'certificates') return router.push('/certificates');
-            if (key === 'campaigns') return router.push('/campaigns');
-            if (key === 'users') return router.push('/users');
-            if (key === 'settings') return router.push('/settings');
-            setActiveMenu(key);
-          }}
-        />
+    <Layout style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      <SideNavBar activeKey="certificates" />
+      <Layout style={{ marginLeft: 280, background: 'transparent' }}>
+        <TopAppBar />
+        <Content style={{ padding: '32px 48px', minHeight: 280 }}>
+          <div style={{ marginBottom: 32 }}>
+            <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-0.03em' }}>Blood Donation Certificates</Title>
+            <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 15 }}>Validate and issue official donation documentation.</Text>
+          </div>
 
-        <Layout style={{ marginLeft: 280 }}>
-          <TopAppBar />
-          <Content style={{ padding: 32, background: '#f1f3ff' }}>
-            <div style={{ marginBottom: 24 }}>
-              <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-1px' }}>
-                Certificates
-              </Title>
-            </div>
-
-            <CertificateStatsBar onSearch={setSearchQuery} />
-            <CertificateTable searchQuery={searchQuery} />
-          </Content>
-        </Layout>
+          <CertificateStatsBar onSearch={setSearchQuery} />
+          <CertificateTable searchQuery={searchQuery} />
+        </Content>
       </Layout>
-    </ConfigProvider>
+    </Layout>
   );
 }
 

@@ -4,7 +4,7 @@ import { Card, Table, Tag, Typography, Space } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import ActionButton from '@/src/components/ui/action-button';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 interface QueueItem {
   id: string;
@@ -78,22 +78,24 @@ export default function RecentQueueTable({ data = [], onComplete, onSkip }: Rece
       key: 'status',
       render: (s: string) => {
         const colors: Record<string, string> = {
-          waiting: '#3b82f6',
-          'in-progress': '#f59e0b',
-          completed: '#22c55e',
-          skipped: '#ef4444'
+          'waiting': '#f59e0b',
+          'in-progress': '#3b82f6',
+          'completed': '#16a34a',
         };
         const color = colors[s] || '#94a3b8';
         return (
           <div style={{ 
             display: 'flex', alignItems: 'center', gap: 8,
             background: `${color}08`, 
-            padding: '4px 10px', 
+            padding: '4px 12px', 
             borderRadius: 99,
-            width: 'fit-content'
+            width: 'fit-content',
+            border: `1px solid ${color}20`
           }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: color }} />
-            <span style={{ fontSize: 12, fontWeight: 600, color, textTransform: 'capitalize' }}>{s}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color, textTransform: 'capitalize' }}>
+              {s === 'in-progress' ? 'In-Progress' : s}
+            </span>
           </div>
         );
       },
@@ -103,10 +105,10 @@ export default function RecentQueueTable({ data = [], onComplete, onSkip }: Rece
       key: 'actions',
       render: (_: unknown, record: QueueItem) =>
         record.status !== 'completed' ? (
-          <Space size={12}>
+          <Space size={16}>
             <span 
               onClick={() => onComplete?.(record.id)}
-              style={{ color: '#22c55e', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
+              style={{ color: '#16a34a', fontWeight: 700, cursor: 'pointer', fontSize: 13 }}
             >
               Complete
             </span>
@@ -118,7 +120,7 @@ export default function RecentQueueTable({ data = [], onComplete, onSkip }: Rece
             </span>
           </Space>
         ) : (
-          <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.2)', fontStyle: 'italic' }}>Handled by System</span>
+          <span style={{ fontSize: 12, color: 'rgba(0,0,0,0.3)', fontWeight: 600, fontStyle: 'italic' }}>Handled by Nurse A.</span>
         ),
     },
   ];
@@ -134,8 +136,13 @@ export default function RecentQueueTable({ data = [], onComplete, onSkip }: Rece
       styles={{ body: { padding: '24px 32px' } }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <Title level={4} style={{ margin: 0, fontWeight: 700, fontSize: 20, letterSpacing: '-0.02em' }}>Donation Queue</Title>
-        <span style={{ color: '#ef4444', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>View All Queue →</span>
+        <div>
+          <Title level={4} style={{ margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.02em' }}>Donation Queue</Title>
+          <Text style={{ fontSize: 13, color: 'rgba(0,0,0,0.45)', fontWeight: 500 }}>Currently active donor registrations at Central Hub</Text>
+        </div>
+        <span style={{ color: '#ef4444', fontWeight: 800, fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+          View All Queue <span style={{ fontSize: 16 }}>→</span>
+        </span>
       </div>
       <Table<QueueItem>
         columns={columns}

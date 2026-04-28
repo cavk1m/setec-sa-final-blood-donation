@@ -55,12 +55,12 @@ const getInitials = (name: string) =>
 
 const STATUS_BADGE: Record<
   string,
-  { label: string; color: string; bg: string }
+  { label: string; color: string; bg: string; dot: string }
 > = {
-  waiting: { label: "WAITING", color: "#d97706", bg: "#fffbeb" },
-  "in-progress": { label: "IN PROCESS", color: "#2563eb", bg: "#eff6ff" },
-  completed: { label: "COMPLETED", color: "#16a34a", bg: "#f0fdf4" },
-  skip: { label: "SKIP", color: "#dc2626", bg: "#fef2f2" },
+  waiting: { label: "Waiting", color: "#d97706", bg: "#fffbeb", dot: "#f59e0b" },
+  "in-progress": { label: "In Process", color: "#2563eb", bg: "#eff6ff", dot: "#3b82f6" },
+  completed: { label: "Completed", color: "#16a34a", bg: "#f0fdf4", dot: "#22c55e" },
+  skip: { label: "Skipped", color: "#dc2626", bg: "#fef2f2", dot: "#ef4444" },
 };
 
 interface QueueTableProps {
@@ -97,10 +97,11 @@ export default function QueueTable({
       render: (_, r) => (
         <Text
           style={{
-            fontWeight: 900,
-            fontSize: 20,
-            color: "#ef4444",
-            opacity: r.status !== "waiting" ? 0.3 : 1,
+            fontWeight: 800,
+            fontSize: 18,
+            color: r.status === 'waiting' ? "#ef4444" : "rgba(0,0,0,0.25)",
+            fontFamily: 'JetBrains Mono, monospace',
+            letterSpacing: '-1px'
           }}
         >
           {String(r.queue_number).padStart(2, "0")}
@@ -218,20 +219,22 @@ export default function QueueTable({
       render: (_, r) => {
         const s = STATUS_BADGE[r.status];
         return (
-          <span
+          <div
             style={{
               background: s.bg,
               color: s.color,
-              fontSize: 10,
-              fontWeight: 700,
-              padding: "4px 10px",
-              borderRadius: 6,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
+              fontSize: 12,
+              fontWeight: 600,
+              padding: "4px 12px",
+              borderRadius: 999,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8
             }}
           >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot }} />
             {s.label}
-          </span>
+          </div>
         );
       },
     },

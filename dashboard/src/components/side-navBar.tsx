@@ -1,10 +1,11 @@
 'use client';
 
-import { Layout, Menu, Typography } from 'antd';
+import { Layout, Menu, Typography, Modal } from 'antd';
 import {
   DashboardOutlined, UnorderedListOutlined, EnvironmentOutlined,
   SafetyCertificateOutlined, NotificationOutlined, TeamOutlined,
   SettingOutlined, PlusCircleFilled, QuestionCircleOutlined, LogoutOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import AppButton from '@/src/components/ui/app-button';
@@ -40,19 +41,34 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
   };
 
   const handleLogout = () => {
-    document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Lax';
-    router.push('/login');
+    Modal.confirm({
+      title: 'Sign Out',
+      icon: <ExclamationCircleOutlined style={{ color: '#ef4444' }} />,
+      content: 'Are you sure you want to sign out of BloodConnect?',
+      okText: 'Sign Out',
+      cancelText: 'Stay',
+      okButtonProps: { 
+        danger: true, 
+        style: { borderRadius: 8, fontWeight: 600 } 
+      },
+      cancelButtonProps: { 
+        style: { borderRadius: 8, fontWeight: 600 } 
+      },
+      onOk() {
+        document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Lax';
+        router.push('/login');
+      },
+    });
   };
 
   return (
     <Sider
       width={280}
       style={{
-        background: '#fff',
+        background: '#0f172a',
         height: '100vh',
         position: 'fixed',
         left: 0, top: 0, bottom: 0,
-        borderRight: '1px solid rgba(0,0,0,0.06)',
         zIndex: 1000,
       }}
     >
@@ -70,22 +86,22 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
             background: '#ef4444',
             borderRadius: 12,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)'
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
           }}>
             <span style={{ fontSize: 24 }}>🩸</span>
           </div>
           <div>
-            <Title level={4} style={{ color: '#ef4444', margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.03em' }}>
+            <Title level={4} style={{ color: '#fff', margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.03em' }}>
               BloodConnect
             </Title>
-            <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Admin Console
             </Text>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
           {navItems.map((item) => {
             const isActive = activeKey === item.key;
             return (
@@ -98,36 +114,37 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
                   alignItems: 'center',
                   gap: 12,
                   padding: '14px 16px',
-                  borderRadius: 8,
+                  borderRadius: 12,
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  background: isActive ? 'rgba(239, 68, 68, 0.04)' : 'transparent',
-                  color: isActive ? '#ef4444' : 'rgba(0,0,0,0.65)',
+                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: isActive ? 'rgba(239, 68, 68, 0.1)' : 'transparent',
+                  color: isActive ? '#fff' : 'rgba(255,255,255,0.6)',
                   position: 'relative',
                 }}
               >
                 <span style={{ 
                   fontSize: 20, 
-                  color: isActive ? '#ef4444' : 'rgba(0,0,0,0.45)',
-                  transition: 'color 0.2s ease'
+                  color: isActive ? '#ef4444' : 'rgba(255,255,255,0.3)',
+                  transition: 'all 0.25s ease'
                 }}>
                   {item.icon}
                 </span>
                 <span style={{ 
                   fontSize: 15, 
-                  fontWeight: isActive ? 700 : 600,
-                  transition: 'color 0.2s ease'
+                  fontWeight: isActive ? 700 : 500,
+                  transition: 'all 0.25s ease'
                 }}>
                   {item.label}
                 </span>
                 {isActive && (
                   <div style={{
                     position: 'absolute',
-                    right: -16,
+                    left: -16,
                     width: 4,
-                    height: 32,
+                    height: 24,
                     background: '#ef4444',
-                    borderRadius: '4px 0 0 4px'
+                    borderRadius: '0 4px 4px 0',
+                    boxShadow: '0 0 12px rgba(239, 68, 68, 0.5)'
                   }} />
                 )}
               </div>
@@ -136,25 +153,25 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
         </div>
 
         {/* Bottom Section */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24 }}>
           <div 
             onClick={() => router.push('/campaigns')}
             style={{
               padding: '16px',
               background: '#ef4444',
-              borderRadius: 12,
+              borderRadius: 14,
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 8,
-              boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)'
+              boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
             }}
             className="new-campaign-btn"
           >
             <PlusCircleFilled style={{ color: '#fff', fontSize: 18 }} />
-            <Text style={{ color: '#fff', fontWeight: 800, fontSize: 14 }}>New Campaign</Text>
+            <Text style={{ color: '#fff', fontWeight: 800, fontSize: 14, letterSpacing: '0.02em' }}>New Campaign</Text>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -163,8 +180,8 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
               className="nav-item logout"
               style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
-                borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s ease',
-                color: 'rgba(0,0,0,0.45)'
+                borderRadius: 10, cursor: 'pointer', transition: 'all 0.2s ease',
+                color: 'rgba(255,255,255,0.4)'
               }}
             >
               <LogoutOutlined style={{ fontSize: 20 }} />
@@ -176,15 +193,23 @@ export default function SideNavBar({ activeKey = 'overview' }: SideNavBarProps) 
 
       <style>{`
         .nav-item:hover {
-          background: rgba(0,0,0,0.02) !important;
+          background: rgba(255,255,255,0.03) !important;
+          color: #fff !important;
+        }
+        .nav-item:hover span {
           color: #ef4444 !important;
         }
         .nav-item.active:hover {
-          background: rgba(239, 68, 68, 0.06) !important;
+          background: rgba(239, 68, 68, 0.15) !important;
         }
         .new-campaign-btn:hover {
           background: #dc2626 !important;
           transform: translateY(-2px);
+          boxShadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        .logout:hover {
+          background: rgba(239, 68, 68, 0.08) !important;
+          color: #ef4444 !important;
         }
       `}</style>
     </Sider>

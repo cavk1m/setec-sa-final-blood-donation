@@ -247,7 +247,7 @@ export default function CompleteDrawer({
           >
             What happens next
           </Text>
-          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+          <Space orientation="vertical" size={8} style={{ width: "100%" }}>
             {[
               "Donor status set to Completed",
               "Blood donation record created",

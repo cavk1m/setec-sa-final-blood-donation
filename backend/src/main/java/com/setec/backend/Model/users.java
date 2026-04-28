@@ -74,6 +74,9 @@ public class users extends BaseEntity{
     @Column(name = "email_verified")
     private Boolean emailVerified = false;
     
+    @Column(name = "phone_verified")
+    private Boolean phoneVerified = false;
+    
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<blood_donations> bloodDonations = new ArrayList<>();
 

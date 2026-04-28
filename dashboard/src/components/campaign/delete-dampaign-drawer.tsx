@@ -230,7 +230,7 @@ export default function DeleteCampaignDrawer({
 
         {/* Warning boxes */}
         <Space
-          direction="vertical"
+          orientation="vertical"
           size={10}
           style={{ width: "100%", marginBottom: 24 }}
         >
