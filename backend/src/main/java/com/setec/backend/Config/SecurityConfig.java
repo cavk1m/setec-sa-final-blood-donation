@@ -59,10 +59,12 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 "/actuator/**",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                 "/api/locations"
                         ).permitAll()
                         
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/locations").permitAll() 
                         
                         .requestMatchers(
                                 "/api/users/profile",

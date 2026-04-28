@@ -63,4 +63,21 @@ public class MockEmailService implements EmailServiceInterface {
             Thread.currentThread().interrupt();
         }
     }
+
+    @Override
+public void sendDonationQueueEmail(String email, String fullName, int queueNumber, String locationName) {
+    log.info("🎯 MOCK EMAIL SENT - Donation Queue Email");
+    log.info("   To: {}", email);
+    log.info("   Name: {}", fullName);
+    log.info("   Queue Number: {}", queueNumber);
+    log.info("   Location: {}", locationName);
+    log.info("   Subject: Your Donation Queue Number - Blood Donation System");
+    log.info("   ✅ In real mode, this would be sent via Gmail SMTP");
+
+    try {
+        Thread.sleep(100);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+}
 }
