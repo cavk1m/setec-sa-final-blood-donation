@@ -11,6 +11,8 @@ export interface UserProfile {
   avatar_url: string | null;
   date_of_birth: string | null;
   address: string | null;
+  full_name: string | null;
+  avatar_name: string | null;
   role: string;
   is_active: boolean;
   last_login_at: string | null;
