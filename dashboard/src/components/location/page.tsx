@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Layout, Row, Col, Typography, Breadcrumb, Table, Tag, Progress, Card, Space, message } from 'antd';
-import { PlusOutlined, FilterOutlined, ExportOutlined } from '@ant-design/icons';
+import { Layout, Row, Col, Typography, Breadcrumb, Table, Tag, Progress, Card, Space, message, Input } from 'antd';
+import { PlusOutlined, FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import SideNavBar from '../side-navBar';
 import TopAppBar from '../top-bar';
 import AddLocationDrawer from './create-location';
@@ -22,9 +22,10 @@ const RECENT_LOGS = [
 export default function LocationPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<LocationData | null>(null);
-  const [locations, setLocations] = useState<LocationItem[]>([]);
+   const [locations, setLocations] = useState<LocationItem[]>([]);
   const [backendLocations, setBackendLocations] = useState<LocationData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchLocations = async () => {
     try {
@@ -41,7 +42,7 @@ export default function LocationPage() {
         queueCount: Math.floor(Math.random() * 10), 
         staffCount: 3 + Math.floor(Math.random() * 5),  
         hubType: index % 2 === 0 ? 'MAIN CAMPUS' : 'MOBILE HUB',
-        status: 'OPERATIONAL',
+        status: loc.status || 'OPERATIONAL',
         lastActivity: `${Math.floor(Math.random() * 60)} mins ago`,
         imageUrl: `https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800&sig=${loc.id}`
       }));
@@ -111,6 +112,11 @@ export default function LocationPage() {
     },
   ];
 
+  const filteredLocations = locations.filter(loc => 
+    loc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    loc.address.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Layout style={{ minHeight: '100vh', background: '#f8fafc' }}>
       <SideNavBar activeKey="locations" />
@@ -135,6 +141,22 @@ export default function LocationPage() {
               </Text>
             </div>
             <Space size={12}>
+              <Input
+                placeholder="Search by name or address..."
+                prefix={<SearchOutlined style={{ color: '#94a3b8' }} />}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                allowClear
+                style={{ 
+                  width: 320, 
+                  height: 44, 
+                  borderRadius: 12,
+                  border: 'var(--premium-card-border)',
+                  boxShadow: 'var(--premium-card-shadow)',
+                  fontSize: 14,
+                  fontWeight: 500
+                }}
+              />
               <AppButton
                 variant="secondary"
                 size="md"
@@ -201,7 +223,7 @@ export default function LocationPage() {
           />
 
           <Row gutter={[24, 24]} style={{ marginBottom: 48 }}>
-            {locations.map((loc) => (
+            {filteredLocations.map((loc) => (
               <Col xs={24} lg={12} key={loc.id}>
                 <LocationCard
                   data={loc}
@@ -210,40 +232,16 @@ export default function LocationPage() {
                 />
               </Col>
             ))}
+            {filteredLocations.length === 0 && !loading && (
+              <Col span={24}>
+                <Card style={{ textAlign: 'center', padding: '48px 0', borderRadius: 20, border: '1px dashed #e2e8f0', background: 'transparent' }}>
+                  <SearchOutlined style={{ fontSize: 48, color: '#cbd5e1', marginBottom: 16 }} />
+                  <Title level={4} style={{ color: '#64748b', marginBottom: 8 }}>No locations found</Title>
+                  <Text style={{ color: '#94a3b8' }}>Try adjusting your search query to find what you're looking for.</Text>
+                </Card>
+              </Col>
+            )}
           </Row>
-
-          {/* Table Section */}
-          <Card 
-            title={
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Title level={4} style={{ margin: 0, fontWeight: 800 }}>Recent Schedule Log</Title>
-                <Link style={{ color: '#ef4444', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Export CSV <ExportOutlined style={{ fontSize: 14 }} />
-                </Link>
-              </div>
-            }
-            style={{ 
-              borderRadius: "var(--premium-card-radius)", 
-              border: "var(--premium-card-border)", 
-              boxShadow: "var(--premium-card-shadow)",
-              overflow: 'hidden' 
-            }}
-          >
-            <Table 
-              dataSource={RECENT_LOGS} 
-              columns={columns} 
-              pagination={false} 
-              style={{ margin: '-16px' }}
-            />
-            <div style={{ textAlign: 'center', marginTop: 24 }}>
-              <AppButton 
-                variant="ghost" 
-                size="md" 
-                label="LOAD MORE HISTORY" 
-                style={{ fontWeight: 800, fontSize: 11, letterSpacing: '0.05em', color: 'rgba(0,0,0,0.45)', border: 'none' }}
-              />
-            </div>
-          </Card>
         </Content>
       </Layout>
     </Layout>

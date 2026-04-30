@@ -8,6 +8,7 @@ export interface LocationData {
   longitude: number | null;
   donation_type: string;
   payment_qr_url: string | null;
+  status?: string;
 }
 
 export const getLocations = async (): Promise<LocationData[]> => {

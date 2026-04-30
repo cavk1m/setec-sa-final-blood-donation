@@ -52,6 +52,7 @@ export default function AddLocationDrawer({
         latitude: initialData.latitude,
         longitude: initialData.longitude,
         donationType: initialData.donation_type,
+        status: initialData.status || 'OPERATIONAL',
       });
     } else if (open) {
       form.resetFields();
@@ -79,6 +80,7 @@ export default function AddLocationDrawer({
         latitude: isNaN(lat as number) ? null : lat,
         longitude: isNaN(lng as number) ? null : lng,
         donation_type: values.donationType,
+        status: values.status,
         payment_qr_url: null,
       };
 
@@ -298,6 +300,36 @@ export default function AddLocationDrawer({
                 { value: "BLOOD", label: "Blood Donation" },
                 { value: "MONEY", label: "Money Donation" },
                 { value: "BOTH", label: "Both (Blood & Money)" },
+              ]}
+            />
+          </Form.Item>
+
+          {/* Status */}
+          <Form.Item
+            name="status"
+            label={
+              <Text
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  color: "#64748b",
+                }}
+              >
+                Operational Status
+              </Text>
+            }
+            initialValue="OPERATIONAL"
+            rules={[{ required: true, message: "Please select status" }]}
+          >
+            <Select
+              placeholder="Select Status"
+              style={{ borderRadius: 999 }}
+              options={[
+                { value: "OPERATIONAL", label: "Operational" },
+                { value: "MAINTENANCE", label: "Under Maintenance" },
+                { value: "CLOSED", label: "Temporarily Closed" },
               ]}
             />
           </Form.Item>

@@ -11,13 +11,13 @@ export default function LoginPage() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#ffffff",
-          colorBgContainer: "#12121b",
-          colorBgLayout: "#0a0a0b",
-          colorBorder: "rgba(255,255,255,0.1)",
-          colorText: "#ffffff",
-          colorTextSecondary: "rgba(255,255,255,0.5)",
-          borderRadius: 12,
+          colorPrimary: "#a10006",
+          colorBgContainer: "#ffffff",
+          colorBgLayout: "#f8f9ff",
+          colorBorder: "#e2e8f0",
+          colorText: "#0b1c30",
+          colorTextSecondary: "#64748b",
+          borderRadius: 16,
           fontFamily: "'Inter', sans-serif",
         },
       }}
@@ -25,7 +25,7 @@ export default function LoginPage() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#0a0a0b",
+          background: "#f8f9ff",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -34,7 +34,7 @@ export default function LoginPage() {
         }}
       >
         {/* Subtle background glow */}
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100vw", height: "100vh", background: "radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "100vw", height: "100vh", background: "radial-gradient(circle at center, rgba(161, 0, 6, 0.03) 0%, transparent 70%)", pointerEvents: "none" }} />
         
         <AuthForm />
       </div>
