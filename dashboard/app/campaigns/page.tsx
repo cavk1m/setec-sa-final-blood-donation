@@ -26,10 +26,13 @@ const TABS: { key: FilterTab; label: string }[] = [
 ];
 
 import TopAppBar from "@/src/components/top-bar";
+import EditCampaignDrawer from "@/src/components/campaign/edit-campaign-drawer";
 
 export default function CampaignsPage() {
   const [filter, setFilter] = useState<FilterTab>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#f8fafc" }}>
@@ -39,45 +42,77 @@ export default function CampaignsPage() {
         <Content style={{ padding: '32px 48px', minHeight: 280 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
             <div>
-              <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-0.03em' }}>Fundraising Campaigns</Title>
-              <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 15 }}>Track and manage charity drives and donation goals.</Text>
+              <Title level={1} style={{ margin: 0, fontWeight: 800, fontSize: 36, letterSpacing: '-0.04em', color: '#0f172a' }}>
+                Fundraising Campaigns
+              </Title>
+              <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 16, fontWeight: 500 }}>
+                Track and manage charity drives and donation goals.
+              </Text>
             </div>
-            
-            {/* Tab pills */}
-            <div
-              style={{
-                display: "flex",
-                gap: 4,
-                background: "rgba(0,0,0,0.04)",
-                borderRadius: 12,
-                padding: 4,
-              }}
-            >
-              {TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setFilter(tab.key)}
-                  style={{
-                    padding: "8px 24px",
-                    borderRadius: 9,
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: 700,
-                    fontSize: 13,
-                    background: filter === tab.key ? "#fff" : "transparent",
-                    color: filter === tab.key ? "#ef4444" : "rgba(0,0,0,0.45)",
-                    boxShadow: filter === tab.key ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+
+            <Space size={16}>
+              {/* Tab pills */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 4,
+                  background: "rgba(0,0,0,0.04)",
+                  borderRadius: 12,
+                  padding: 4,
+                }}
+              >
+                {TABS.map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setFilter(tab.key)}
+                    style={{
+                      padding: "8px 24px",
+                      borderRadius: 9,
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      fontSize: 13,
+                      background: filter === tab.key ? "#fff" : "transparent",
+                      color: filter === tab.key ? "#ef4444" : "rgba(0,0,0,0.45)",
+                      boxShadow: filter === tab.key ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setCreateDrawerOpen(true)}
+                style={{
+                  height: 44,
+                  borderRadius: 12,
+                  background: "#ef4444",
+                  borderColor: "#ef4444",
+                  fontWeight: 700,
+                  paddingInline: 24,
+                }}
+              >
+                New Campaign
+              </Button>
+            </Space>
           </div>
 
           <CampaignStatsBar onSearch={setSearchQuery} />
-          <CampaignGrid filter={filter} searchQuery={searchQuery} />
+          <CampaignGrid filter={filter} searchQuery={searchQuery} refreshTrigger={refreshTrigger} />
+
+          <EditCampaignDrawer
+            open={createDrawerOpen}
+            campaign={null}
+            onCancel={() => setCreateDrawerOpen(false)}
+            onSave={() => {
+              setCreateDrawerOpen(false);
+              setRefreshTrigger(prev => prev + 1);
+            }}
+          />
         </Content>
       </Layout>
     </Layout>

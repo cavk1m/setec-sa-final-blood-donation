@@ -25,6 +25,12 @@ export interface LocationItem {
   imageUrl: string;
 }
 
+const STATUS_CONFIG: Record<LocationItem["status"], { bg: string; color: string }> = {
+  OPERATIONAL: { bg: "#16a34a", color: "#ffffff" },
+  MAINTENANCE: { bg: "#f59e0b", color: "#ffffff" },
+  OFFLINE: { bg: "#ef4444", color: "#ffffff" },
+};
+
 export default function LocationCard({
   data,
   onEdit,
@@ -34,15 +40,18 @@ export default function LocationCard({
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
 }) {
+  const status = STATUS_CONFIG[data.status] || STATUS_CONFIG.OPERATIONAL;
+
   return (
     <Card
       hoverable
       style={{
-        borderRadius: 20,
-        border: "1px solid rgba(0,0,0,0.06)",
+        borderRadius: "var(--premium-card-radius)",
+        border: "var(--premium-card-border)",
         overflow: "hidden",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-        height: '100%'
+        boxShadow: "var(--premium-card-shadow)",
+        height: '100%',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}
       styles={{ body: { padding: 0 } }}
     >
@@ -54,19 +63,31 @@ export default function LocationCard({
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
         />
         <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6 }}>
-          <Tag style={{ 
-            background: '#16a34a', color: '#fff', border: 'none', 
-            borderRadius: 6, fontWeight: 800, fontSize: 10, margin: 0 
+          <div style={{ 
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(0,0,0,0.5)', 
+            backdropFilter: 'blur(4px)',
+            padding: '4px 10px', 
+            borderRadius: 99,
+            border: '1px solid rgba(255,255,255,0.1)'
           }}>
-            {data.status}
-          </Tag>
-          <Tag style={{ 
-            background: 'rgba(0,0,0,0.6)', color: '#fff', border: 'none', 
-            borderRadius: 6, fontWeight: 800, fontSize: 10, margin: 0,
-            backdropFilter: 'blur(4px)'
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: status.bg, boxShadow: `0 0 8px ${status.bg}` }} />
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {data.status}
+            </span>
+          </div>
+          <div style={{ 
+            background: 'rgba(0,0,0,0.5)', 
+            backdropFilter: 'blur(4px)',
+            color: '#fff', 
+            padding: '4px 10px', 
+            borderRadius: 99,
+            fontSize: 10, fontWeight: 800,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            border: '1px solid rgba(255,255,255,0.1)'
           }}>
             {data.hubType}
-          </Tag>
+          </div>
         </div>
       </div>
 
@@ -76,8 +97,26 @@ export default function LocationCard({
             {data.name}
           </Title>
           <Space size={12}>
-            <EditOutlined onClick={() => onEdit?.(data.id)} style={{ color: 'rgba(0,0,0,0.45)', cursor: 'pointer', fontSize: 16 }} />
-            <DeleteOutlined onClick={() => onDelete?.(data.id)} style={{ color: 'rgba(0,0,0,0.45)', cursor: 'pointer', fontSize: 16 }} />
+            <div 
+              onClick={() => onEdit?.(data.id)}
+              style={{ 
+                width: 32, height: 32, borderRadius: 8, 
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,0.03)', cursor: 'pointer', transition: 'all 0.2s'
+              }}
+            >
+              <EditOutlined style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14 }} />
+            </div>
+            <div 
+              onClick={() => onDelete?.(data.id)}
+              style={{ 
+                width: 32, height: 32, borderRadius: 8, 
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(239, 68, 68, 0.05)', cursor: 'pointer', transition: 'all 0.2s'
+              }}
+            >
+              <DeleteOutlined style={{ color: '#ef4444', fontSize: 14 }} />
+            </div>
           </Space>
         </div>
 
@@ -86,15 +125,17 @@ export default function LocationCard({
           <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 13, fontWeight: 500 }}>{data.address}</Text>
         </Space>
 
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
           {data.donationType.map(type => (
             <Tag key={type} style={{ 
               borderRadius: 99, fontWeight: 700, fontSize: 11, 
-              background: type === 'WHOLE BLOOD' ? '#fff1f2' : '#eff6ff',
-              color: type === 'WHOLE BLOOD' ? '#ef4444' : '#3b82f6',
+              background: type === 'BLOOD' || type === 'WHOLE BLOOD' ? '#fff1f2' : 
+                         type === 'MONEY' ? '#f0fdf4' : '#eff6ff',
+              color: type === 'BLOOD' || type === 'WHOLE BLOOD' ? '#ef4444' : 
+                     type === 'MONEY' ? '#16a34a' : '#3b82f6',
               border: 'none', padding: '2px 12px'
             }}>
-              • {type}
+              • {type === 'BLOOD' ? 'WHOLE BLOOD' : type}
             </Tag>
           ))}
         </div>

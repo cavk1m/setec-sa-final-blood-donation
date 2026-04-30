@@ -19,10 +19,11 @@ export default function StatsRow() {
       {/* Total Donors */}
       <Card 
         style={{ 
-          borderRadius: 20, 
-          border: '1px solid rgba(0,0,0,0.04)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-          background: '#fff'
+          borderRadius: "var(--premium-card-radius)", 
+          border: "var(--premium-card-border)",
+          boxShadow: "var(--premium-card-shadow)",
+          background: '#fff',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }} 
         styles={{ body: { padding: '24px' } }} 
         hoverable
@@ -40,13 +41,14 @@ export default function StatsRow() {
           <div style={{ 
             background: 'rgba(34, 197, 94, 0.08)', 
             color: '#22c55e', 
-            fontSize: 12, 
-            fontWeight: 700, 
-            padding: '4px 10px', 
+            fontSize: 11, 
+            fontWeight: 800, 
+            padding: '4px 12px', 
             borderRadius: 99, 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 4 
+            gap: 6,
+            border: '1.5px solid rgba(34, 197, 94, 0.15)'
           }}>
             <ArrowUpOutlined style={{ fontSize: 10 }} /> 12%
           </div>
@@ -60,10 +62,11 @@ export default function StatsRow() {
       {/* Donations Today */}
       <Card 
         style={{ 
-          borderRadius: 20, 
-          border: '1px solid rgba(0,0,0,0.04)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-          background: '#fff'
+          borderRadius: "var(--premium-card-radius)", 
+          border: "var(--premium-card-border)",
+          boxShadow: "var(--premium-card-shadow)",
+          background: '#fff',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }} 
         styles={{ body: { padding: '24px' } }} 
         hoverable
@@ -79,18 +82,19 @@ export default function StatsRow() {
             <MedicineBoxOutlined style={{ fontSize: 24 }} />
           </div>
           <div style={{ 
-            background: 'rgba(239, 68, 68, 0.08)', 
+            background: 'rgba(239, 68, 68, 0.1)', 
             color: '#ef4444', 
             fontSize: 10, 
             fontWeight: 800, 
-            padding: '4px 12px', 
+            padding: '4px 14px', 
             borderRadius: 99, 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 6,
-            letterSpacing: '0.05em'
+            gap: 8,
+            letterSpacing: '0.05em',
+            border: '1.5px solid rgba(239, 68, 68, 0.15)'
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 8px #ef4444' }} />
             LIVE
           </div>
         </div>
@@ -103,10 +107,11 @@ export default function StatsRow() {
       {/* Campaign Goal */}
       <Card 
         style={{ 
-          borderRadius: 20, 
-          border: '1px solid rgba(0,0,0,0.04)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-          background: '#fff'
+          borderRadius: "var(--premium-card-radius)", 
+          border: "var(--premium-card-border)",
+          boxShadow: "var(--premium-card-shadow)",
+          background: '#fff',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }} 
         styles={{ body: { padding: '24px' } }} 
         hoverable
@@ -143,10 +148,11 @@ export default function StatsRow() {
       {/* Certificates Issued */}
       <Card 
         style={{ 
-          borderRadius: 20, 
-          border: '1px solid rgba(0,0,0,0.04)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-          background: '#fff'
+          borderRadius: "var(--premium-card-radius)", 
+          border: "var(--premium-card-border)",
+          boxShadow: "var(--premium-card-shadow)",
+          background: '#fff',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }} 
         styles={{ body: { padding: '24px' } }} 
         hoverable
@@ -162,15 +168,17 @@ export default function StatsRow() {
             <SafetyCertificateOutlined style={{ fontSize: 24 }} />
           </div>
           <div style={{ 
-            background: 'rgba(22, 163, 74, 0.08)', 
+            background: 'rgba(22, 163, 74, 0.1)', 
             color: '#16a34a', 
             fontSize: 10, 
             fontWeight: 800, 
-            padding: '4px 12px', 
+            padding: '4px 14px', 
             borderRadius: 99,
-            display: 'flex', alignItems: 'center', gap: 6
+            display: 'flex', alignItems: 'center', gap: 8,
+            border: '1.5px solid rgba(22, 163, 74, 0.15)'
           }}>
-            <span style={{ fontSize: 14 }}>✓</span> COMPLIANCE VERIFIED
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', boxShadow: '0 0 8px #16a34a' }} />
+            VERIFIED
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>

@@ -1,18 +1,48 @@
 'use client';
 
-import { useState } from 'react';
-import { Layout, ConfigProvider, Typography } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, ConfigProvider, Typography, message } from 'antd';
 import { useRouter } from 'next/navigation';
 import SideNavBar from '../side-navBar';
 import TopAppBar from '../top-bar';
 import CertificateStatsBar from './certificate-statsBar';
-import CertificateTable from './certificate-table';
+import CertificateTable, { CertificateEntry } from './certificate-table';
+import { getDashboardCertificates } from '@/src/features/certificate/certificate.api';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 export default function CertificatesPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [certificates, setCertificates] = useState<CertificateEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        setLoading(true);
+        const data = await getDashboardCertificates();
+        
+        const mapped: CertificateEntry[] = data.map(cert => ({
+          id: cert.id,
+          certificateNumber: cert.certificate_number,
+          donorName: cert.user?.full_name || 'N/A',
+          bloodType: cert.user?.blood_type || 'N/A',
+          donationDate: new Date(cert.issued_date).toLocaleDateString(),
+          locationName: cert.location_name,
+          issuedDate: new Date(cert.issued_date).toLocaleDateString(),
+        }));
+        
+        setCertificates(mapped);
+      } catch (error) {
+        message.error('Failed to load certificates');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCertificates();
+  }, []);
 
   return (
     <Layout style={{ minHeight: '100vh', background: '#f8fafc' }}>
@@ -21,12 +51,16 @@ export default function CertificatesPage() {
         <TopAppBar />
         <Content style={{ padding: '32px 48px', minHeight: 280 }}>
           <div style={{ marginBottom: 32 }}>
-            <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-0.03em' }}>Blood Donation Certificates</Title>
-            <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 15 }}>Validate and issue official donation documentation.</Text>
+            <Title level={1} style={{ margin: 0, fontWeight: 800, fontSize: 36, letterSpacing: '-0.04em', color: '#0f172a' }}>
+              Donation Certificates
+            </Title>
+            <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 16, fontWeight: 500 }}>
+              Validate and issue official donation documentation for clinical compliance.
+            </Text>
           </div>
 
           <CertificateStatsBar onSearch={setSearchQuery} />
-          <CertificateTable searchQuery={searchQuery} />
+          <CertificateTable data={certificates} loading={loading} searchQuery={searchQuery} />
         </Content>
       </Layout>
     </Layout>

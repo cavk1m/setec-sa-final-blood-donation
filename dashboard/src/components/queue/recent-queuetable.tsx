@@ -86,14 +86,14 @@ export default function RecentQueueTable({ data = [], onComplete, onSkip }: Rece
         return (
           <div style={{ 
             display: 'flex', alignItems: 'center', gap: 8,
-            background: `${color}08`, 
-            padding: '4px 12px', 
+            background: `${color}12`, 
+            padding: '4px 14px', 
             borderRadius: 99,
             width: 'fit-content',
-            border: `1px solid ${color}20`
+            border: `1.5px solid ${color}20`
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: color }} />
-            <span style={{ fontSize: 12, fontWeight: 700, color, textTransform: 'capitalize' }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, boxShadow: `0 0 8px ${color}` }} />
+            <span style={{ fontSize: 11, fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
               {s === 'in-progress' ? 'In-Progress' : s}
             </span>
           </div>
@@ -128,12 +128,14 @@ export default function RecentQueueTable({ data = [], onComplete, onSkip }: Rece
   return (
     <Card 
       style={{ 
-        borderRadius: 20, 
-        border: '1px solid rgba(0,0,0,0.04)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-        background: '#fff'
+        borderRadius: "var(--premium-card-radius)", 
+        border: "var(--premium-card-border)",
+        boxShadow: "var(--premium-card-shadow)",
+        background: '#fff',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }} 
       styles={{ body: { padding: '24px 32px' } }}
+      hoverable
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>

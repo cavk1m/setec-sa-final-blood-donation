@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   Form,
@@ -10,9 +10,11 @@ import {
   Typography,
   Divider,
   InputNumber,
+  message,
 } from "antd";
 import { CloseOutlined, SaveOutlined, EditOutlined } from "@ant-design/icons";
 import { CampaignItem } from "./campaign-card";
+import { createCampaign, updateCampaign } from "@/src/features/campaign/campaign.api";
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -29,7 +31,7 @@ interface EditCampaignDrawerProps {
   open: boolean;
   campaign: CampaignItem | null;
   onCancel: () => void;
-  onSave: (updated: CampaignItem) => void;
+  onSave: () => void;
 }
 
 export default function EditCampaignDrawer({
@@ -39,33 +41,65 @@ export default function EditCampaignDrawer({
   onSave,
 }: EditCampaignDrawerProps) {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (campaign) {
-      form.setFieldsValue({
-        name: campaign.name,
-        description: campaign.description,
-        raised: campaign.raised,
-        goal: campaign.goal,
-        status: campaign.status,
-        createdAt: campaign.createdAt,
-      });
+    if (open) {
+      if (campaign) {
+        form.setFieldsValue({
+          name: campaign.name,
+          description: campaign.description,
+          raised: campaign.raised,
+          goal: campaign.goal,
+          status: campaign.status,
+          createdAt: campaign.createdAt,
+        });
+      } else {
+        form.resetFields();
+        form.setFieldsValue({
+          status: 'active',
+          raised: 0,
+        });
+      }
     }
-  }, [campaign, form]);
+  }, [open, campaign, form]);
 
-  if (!campaign) return null;
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      setLoading(true);
 
-  const handleSave = () => {
-    form.validateFields().then((values) => {
-      onSave({ ...campaign, ...values });
-      onCancel();
-    });
+      const payload = {
+        title: values.name,
+        description: values.description,
+        target_amount: values.goal,
+        image_url: "", // Can add upload later
+        campaign_type: "blood", // Default
+      };
+
+      if (campaign?.id) {
+        await updateCampaign(campaign.id, payload);
+        message.success("Campaign updated successfully");
+      } else {
+        await createCampaign(payload);
+        message.success("Campaign created successfully");
+      }
+
+      onSave();
+    } catch (error: any) {
+      console.error("Failed to save campaign:", error);
+      message.error(error.response?.data?.message || "Failed to save campaign");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const pct = Math.min(
-    Math.round((campaign.raised / campaign.goal) * 100),
-    100,
-  );
+  const raisedValue = Form.useWatch("raised", form);
+  const goalValue = Form.useWatch("goal", form);
+
+  const currentRaised = raisedValue || 0;
+  const currentGoal = goalValue || 1;
+  const pct = Math.min(Math.round((currentRaised / currentGoal) * 100), 100);
 
   return (
     <Drawer
@@ -75,6 +109,7 @@ export default function EditCampaignDrawer({
       width={480}
       title={null}
       closable={false}
+      destroyOnClose={true}
       styles={{
         body: { padding: 0 },
         wrapper: { boxShadow: "-4px 0 24px rgba(0,0,0,0.1)" },
@@ -171,10 +206,10 @@ export default function EditCampaignDrawer({
           }}
         >
           <Text style={{ fontSize: 11, color: "#94a3b8" }}>
-            ${campaign.raised.toLocaleString()} raised
+            ${(campaign?.raised || 0).toLocaleString()} raised
           </Text>
           <Text style={{ fontSize: 11, color: "#94a3b8" }}>
-            ${campaign.goal.toLocaleString()} goal
+            ${(campaign?.goal || 0).toLocaleString()} goal
           </Text>
         </div>
       </div>
@@ -304,6 +339,7 @@ export default function EditCampaignDrawer({
           block
           size="large"
           type="primary"
+          loading={loading}
           icon={<SaveOutlined />}
           onClick={handleSave}
           style={{
@@ -313,7 +349,7 @@ export default function EditCampaignDrawer({
             borderColor: "#ef4444",
           }}
         >
-          Save Changes
+          {campaign ? "Save Changes" : "Create Campaign"}
         </Button>
       </div>
     </Drawer>

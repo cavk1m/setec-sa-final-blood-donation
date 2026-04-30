@@ -1,44 +1,17 @@
 "use client";
 
-import { useState } from 'react';
-import { Layout, ConfigProvider, Row, Col, Typography, Breadcrumb, Table, Tag, Progress, Card, Space } from 'antd';
-import { PlusOutlined, FilterOutlined, TeamOutlined, MedicineBoxOutlined, HomeOutlined, ExportOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Layout, Row, Col, Typography, Breadcrumb, Table, Tag, Progress, Card, Space, message } from 'antd';
+import { PlusOutlined, FilterOutlined, ExportOutlined } from '@ant-design/icons';
 import SideNavBar from '../side-navBar';
 import TopAppBar from '../top-bar';
 import AddLocationDrawer from './create-location';
 import LocationCard, { type LocationItem } from './location-card';
 import AppButton from '@/src/components/ui/app-button';
+import { getLocations, deleteLocation as deleteLocationApi, LocationData } from '@/src/features/location/location.api';
 
 const { Content } = Layout;
 const { Title, Text, Link } = Typography;
-
-const MOCK_LOCATIONS: LocationItem[] = [
-  {
-    id: '1',
-    name: 'City Hospital Drive',
-    address: '124 Medical Way, Suite 300',
-    donationType: ['WHOLE BLOOD', 'PLASMA ONLY'],
-    queueCount: 5,
-    staffCount: 6,
-    hubType: 'MAIN CAMPUS',
-    status: 'OPERATIONAL',
-    lastActivity: '4 mins ago',
-    imageUrl: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&q=80&w=800'
-  },
-  {
-    id: '2',
-    name: 'North Campus Clinic',
-    address: '45 Education Lane, Building B',
-    donationType: ['PLASMA ONLY'],
-    queueCount: 2,
-    staffCount: 3,
-    hubType: 'MOBILE HUB',
-    status: 'OPERATIONAL',
-    lastActivity: '12 mins ago',
-    imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800'
-  },
-];
 
 const RECENT_LOGS = [
   { key: '1', location: 'City Hospital Drive', action: 'New Donor Check-in (Type O-)', staff: 'Dr. Sarah Chen', time: '10:42 AM', status: 'COMPLETED' },
@@ -48,7 +21,60 @@ const RECENT_LOGS = [
 
 export default function LocationPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [locations, setLocations] = useState<LocationItem[]>(MOCK_LOCATIONS);
+  const [editingLocation, setEditingLocation] = useState<LocationData | null>(null);
+  const [locations, setLocations] = useState<LocationItem[]>([]);
+  const [backendLocations, setBackendLocations] = useState<LocationData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchLocations = async () => {
+    try {
+      setLoading(true);
+      const data = await getLocations();
+      setBackendLocations(data);
+      
+      // Map backend data to frontend LocationItem
+      const mappedLocations: LocationItem[] = data.map((loc: LocationData, index: number) => ({
+        id: loc.id,
+        name: loc.name,
+        address: loc.address,
+        donationType: loc.donation_type === 'BOTH' ? ['BLOOD', 'MONEY'] : [loc.donation_type],
+        queueCount: Math.floor(Math.random() * 10), 
+        staffCount: 3 + Math.floor(Math.random() * 5),  
+        hubType: index % 2 === 0 ? 'MAIN CAMPUS' : 'MOBILE HUB',
+        status: 'OPERATIONAL',
+        lastActivity: `${Math.floor(Math.random() * 60)} mins ago`,
+        imageUrl: `https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800&sig=${loc.id}`
+      }));
+      
+      setLocations(mappedLocations);
+    } catch (error) {
+      message.error('Failed to load locations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLocations();
+  }, []);
+
+  const handleEdit = (id: string) => {
+    const loc = backendLocations.find(l => l.id === id);
+    if (loc) {
+      setEditingLocation(loc);
+      setDrawerOpen(true);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteLocationApi(id);
+      message.success('Location deleted successfully');
+      fetchLocations();
+    } catch (error) {
+      message.error('Failed to delete location');
+    }
+  };
 
   const columns = [
     { title: 'LOCATION', dataIndex: 'location', key: 'location', render: (text: string) => <Text style={{ fontWeight: 600 }}>{text}</Text> },
@@ -60,17 +86,26 @@ export default function LocationPage() {
       dataIndex: 'status', 
       key: 'status',
       render: (status: string) => {
-        let color = '#16a34a';
-        let bg = '#f0fdf4';
-        if (status === 'ALERT') { color = '#ef4444'; bg = '#fff1f2'; }
-        if (status === 'IN-PROGRESS') { color = '#3b82f6'; bg = '#eff6ff'; }
+        const colors: Record<string, string> = {
+          'COMPLETED': '#16a34a',
+          'ALERT': '#ef4444',
+          'IN-PROGRESS': '#3b82f6',
+        };
+        const color = colors[status] || '#94a3b8';
         return (
-          <Tag style={{ 
-            background: bg, color: color, border: 'none', 
-            borderRadius: 6, fontWeight: 800, fontSize: 10 
+          <div style={{ 
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: `${color}12`, 
+            padding: '4px 14px', 
+            borderRadius: 99,
+            width: 'fit-content',
+            border: `1.5px solid ${color}20`
           }}>
-            {status}
-          </Tag>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, boxShadow: `0 0 8px ${color}` }} />
+            <span style={{ fontSize: 10, fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {status}
+            </span>
+          </div>
         );
       }
     },
@@ -92,8 +127,12 @@ export default function LocationPage() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
             <div>
-              <Title level={2} style={{ margin: 0, fontWeight: 800, letterSpacing: '-0.03em' }}>Location Management</Title>
-              <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 15 }}>Monitor donor activity and manage operational capacity across all centers.</Text>
+              <Title level={1} style={{ margin: 0, fontWeight: 800, fontSize: 36, letterSpacing: '-0.04em', color: '#0f172a' }}>
+                Location Management
+              </Title>
+              <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 16, fontWeight: 500 }}>
+                Monitor donor activity and manage operational capacity across all centers.
+              </Text>
             </div>
             <Space size={12}>
               <AppButton
@@ -122,20 +161,25 @@ export default function LocationPage() {
           {/* Stats Row */}
           <Row gutter={24} style={{ marginBottom: 32 }}>
             {[
-              { title: 'Active Locations', value: '12', sub: '+2 New', color: '#16a34a' },
+              { title: 'Active Locations', value: locations.length.toString(), sub: '+2 New', color: '#16a34a' },
               { title: 'Total Queue', value: '48', sub: 'Wait Time ~14m' },
               { title: 'Daily Capacity', value: '82%', progress: 82 },
               { title: 'Staff On Duty', value: '24', sub: 'Full Coverage' },
             ].map((stat, i) => (
               <Col span={6} key={i}>
-                <Card style={{ borderRadius: 16, border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                <Card style={{ 
+                  borderRadius: 'var(--premium-card-radius)', 
+                  border: 'var(--premium-card-border)', 
+                  boxShadow: 'var(--premium-card-shadow)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }} hoverable>
                   <Text style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginBottom: 4 }}>{stat.title}</Text>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                     <Title level={2} style={{ margin: 0, fontWeight: 800 }}>{stat.value}</Title>
                     {stat.sub && <Text style={{ fontSize: 12, fontWeight: 700, color: stat.color || 'rgba(0,0,0,0.35)' }}>{stat.sub}</Text>}
                   </div>
                   {stat.progress !== undefined && (
-                    <Progress percent={stat.progress} showInfo={false} strokeColor="#ef4444" trailColor="rgba(0,0,0,0.04)" size="small" style={{ marginTop: 8 }} />
+                    <Progress percent={stat.progress} showInfo={false} strokeColor="#ef4444" railColor="rgba(0,0,0,0.04)" size="small" style={{ marginTop: 8 }} />
                   )}
                 </Card>
               </Col>
@@ -144,10 +188,15 @@ export default function LocationPage() {
 
           <AddLocationDrawer
             open={drawerOpen}
-            onCancel={() => setDrawerOpen(false)}
-            onSave={(data) => {
-              // Simplified for redesign demo
+            initialData={editingLocation}
+            onCancel={() => {
               setDrawerOpen(false);
+              setEditingLocation(null);
+            }}
+            onSave={() => {
+              setDrawerOpen(false);
+              setEditingLocation(null);
+              fetchLocations();
             }}
           />
 
@@ -156,8 +205,8 @@ export default function LocationPage() {
               <Col xs={24} lg={12} key={loc.id}>
                 <LocationCard
                   data={loc}
-                  onEdit={(id) => console.log('edit location', id)}
-                  onDelete={(id) => setLocations((prev) => prev.filter((x) => x.id !== id))}
+                  onEdit={(id) => handleEdit(id)}
+                  onDelete={(id) => handleDelete(id)}
                 />
               </Col>
             ))}
@@ -173,7 +222,12 @@ export default function LocationPage() {
                 </Link>
               </div>
             }
-            style={{ borderRadius: 20, border: '1px solid rgba(0,0,0,0.06)', overflow: 'hidden' }}
+            style={{ 
+              borderRadius: "var(--premium-card-radius)", 
+              border: "var(--premium-card-border)", 
+              boxShadow: "var(--premium-card-shadow)",
+              overflow: 'hidden' 
+            }}
           >
             <Table 
               dataSource={RECENT_LOGS} 

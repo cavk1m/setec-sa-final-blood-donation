@@ -68,6 +68,7 @@ interface QueueTableProps {
   loading?: boolean;
   onComplete?: (id: string) => void;
   onSkip?: (id: string) => void;
+  onRefresh?: () => void;
 }
 
 export default function QueueTable({
@@ -75,6 +76,7 @@ export default function QueueTable({
   loading,
   onComplete,
   onSkip,
+  onRefresh,
 }: QueueTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -347,6 +349,7 @@ export default function QueueTable({
               size="sm"
               tooltip="Refresh"
               icon={<ReloadOutlined style={{ color: "#64748b" }} />}
+              onClick={onRefresh}
             />
           </Space>
         </div>

@@ -28,13 +28,15 @@ export default function CampaignProgress({ data = MOCK_CAMPAIGNS }: CampaignProg
   return (
     <Card 
       style={{ 
-        borderRadius: 20, 
-        border: '1px solid rgba(0,0,0,0.04)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+        borderRadius: "var(--premium-card-radius)", 
+        border: "var(--premium-card-border)",
+        boxShadow: "var(--premium-card-shadow)",
         background: '#fff',
-        height: '100%'
+        height: '100%',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }} 
       styles={{ body: { padding: 32 } }}
+      hoverable
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <Title level={4} style={{ margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.02em' }}>Active Campaigns</Title>
@@ -50,7 +52,16 @@ export default function CampaignProgress({ data = MOCK_CAMPAIGNS }: CampaignProg
                   <Text style={{ fontWeight: 700, fontSize: 14, display: 'block', color: '#161c27' }}>{c.name}</Text>
                   <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', fontWeight: 600 }}>{c.location}</Text>
                 </div>
-                <Text style={{ fontWeight: 800, fontSize: 14, color: '#ef4444' }}>{pct}%</Text>
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  background: 'rgba(239, 68, 68, 0.08)', 
+                  padding: '2px 10px', 
+                  borderRadius: 99,
+                  border: '1px solid rgba(239, 68, 68, 0.15)'
+                }}>
+                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef4444' }} />
+                  <Text style={{ fontWeight: 800, fontSize: 12, color: '#ef4444' }}>{pct}%</Text>
+                </div>
               </div>
               <Progress 
                 percent={pct} 

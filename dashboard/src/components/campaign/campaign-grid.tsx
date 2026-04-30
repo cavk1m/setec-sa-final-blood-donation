@@ -1,73 +1,76 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Row, Col } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Row, Col, message } from 'antd';
 import CampaignCard, { CampaignItem } from './campaign-card';
 import ViewCampaignDrawer from './view-campaign-drawer';
 import DeleteCampaignDrawer from './delete-dampaign-drawer';
 import EditCampaignDrawer from './edit-campaign-drawer';
-
-
-const MOCK_CAMPAIGNS: CampaignItem[] = [
-  {
-    id: '1',
-    name: 'Emergency O-Negative Drive',
-    description: 'Urgent mobilization for regional hospitals facing critical blood shortages. High priority for trauma centers.',
-    raised: 12600, goal: 15000,
-    donorCount: 142,
-    createdAt: 'Oct 12, 2023',
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Spring Community Health Fair',
-    description: 'Annual partnership with City Hall. Focus on general wellness and voluntary blood screening.',
-    raised: 3200, goal: 10000,
-    donorCount: 48,
-    createdAt: 'Nov 01, 2023',
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'Winter Holiday Reserve',
-    description: 'Building surplus reserves for the holiday season when donation rates typically decrease by 40%.',
-    raised: 18200, goal: 20000,
-    donorCount: 210,
-    createdAt: 'Dec 05, 2023',
-    status: 'active',
-  },
-  {
-    id: '4',
-    name: 'Mobile Unit Fundraising',
-    description: 'Completed campaign for a new mobile blood collection unit servicing rural counties.',
-    raised: 20000, goal: 20000,
-    donorCount: 560,
-    createdAt: 'Jan 15, 2024',
-    status: 'completed',
-  },
-];
+import { getCampaigns, deleteCampaign as deleteCampaignApi, CampaignData } from '@/src/features/campaign/campaign.api';
 
 interface CampaignGridProps {
   filter?: 'all' | 'active' | 'completed';
   searchQuery?: string;
+  refreshTrigger?: number;
 }
 
-export default function CampaignGrid({ filter = 'all', searchQuery = '' }: CampaignGridProps) {
-  const [campaigns, setCampaigns]       = useState<CampaignItem[]>(MOCK_CAMPAIGNS);
+export default function CampaignGrid({ filter = 'all', searchQuery = '', refreshTrigger = 0 }: CampaignGridProps) {
+  const [campaigns, setCampaigns] = useState<CampaignItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Drawer targets
   const [editTarget,   setEditTarget]   = useState<CampaignItem | null>(null);
   const [viewTarget,   setViewTarget]   = useState<CampaignItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CampaignItem | null>(null);
 
-  // Handlers
-  const handleSave = (updated: CampaignItem) => {
-    setCampaigns(prev => prev.map(c => c.id === updated.id ? updated : c));
+  const fetchCampaigns = async () => {
+    try {
+      setLoading(true);
+      const data = await getCampaigns();
+      
+      const mapped: CampaignItem[] = data.map((c: CampaignData) => ({
+        id: c.id,
+        name: c.title,
+        description: c.description,
+        raised: c.current_amount,
+        goal: c.target_amount,
+        donorCount: 0, // Not available in simple backend model yet
+        createdAt: new Date(c.created_at).toLocaleDateString(),
+        status: c.current_amount >= c.target_amount ? 'completed' : 'active',
+      }));
+      
+      setCampaigns(mapped);
+    } catch (error) {
+      message.error('Failed to load campaigns');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setCampaigns(prev => prev.filter(c => c.id !== id));
-    setDeleteTarget(null);
+  useEffect(() => {
+    fetchCampaigns();
+  }, [refreshTrigger]);
+
+  const [deleting, setDeleting] = useState(false);
+
+  // Handlers
+  const handleSave = () => {
+    setEditTarget(null);
+    fetchCampaigns();
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      setDeleting(true);
+      await deleteCampaignApi(id);
+      message.success('Campaign deleted successfully');
+      setDeleteTarget(null);
+      fetchCampaigns();
+    } catch (error) {
+      message.error('Failed to delete campaign');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const filtered = campaigns.filter(c => {
@@ -111,6 +114,7 @@ export default function CampaignGrid({ filter = 'all', searchQuery = '' }: Campa
       <DeleteCampaignDrawer
         open={!!deleteTarget}
         campaign={deleteTarget}
+        loading={deleting}
         onCancel={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
       />

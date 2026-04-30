@@ -124,6 +124,12 @@ body {
   --input: #e2e8f0;
   --ring: #a10006;
   --radius: 0.5rem;
+
+  /* Premium Card System */
+  --premium-card-radius: 20px;
+  --premium-card-border: 1px solid rgba(15, 23, 42, 0.05);
+  --premium-card-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+  --premium-card-shadow-hover: 0 12px 40px rgba(15, 23, 42, 0.06);
 }
 
 .dark {
@@ -145,6 +151,11 @@ body {
   --border: #334155;
   --input: #334155;
   --ring: #ffb4a9;
+
+  /* Premium Card System - Dark */
+  --premium-card-border: 1px solid rgba(255, 255, 255, 0.08);
+  --premium-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --premium-card-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 @layer base {

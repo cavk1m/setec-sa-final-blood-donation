@@ -22,21 +22,42 @@ import { LocationItem } from "./location-card";
 
 const { Text, Title } = Typography;
 
+import { createLocation, updateLocation, LocationData } from "@/src/features/location/location.api";
+import { message } from "antd";
+
 interface AddLocationDrawerProps {
   open: boolean;
+  initialData?: LocationData | null;
   onCancel: () => void;
-  onSave: (data: Omit<LocationItem, "id">) => void;
+  onSave: () => void;
 }
 
 export default function AddLocationDrawer({
   open,
+  initialData,
   onCancel,
   onSave,
 }: AddLocationDrawerProps) {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (open && initialData) {
+      form.setFieldsValue({
+        locationName: initialData.name,
+        address: initialData.address,
+        latitude: initialData.latitude,
+        longitude: initialData.longitude,
+        donationType: initialData.donation_type,
+      });
+    } else if (open) {
+      form.resetFields();
+      setFileName(null);
+    }
+  }, [open, initialData, form]);
 
   const handleFileSelect = (file: File) => {
     if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
@@ -44,19 +65,41 @@ export default function AddLocationDrawer({
     }
   };
 
-  const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      onSave({
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      setLoading(true);
+
+      const lat = values.latitude ? parseFloat(values.latitude.toString().replace(',', '.')) : null;
+      const lng = values.longitude ? parseFloat(values.longitude.toString().replace(',', '.')) : null;
+
+      const payload = {
         name: values.locationName,
         address: values.address,
-        donationType: values.donationType,
-        queueCount: 0,
-        hasQR: !!fileName,
-      });
+        latitude: isNaN(lat as number) ? null : lat,
+        longitude: isNaN(lng as number) ? null : lng,
+        donation_type: values.donationType,
+        payment_qr_url: null,
+      };
+
+      if (initialData?.id) {
+        await updateLocation(initialData.id, payload);
+        message.success("Location updated successfully");
+      } else {
+        await createLocation(payload);
+        message.success("Location created successfully");
+      }
+      
       form.resetFields();
       setFileName(null);
-      onCancel();
-    });
+      onSave();
+    } catch (error: any) {
+      console.error("Failed to save location:", error);
+      const errorMsg = error.response?.data?.message || error.message || "Failed to save location";
+      message.error(errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,10 +126,10 @@ export default function AddLocationDrawer({
       >
         <div>
           <Title level={5} style={{ margin: 0, fontWeight: 700 }}>
-            Add New Location
+            {initialData ? "Edit Location" : "Add New Location"}
           </Title>
           <Text style={{ fontSize: 13, color: "#94a3b8" }}>
-            Fill in the details below
+            {initialData ? "Modify existing center details" : "Fill in the details below"}
           </Text>
         </div>
         <Button
@@ -252,9 +295,9 @@ export default function AddLocationDrawer({
               placeholder="Select Donation Type"
               style={{ borderRadius: 999 }}
               options={[
-                { value: "WHOLE BLOOD", label: "Whole Blood" },
-                { value: "PLASMA ONLY", label: "Plasma Only" },
-                { value: "PLATELETS", label: "Platelets" },
+                { value: "BLOOD", label: "Blood Donation" },
+                { value: "MONEY", label: "Money Donation" },
+                { value: "BOTH", label: "Both (Blood & Money)" },
               ]}
             />
           </Form.Item>
@@ -390,6 +433,7 @@ export default function AddLocationDrawer({
           block
           size="large"
           type="primary"
+          loading={loading}
           icon={<PlusCircleOutlined />}
           onClick={handleSubmit}
           style={{
