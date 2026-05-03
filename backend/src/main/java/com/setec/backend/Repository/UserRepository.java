@@ -1,6 +1,8 @@
 package com.setec.backend.Repository;
 
 import com.setec.backend.Model.users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,4 +39,14 @@ public interface UserRepository extends JpaRepository<users, UUID> {
 
     @Query("SELECT u FROM users u WHERE u.email = :email AND u.isActive = true")
     Optional<users> findActiveUserByEmail(@Param("email") String email);
+
+        // ADD THIS
+@Query(value = "SELECT * FROM users WHERE " +
+    "(:search IS NULL OR LOWER(full_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(email) LIKE LOWER(CONCAT('%', :search, '%')))",
+    countQuery = "SELECT COUNT(*) FROM users WHERE " +
+    "(:search IS NULL OR LOWER(full_name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(email) LIKE LOWER(CONCAT('%', :search, '%')))",
+    nativeQuery = true)
+Page<users> findAllWithFilters(
+    @Param("search") String search,
+    Pageable pageable);
 }

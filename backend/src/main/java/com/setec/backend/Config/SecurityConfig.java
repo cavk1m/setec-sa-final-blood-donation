@@ -65,6 +65,9 @@ public class SecurityConfig {
                         
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/locations").permitAll() 
+
+                        .requestMatchers(HttpMethod.GET, "/api/campaigns").permitAll()   // ADD
+                        .requestMatchers(HttpMethod.GET, "/api/settings").permitAll()    // ADD
                         
                         .requestMatchers(
                                 "/api/users/profile",
@@ -75,7 +78,8 @@ public class SecurityConfig {
                         ).authenticated()
                         
                         // Admin only endpoints (if needed in future)
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                         
                         .anyRequest().authenticated()
                 )

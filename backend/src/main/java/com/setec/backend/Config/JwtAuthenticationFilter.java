@@ -22,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -77,7 +78,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                      UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
                              .username(user.getEmail())
                              .password(user.getPasswordHash() != null ? user.getPasswordHash() : "")
-                             .authorities(new ArrayList<>()) // You can add roles here if needed
+                            //  .authorities(new ArrayList<>()) // You can add roles here if needed
+                                    .authorities(user.getRole() != null ? 
+            List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(user.getRole().name())) : 
+            new ArrayList<>())
                              .accountExpired(false)
                              .accountLocked(!user.getIsActive())
                              .credentialsExpired(false)
