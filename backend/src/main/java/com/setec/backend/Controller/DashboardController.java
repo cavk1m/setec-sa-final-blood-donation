@@ -196,4 +196,52 @@ public class DashboardController {
             ));
         }
     }
+
+
+    // GET /api/dashboard/certificates
+    @GetMapping("/certificates")
+    @SecurityRequirement(name = "bearer-jwt")
+    public ResponseEntity<?> getAllCertificates(HttpServletRequest request) {
+        try {
+            UUID adminId = (UUID) request.getAttribute("currentUserId");
+
+            users admin = userRepository.findById(adminId).orElse(null);
+            if (admin == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "success", false,
+                    "message", "Admin not found"
+                ));
+            }
+
+          List<certificates> certs = certificateRepository.findAllWithUser();
+
+            List<Map<String, Object>> certList = certs.stream().map(cert -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", cert.getId());
+                map.put("certificate_number", cert.getCertificate_number());
+                map.put("issued_date", cert.getIssued_date());
+                map.put("location_name", cert.getLocation_name());
+                map.put("created_at", cert.getCreated_at());
+
+                if (cert.getUser() != null) {
+                    Map<String, Object> userMap = new HashMap<>();
+                    userMap.put("id", cert.getUser().getId());
+                    userMap.put("full_name", cert.getUser().getFullName());
+                    userMap.put("blood_type", cert.getUser().getBloodType());
+                    map.put("user", userMap);
+                }
+
+                return map;
+            }).collect(Collectors.toList());
+
+            return ResponseEntity.ok(Map.of("certificates", certList));
+
+        } catch (Exception e) {
+            log.error("Failed to fetch certificates: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "success", false,
+                "message", "Failed to fetch certificates: " + e.getMessage()
+            ));
+        }
+    }   
 }

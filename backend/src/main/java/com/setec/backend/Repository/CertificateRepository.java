@@ -18,4 +18,8 @@ public interface CertificateRepository extends JpaRepository<certificates, UUID>
 
     @Query("SELECT c FROM certificates c LEFT JOIN FETCH c.user WHERE c.id = :id AND c.user.id = :userId")
     Optional<certificates> findByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
+
+    // ADD THIS
+    @Query("SELECT c FROM certificates c LEFT JOIN FETCH c.user ORDER BY c.created_at DESC")
+    List<certificates> findAllWithUser();
 }
