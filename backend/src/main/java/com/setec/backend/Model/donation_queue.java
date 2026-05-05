@@ -38,7 +38,7 @@ public class donation_queue {
     private long queue_number;
 
     @Column(name = "survey_score")
-    private long survey_score;
+    private Long survey_score;
 
     @Column(name = "status", nullable = false)
     private String status;  // "waiting", "skip", "completed"
