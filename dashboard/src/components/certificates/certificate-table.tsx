@@ -4,6 +4,9 @@ import { Card, Table, Tag, Typography, Space } from "antd";
 import { FilePdfOutlined, PrinterOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import ActionButton from "@/src/components/ui/action-button";
+import { getCertificatePrint } from "@/src/features/certificate/certificate.api";
+import { message } from "antd";
+import { axiosInstance } from "@/src/lib/axios";
 
 const { Text, Title } = Typography;
 
@@ -17,61 +20,24 @@ export interface CertificateEntry {
   issuedDate: string;
 }
 
-const MOCK_CERTIFICATES: CertificateEntry[] = [
-  {
-    id: "1",
-    certificateNumber: "CERT-2023-00891",
-    donorName: "Elena Rodriguez",
-    bloodType: "O+",
-    donationDate: "Oct 14, 2023",
-    locationName: "St. Jude Medical",
-    issuedDate: "Oct 14, 2023",
-  },
-  {
-    id: "2",
-    certificateNumber: "CERT-2023-00892",
-    donorName: "Marcus Chen",
-    bloodType: "AB-",
-    donationDate: "Oct 15, 2023",
-    locationName: "Downtown Plaza Center",
-    issuedDate: "Oct 15, 2023",
-  },
-  {
-    id: "3",
-    certificateNumber: "CERT-2023-00893",
-    donorName: "Sarah Jenkins",
-    bloodType: "A+",
-    donationDate: "Oct 15, 2023",
-    locationName: "Westside Mobile Bus",
-    issuedDate: "Oct 16, 2023",
-  },
-  {
-    id: "4",
-    certificateNumber: "CERT-2023-00894",
-    donorName: "David Park",
-    bloodType: "B+",
-    donationDate: "Oct 16, 2023",
-    locationName: "Central Metro Hub",
-    issuedDate: "Oct 16, 2023",
-  },
-  {
-    id: "5",
-    certificateNumber: "CERT-2023-00895",
-    donorName: "Mia Thompson",
-    bloodType: "O-",
-    donationDate: "Oct 17, 2023",
-    locationName: "St. Jude Medical",
-    issuedDate: "Oct 17, 2023",
-  },
-];
+const BLOOD_LABELS: Record<string, string> = {
+  A_POSITIVE: "A+",
+  A_NEGATIVE: "A-",
+  B_POSITIVE: "B+",
+  B_NEGATIVE: "B-",
+  O_POSITIVE: "O+",
+  O_NEGATIVE: "O-",
+  AB_POSITIVE: "AB+",
+  AB_NEGATIVE: "AB-",
+};
 
 const BLOOD_TYPE_STYLE: Record<string, { bg: string; color: string }> = {
-  "O+": { bg: "#d1fae5", color: "#047857" },
-  "O-": { bg: "#d1fae5", color: "#047857" },
   "A+": { bg: "#fee2e2", color: "#b91c1c" },
   "A-": { bg: "#fee2e2", color: "#b91c1c" },
   "B+": { bg: "#dbeafe", color: "#1d4ed8" },
   "B-": { bg: "#dbeafe", color: "#1d4ed8" },
+  "O+": { bg: "#d1fae5", color: "#047857" },
+  "O-": { bg: "#d1fae5", color: "#047857" },
   "AB+": { bg: "#ede9fe", color: "#6d28d9" },
   "AB-": { bg: "#ede9fe", color: "#6d28d9" },
 };
@@ -83,10 +49,44 @@ interface CertificateTableProps {
 }
 
 export default function CertificateTable({
-  data = MOCK_CERTIFICATES,
+  data = [],
   loading,
   searchQuery = "",
 }: CertificateTableProps) {
+  const handlePrint = async (id: string) => {
+    try {
+      const html = await getCertificatePrint(id);
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+      }
+    } catch (error) {
+      message.error("Failed to prepare print");
+    }
+  };
+
+  const handleDownload = async (id: string, certNumber: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/api/certificates/${id}/download`,
+        {
+          responseType: "blob",
+        },
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${certNumber}.html`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      message.success("Download started");
+    } catch (error) {
+      message.error("Failed to download certificate");
+    }
+  };
+
   const filtered = data.filter(
     (r) =>
       r.certificateNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -116,7 +116,8 @@ export default function CertificateTable({
       title: "Donor Name",
       key: "donorName",
       render: (_, r) => {
-        const s = BLOOD_TYPE_STYLE[r.bloodType] ?? {
+        const bloodLabel = BLOOD_LABELS[r.bloodType] || r.bloodType;
+        const s = BLOOD_TYPE_STYLE[bloodLabel] ?? {
           bg: "#f1f5f9",
           color: "#475569",
         };
@@ -125,16 +126,26 @@ export default function CertificateTable({
             <Text style={{ fontWeight: 700, fontSize: 14 }}>{r.donorName}</Text>
             <div
               style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                background: `${s.color}12`, 
-                padding: '2px 10px', 
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                background: `${s.color}12`,
+                padding: "2px 10px",
                 borderRadius: 99,
-                border: `1px solid ${s.color}20`
+                border: `1px solid ${s.color}20`,
               }}
             >
-              <div style={{ width: 4, height: 4, borderRadius: '50%', background: s.color, boxShadow: `0 0 6px ${s.color}` }} />
+              <div
+                style={{
+                  width: 4,
+                  height: 4,
+                  borderRadius: "50%",
+                  background: s.color,
+                  boxShadow: `0 0 6px ${s.color}`,
+                }}
+              />
               <span style={{ fontSize: 10, fontWeight: 900, color: s.color }}>
-                {r.bloodType}
+                {bloodLabel}
               </span>
             </div>
           </Space>
@@ -169,19 +180,21 @@ export default function CertificateTable({
       title: "Actions",
       key: "actions",
       align: "right",
-      render: () => (
+      render: (_, r) => (
         <Space size={8}>
           <ActionButton
             variant="download"
             size="sm"
             icon={<FilePdfOutlined />}
-            label="Download PDF"
+            label="Download"
+            onClick={() => handleDownload(r.id, r.certificateNumber)}
           />
           <ActionButton
             variant="print"
             size="sm"
             icon={<PrinterOutlined />}
             label="Print"
+            onClick={() => handlePrint(r.id)}
           />
         </Space>
       ),

@@ -8,10 +8,16 @@ const { Text, Title } = Typography;
 
 interface CertificateStatsBarProps {
   onSearch?: (value: string) => void;
+  totalIssued?: number;
+  topLocation?: string;
+  topLocationCount?: number;
 }
 
 export default function CertificateStatsBar({
   onSearch,
+  totalIssued = 0,
+  topLocation = "N/A",
+  topLocationCount = 0,
 }: CertificateStatsBarProps) {
   return (
     <div style={{ marginBottom: 24 }}>
@@ -56,7 +62,7 @@ export default function CertificateStatsBar({
                   lineHeight: 1,
                 }}
               >
-                1,482
+                {totalIssued.toLocaleString()}
               </Title>
               <span
                 style={{
@@ -162,10 +168,10 @@ export default function CertificateStatsBar({
                 letterSpacing: "-0.3px",
               }}
             >
-              Central Metro
+              {topLocation}
             </Title>
             <Text style={{ fontSize: 12, color: "#94a3b8" }}>
-              342 Certificates
+              {topLocationCount} Certificates
             </Text>
           </Card>
         </Col>

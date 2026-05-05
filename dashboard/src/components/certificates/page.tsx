@@ -59,7 +59,30 @@ export default function CertificatesPage() {
             </Text>
           </div>
 
-          <CertificateStatsBar onSearch={setSearchQuery} />
+          <CertificateStatsBar 
+            onSearch={setSearchQuery} 
+            totalIssued={certificates.length}
+            topLocation={
+              certificates.length > 0 
+                ? Object.entries(
+                    certificates.reduce((acc, curr) => {
+                      acc[curr.locationName] = (acc[curr.locationName] || 0) + 1;
+                      return acc;
+                    }, {} as Record<string, number>)
+                  ).sort((a, b) => b[1] - a[1])[0][0]
+                : "N/A"
+            }
+            topLocationCount={
+              certificates.length > 0 
+                ? Object.entries(
+                    certificates.reduce((acc, curr) => {
+                      acc[curr.locationName] = (acc[curr.locationName] || 0) + 1;
+                      return acc;
+                    }, {} as Record<string, number>)
+                  ).sort((a, b) => b[1] - a[1])[0][1]
+                : 0
+            }
+          />
           <CertificateTable data={certificates} loading={loading} searchQuery={searchQuery} />
         </Content>
       </Layout>
