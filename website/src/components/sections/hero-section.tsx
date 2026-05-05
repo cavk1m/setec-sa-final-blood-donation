@@ -1,14 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useGetSettings } from "@/hooks/use-settings";
 
 export function HeroSection() {
+  const { data: settings } = useGetSettings();
+
+  // Use dynamic background from API if available, fallback to static hero.png
+  const backgroundUrl = settings?.hero_background_url 
+    ? (settings.hero_background_url.startsWith('http') ? settings.hero_background_url : `http://localhost:8081${settings.hero_background_url}`)
+    : "/hero.png";
+
   return (
     <section
       className="relative min-h-screen flex items-center pt-32 pb-20 px-6 overflow-hidden"
       style={{
-        backgroundImage: "url('/hero.png')",
+        backgroundImage: `url('${backgroundUrl}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

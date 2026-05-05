@@ -1,57 +1,59 @@
-// components/campaigns-page/CampaignCard.tsx
-
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Campaign } from "@/definitions/campaign";
-// import { Campaign } from "@/definitions/campaign";
+import { ApiCampaign, CampaignType } from "@/definitions/campaign";
 
 interface CampaignCardProps {
-  campaign: Campaign;
+  campaign: ApiCampaign;
   onDonate: (id: string) => void;
-  onVolunteer?: (id: string) => void;
   onShare?: (id: string) => void;
 }
 
-export function CampaignCard({
-  campaign,
-  onDonate,
-  onVolunteer,
-  onShare,
-}: CampaignCardProps) {
+// Map campaign_type → badge label & colour
+const TYPE_STYLE: Record<
+  string,
+  { label: string; bg: string }
+> = {
+  blood:   { label: "Blood Drive",  bg: "#670017" },
+  food:    { label: "Food Drive",   bg: "#9c404b" },
+  medical: { label: "Medical",      bg: "#512122" },
+  shelter: { label: "Shelter",      bg: "#7a3b3b" },
+};
+
+function getBadge(type: CampaignType) {
+  return TYPE_STYLE[type] ?? { label: String(type).toUpperCase(), bg: "#670017" };
+}
+
+// Fallback image when image_url is empty
+const FALLBACK =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuDvEt4cyjY8lo7JAcR6D8jTc2oInWzBTNak0cxeiArO3-Jo4ypcH1QZ7uuU0VZrnFuCtimi6rPwVF0e7pt9IUQrJt9obUyIYrba25VEkQq5gsB0vkbmVIqZ-2rggmWDy3eHpUoUYzfKnD-n-K0q7fg5YZUt7HZq_3E4_V4FDfDylkJeTt8Ddf78BkCd6PFOduxh6iOxOcu5KbBYOkX97Noc0dQaAJdxHIrXua3MqGzhEc2v5qEUTUhZeFk9qS9zIZP3VGSr1ZOV-KEm";
+
+export function CampaignCard({ campaign, onDonate, onShare }: CampaignCardProps) {
+  const badge = getBadge(campaign.campaign_type);
+  const pct   = Math.min(campaign.progress_percent, 100);
+  const imgSrc = campaign.image_url || FALLBACK;
+
   return (
     <div className="group bg-white rounded-xl overflow-hidden shadow-[0_12px_40px_rgba(88,65,65,0.08)] flex flex-col transition-transform duration-500 hover:-translate-y-2">
       {/* Image */}
       <div className="relative h-72 overflow-hidden">
-        <img
-          src={campaign.image}
-          alt={campaign.imageAlt}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        <Image
+          src={imgSrc}
+          alt={campaign.title}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
+          unoptimized
         />
         {/* Badge */}
         <div className="absolute top-4 left-4">
           <span
             className="px-3 py-1 rounded-full font-sans text-[10px] font-bold tracking-widest uppercase shadow-xl text-white"
-            style={{ backgroundColor: campaign.badgeBg }}
+            style={{ backgroundColor: badge.bg }}
           >
-            {campaign.badge}
+            {badge.label}
           </span>
         </div>
-        {/* Bottom gradient + location */}
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-4 left-4 text-white">
-          <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest opacity-90 font-sans">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              className="w-3 h-3"
-            >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            {campaign.location}
-          </div>
-        </div>
+        {/* Bottom gradient */}
+        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
 
       {/* Content */}
@@ -67,17 +69,18 @@ export function CampaignCard({
         <div className="mt-auto">
           <div className="flex justify-between items-end mb-2">
             <span className="font-sans text-xs font-bold text-[#670017] tracking-widest uppercase">
-              {campaign.pct}% Fulfilled
+              {pct}% Fulfilled
             </span>
             <span className="font-sans text-xs text-[#584141]">
-              {campaign.metric}
+              {campaign.current_amount.toLocaleString()} /{" "}
+              {campaign.target_amount.toLocaleString()} Units
             </span>
           </div>
           <div className="w-full h-1.5 bg-[#f1ecf2] rounded-full mb-8 overflow-hidden">
             <div
-              className="h-full rounded-full"
+              className="h-full rounded-full transition-all duration-700"
               style={{
-                width: `${campaign.pct}%`,
+                width: `${pct}%`,
                 background: "linear-gradient(to right, #670017, #8c1127)",
               }}
             />
@@ -92,38 +95,27 @@ export function CampaignCard({
                 background: "linear-gradient(135deg, #670017 0%, #8c1127 100%)",
               }}
             >
-              {campaign.primaryCta}
+              Donate Now
             </Button>
-
-            {campaign.secondaryCta && onVolunteer ? (
-              <Button
-                variant="outline"
-                onClick={() => onVolunteer(campaign.id)}
-                className="px-6 border border-[#e0bfbf] text-[#670017] rounded-full text-xs font-bold tracking-widest uppercase hover:bg-[#670017]/5 transition-colors font-sans"
+            <button
+              onClick={() => onShare?.(campaign.id)}
+              className="px-4 border border-[#e0bfbf] text-[#670017] rounded-full hover:bg-[#670017]/5 transition-colors cursor-pointer"
+              aria-label="Share"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="w-4 h-4"
               >
-                {campaign.secondaryCta}
-              </Button>
-            ) : (
-              <button
-                onClick={() => onShare?.(campaign.id)}
-                className="px-4 border border-[#e0bfbf] text-[#670017] rounded-full hover:bg-[#670017]/5 transition-colors cursor-pointer"
-                aria-label="Share"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="w-4 h-4"
-                >
-                  <circle cx="18" cy="5" r="3" />
-                  <circle cx="6" cy="12" r="3" />
-                  <circle cx="18" cy="19" r="3" />
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                </svg>
-              </button>
-            )}
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

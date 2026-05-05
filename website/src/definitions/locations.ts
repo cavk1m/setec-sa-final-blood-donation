@@ -67,3 +67,58 @@ export const LOCATION_CENTERS: LocationCenter[] = [
     tags: ["MEDICAL SUPPLIES", "CLOTHING"],
   },
 ];
+
+// ─── API Types (Backend → /api/locations) ────────────────────────────────────
+
+export type DonationType = "BLOOD" | "FOOD" | "CLOTHING" | "MEDICAL" | string;
+
+/** Shape returned by the backend for each location */
+export interface ApiLocation {
+  id: string;
+  name: string;
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+  donation_type: DonationType | null;
+  payment_qr_url: string | null;
+}
+
+// GET /api/locations  – public, no auth required
+export interface GetLocationsResponse {
+  locations: ApiLocation[];
+}
+
+// POST /api/locations  – admin only (bearer JWT)
+export interface CreateLocationRequest {
+  name: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  donation_type?: DonationType;
+  payment_qr_url?: string;
+}
+
+export interface CreateLocationResponse {
+  message: string;
+  location: ApiLocation;
+}
+
+// PUT /api/locations/{id}  – admin only
+export interface UpdateLocationRequest {
+  name?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  donation_type?: DonationType;
+  payment_qr_url?: string;
+}
+
+export interface UpdateLocationResponse {
+  message: string;
+  location: Pick<ApiLocation, "id" | "name" | "address" | "payment_qr_url">;
+}
+
+// DELETE /api/locations/{id}  – admin only
+export interface DeleteLocationResponse {
+  message: string;
+}

@@ -4,73 +4,36 @@ import {
   UseMutationResult,
   UseQueryResult,
 } from "@tanstack/react-query";
-
 import {
   DonationRegisterRequest,
   DonationRegisterResponse,
   GetMyQueueResponse,
 } from "@/definitions/donation";
-import { axiosInstance } from "@/lib";
-import { donationEndpoint } from "@/constants/endpoint";
-import {
-  mockDonationRegisterResponse,
-  mockGetMyQueueResponse,
-} from "@/services/mock-data";
+import { createDonationRegister, getMyQueue } from "@/services/donation";
+import { useAuthStore } from "./zustand/use-auth-store";
 
-// export const useDonationRegister = (): UseMutationResult<
-//   DonationRegisterResponse,
-//   Error,
-//   DonationRegisterRequest
-// > => {
-//   return useMutation({
-//     mutationFn: async (data: DonationRegisterRequest) => {
-//       const response = await axiosInstance.post<DonationRegisterResponse>(
-//         `${donationEndpoint}register`,
-//         data,
-//       );
-//       return response.data;
-//     },
-//   });
-// };
-
-// Mock implementation for donation registration (simulates API delay with timeout)
-
+// POST /api/donation/register
 export const useDonationRegister = (): UseMutationResult<
   DonationRegisterResponse,
   Error,
   DonationRegisterRequest
 > => {
+  const user = useAuthStore((s) => s.user);
+  const token = user?.token;
+
   return useMutation({
-    mutationFn: async (data: DonationRegisterRequest) => {
-      // Return mock data (simulates API delay)
-      return new Promise<DonationRegisterResponse>((resolve) => {
-        setTimeout(() => resolve(mockDonationRegisterResponse), 800);
-      });
-    },
+    mutationFn: (data: DonationRegisterRequest) =>
+      createDonationRegister(data, token),
   });
 };
 
-// export const useGetMyQueue = (): UseQueryResult<GetMyQueueResponse, Error> => {
-//   return useQuery({
-//     queryKey: ["my-queue"],
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<GetMyQueueResponse>(
-//         `${donationEndpoint}my-queue`,
-//       );
-//       return response.data;
-//     },
-//   });
-// };
-
-// Mock implementation for fetching user's queue status (simulates API delay with timeout)
+// GET /api/donation/my-queue
 export const useGetMyQueue = (): UseQueryResult<GetMyQueueResponse, Error> => {
+  const user = useAuthStore((s) => s.user);
+  const token = user?.token;
+
   return useQuery({
-    queryKey: ["my-queue"],
-    queryFn: async () => {
-      // Return mock data
-      return new Promise<GetMyQueueResponse>((resolve) => {
-        setTimeout(() => resolve(mockGetMyQueueResponse), 500);
-      });
-    },
+    queryKey: ["my-queue", token],
+    queryFn: () => getMyQueue(token),
   });
 };

@@ -1,89 +1,47 @@
+"use client";
+
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { useGetCampaigns } from "@/hooks/use-campaign";
+import { ApiCampaign, CampaignType } from "@/definitions/campaign";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface Campaign {
-  id: string;
-  badge: string;
-  badgeVariant: "destructive" | "secondary" | "outline";
-  badgeBg: string;
-  image: string;
-  imageAlt: string;
-  title: string;
-  description: string;
-  ctaLabel: string;
-  ctaVariant: "default" | "outline";
+// ─── Badge style map ──────────────────────────────────────────────────────────
+const TYPE_STYLE: Record<string, { label: string; bg: string }> = {
+  blood:   { label: "Urgent",     bg: "bg-[#670017]" },
+  food:    { label: "Food Drive", bg: "bg-[#9c404b]" },
+  medical: { label: "Medical",    bg: "bg-[#512122]" },
+  shelter: { label: "Shelter",    bg: "bg-[#7a3b3b]" },
+};
+
+function getBadge(type: CampaignType) {
+  return TYPE_STYLE[type] ?? { label: String(type).toUpperCase(), bg: "bg-[#670017]" };
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-const CAMPAIGNS: Campaign[] = [
-  {
-    id: "blood-drive",
-    badge: "Urgent",
-    badgeVariant: "destructive",
-    badgeBg: "bg-[#670017]",
-    image:
-      "https://www.reuters.com/resizer/v2/LMJ272HLOVIAROEVUYC5HXH4SQ.jpg?auth=12ee5d46c850558bab4f6f63385994414f2d4cda6319c0f4e0442a73214a9aac",
-    imageAlt: "Cambodia–Thailand fighting photo",
-    title: "Blood Drive — Eastern Province Crisis Response",
-    description:
-      "Rapid mobilization required to support local hospitals facing unexpected shortages due to the recent environmental crisis.",
-    ctaLabel: "Donate Blood",
-    ctaVariant: "default",
-  },
-  {
-    id: "flood-relief",
-    badge: "Food Drive",
-    badgeVariant: "secondary",
-    badgeBg: "bg-[#9c404b]",
-    image:
-      "https://static01.nyt.com/images/2025/08/24/multimedia/24int-thailand-cambodia-wtk-htcj/24int-thailand-cambodia-wtk-htcj-videoSixteenByNine3000.jpg",
-    imageAlt: "Thailand–Cambodia border conflict photo",
-    title: "Flood Relief — Emergency Food & Drive",
-    description:
-      "Collecting non-perishable goods and essential clothing items for over 500 families displaced by recent coastal flooding.",
-    ctaLabel: "Fund Campaign",
-    ctaVariant: "outline",
-  },
-  {
-    id: "medical-supply",
-    badge: "Medical",
-    badgeVariant: "outline",
-    badgeBg: "bg-[#512122]",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDT48TfbjqlZGuqdWV_rnDe65L4VkoFlgwr3RlyNyKd4YuSlG1V7SgQ49liOhryEBsf3feYLBoidJY_ELX-imjfAYpN3ZOE7-NgGjsUxrS2P_oVK3Qy2Q7HVaNWVBVrBVH7Fa7BPQSjK0ob97YLE8fQsYseUOx3Ib4bt9-YV_oh_ShvSTpYPZaYpfvmNDclv6PyYvetZ0G616AADPuaaYOoIfT39HxBxQesMkmlWeNqmEFI02zNNGhu8GtmJH1QznYtpKPM8Yn5HDkV",
-    imageAlt: "Medical clinic",
-    title: "Pediatric Ward Medical Supply Campaign",
-    description:
-      "Securing essential surgical equipment and specialized pediatric care supplies for rural community health centers.",
-    ctaLabel: "Donate Now",
-    ctaVariant: "default",
-  },
-];
+const FALLBACK =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuDvEt4cyjY8lo7JAcR6D8jTc2oInWzBTNak0cxeiArO3-Jo4ypcH1QZ7uuU0VZrnFuCtimi6rPwVF0e7pt9IUQrJt9obUyIYrba25VEkQq5gsB0vkbmVIqZ-2rggmWDy3eHpUoUYzfKnD-n-K0q7fg5YZUt7HZq_3E4_V4FDfDylkJeTt8Ddf78BkCd6PFOduxh6iOxOcu5KbBYOkX97Noc0dQaAJdxHIrXua3MqGzhEc2v5qEUTUhZeFk9qS9zIZP3VGSr1ZOV-KEm";
 
 // ─── Campaign Card ─────────────────────────────────────────────────────────────
-function CampaignCard({ campaign }: { campaign: Campaign }) {
+function CampaignCard({ campaign }: { campaign: ApiCampaign }) {
+  const badge  = getBadge(campaign.campaign_type);
+  const imgSrc = campaign.image_url || FALLBACK;
+
   return (
     <Card className="group overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col border-[#e0bfbf]/30 bg-white rounded-xl">
       {/* Image */}
       <div className="h-64 overflow-hidden relative">
-        <img
-          src={campaign.image}
-          alt={campaign.imageAlt}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        <Image
+          src={imgSrc}
+          alt={campaign.title}
+          fill
+          className="object-cover group-hover:scale-110 transition-transform duration-700"
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         <div className="absolute top-4 left-4">
-          <Badge
-            className={`${campaign.badgeBg} text-white text-[10px] font-bold uppercase tracking-widest border-0`}
-          >
-            {campaign.badge}
+          <Badge className={`${badge.bg} text-white text-[10px] font-bold uppercase tracking-widest border-0`}>
+            {badge.label}
           </Badge>
         </div>
       </div>
@@ -93,21 +51,30 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
         <h3 className="text-2xl font-serif font-semibold mb-4 text-[#1c1b1f] leading-snug">
           {campaign.title}
         </h3>
-        <p className="text-[#584141] text-sm flex-grow leading-relaxed font-sans">
+        <p className="text-[#584141] text-sm flex-grow leading-relaxed font-sans line-clamp-2">
           {campaign.description}
         </p>
+        {/* Progress bar */}
+        <div className="mt-4">
+          <div className="flex justify-between text-xs font-sans text-[#584141] mb-1">
+            <span className="font-bold text-[#670017]">{Math.min(campaign.progress_percent, 100)}%</span>
+            <span>{campaign.current_amount.toLocaleString()} / {campaign.target_amount.toLocaleString()}</span>
+          </div>
+          <div className="w-full h-1.5 bg-[#f1ecf2] rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full"
+              style={{
+                width: `${Math.min(campaign.progress_percent, 100)}%`,
+                background: "linear-gradient(to right, #670017, #8c1127)",
+              }}
+            />
+          </div>
+        </div>
       </CardContent>
 
       <CardFooter className="px-8 pb-8 pt-4">
-        <Button
-          variant={campaign.ctaVariant}
-          className={
-            campaign.ctaVariant === "default"
-              ? "w-full rounded-full bg-[#670017] hover:bg-[#8c1127] text-white font-bold font-sans"
-              : "w-full rounded-full border-[#e0bfbf] text-[#670017] hover:bg-[#ffdada] font-bold font-sans"
-          }
-        >
-          {campaign.ctaLabel}
+        <Button className="w-full rounded-full bg-[#670017] hover:bg-[#8c1127] text-white font-bold font-sans">
+          Donate Now
         </Button>
       </CardFooter>
     </Card>
@@ -116,10 +83,13 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 export function EmergencyCampaigns() {
+  const { data, isLoading } = useGetCampaigns();
+  const campaigns = (data?.campaigns ?? []).slice(0, 3);
+
   return (
     <section className="py-24 bg-[#fdf8fd]">
       <div className="max-w-screen-2xl mx-auto px-6 lg:px-20">
-        {/* Header row */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <span className="text-[#670017] font-bold uppercase tracking-[0.15em] text-xs mb-4 block font-sans">
@@ -136,12 +106,30 @@ export function EmergencyCampaigns() {
           </p>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {CAMPAIGNS.map((campaign) => (
-            <CampaignCard key={campaign.id} campaign={campaign} />
-          ))}
-        </div>
+        {/* Loading skeleton */}
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl overflow-hidden bg-white shadow-sm animate-pulse">
+                <div className="h-64 bg-[#f1ecf2]" />
+                <div className="p-8 space-y-3">
+                  <div className="h-5 bg-[#f1ecf2] rounded w-3/4" />
+                  <div className="h-4 bg-[#f1ecf2] rounded w-full" />
+                  <div className="h-4 bg-[#f1ecf2] rounded w-5/6" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Cards */}
+        {!isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {campaigns.map((c) => (
+              <CampaignCard key={c.id} campaign={c} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

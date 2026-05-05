@@ -65,7 +65,7 @@ export const INITIAL_FORM_DATA: DonorFormData = {
   password: "",
   bloodType: "O+",
   dob: "",
-  location_id: "loc-uuid-1234",
+  location_id: "",
   visitDate: "",
   answers: {},
 };

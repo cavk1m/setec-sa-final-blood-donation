@@ -8,11 +8,15 @@ import { axiosInstance } from "@/lib/axios-instance";
 
 export const createDonationRegister = async (
   data: DonationRegisterRequest,
+  token?: string,
 ): Promise<DonationRegisterResponse> => {
   try {
     const response = await axiosInstance.post<DonationRegisterResponse>(
-      `${donationEndpoint}register`,
+      `${donationEndpoint.slice(0, -1)}/register`,
       data,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
     );
     return response.data;
   } catch (error) {
@@ -21,10 +25,13 @@ export const createDonationRegister = async (
   }
 };
 
-export const getMyQueue = async (): Promise<GetMyQueueResponse> => {
+export const getMyQueue = async (token?: string): Promise<GetMyQueueResponse> => {
   try {
     const response = await axiosInstance.get<GetMyQueueResponse>(
-      `${donationEndpoint}my-queue`,
+      `${donationEndpoint.slice(0, -1)}/my-queue`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
     );
     return response.data;
   } catch (error) {

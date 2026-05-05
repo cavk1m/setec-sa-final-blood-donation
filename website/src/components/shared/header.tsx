@@ -406,6 +406,24 @@ function UserAvatar({ scrolled }: { scrolled: boolean }) {
                 My Queue
               </Link>
 
+              <Link
+                href="/my-certificates"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-[#1c1b1f] hover:bg-[#ffdada]/50 hover:text-[#670017] transition-colors font-sans"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  className="w-4 h-4"
+                >
+                  <path d="M5 3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5z" />
+                  <path d="M7 7h6M7 11h6M7 15h4" />
+                </svg>
+                My Certificates
+              </Link>
+
               <Separator className="my-1" />
 
               <button

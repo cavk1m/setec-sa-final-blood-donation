@@ -1,10 +1,10 @@
 "use client";
 
 import { LocationCard } from "./location-card";
-import { LocationCenter } from "./types";
+import { ApiLocation } from "./types";
 
 interface LocationsGridProps {
-  centers: LocationCenter[];
+  centers: ApiLocation[];
   onRegister: (id: string) => void;
 }
 
@@ -61,6 +61,24 @@ export function LocationsGrid({ centers, onRegister }: LocationsGridProps) {
           />
         ))}
       </div>
+
+      {centers.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#e0bfbf"
+            strokeWidth="1.5"
+            className="w-16 h-16 mb-4"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <p className="font-sans text-[#584141]/60 text-lg">
+            No locations found for this category.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

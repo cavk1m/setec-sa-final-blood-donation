@@ -43,7 +43,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
 
               <span
                 className={cn(
-                  "text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-colors font-sans",
+                  "text-[9px] font-bold uppercase tracking-wider text-center max-w-[60px] leading-tight transition-colors font-sans",
                   active
                     ? "text-[#670017]"
                     : done
@@ -57,7 +57,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
 
             {/* Connector line */}
             {idx < REGISTRATION_STEPS.length - 1 && (
-              <div className="relative mx-3 mb-5 w-14 md:w-20 h-0.5 rounded-full bg-[#e0bfbf] overflow-hidden">
+              <div className="relative mx-2 self-start mt-[17px] w-8 sm:w-12 md:w-16 h-0.5 rounded-full bg-[#e0bfbf] overflow-hidden">
                 <div
                   className="absolute inset-y-0 left-0 bg-[#670017] transition-all duration-500 ease-out"
                   style={{ width: current > step.id ? "100%" : "0%" }}
