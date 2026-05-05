@@ -77,3 +77,58 @@ export const CAMPAIGNS: Campaign[] = [
     filter: "medical",
   },
 ];
+
+// ─── API Types (Backend → /api/campaigns) ────────────────────────────────────
+
+export type CampaignType = "blood" | "food" | "medical" | "shelter" | string;
+
+/** Shape returned by the backend for each campaign */
+export interface ApiCampaign {
+  id: string;
+  title: string;
+  description: string;
+  target_amount: number;
+  current_amount: number;
+  image_url: string;
+  campaign_type: CampaignType;
+  progress_percent: number;  // server-computed: current/target * 100
+  created_at: string;        // ISO datetime string
+}
+
+// GET /api/campaigns  – public, no auth required
+export interface GetCampaignsResponse {
+  campaigns: ApiCampaign[];
+}
+
+// POST /api/campaigns  – admin only (bearer JWT)
+export interface CreateCampaignRequest {
+  title: string;
+  description: string;
+  target_amount: number;
+  image_url?: string;
+  campaign_type?: CampaignType;
+}
+
+export interface CreateCampaignResponse {
+  message: string;
+  campaign: Pick<ApiCampaign, "id" | "title" | "target_amount" | "current_amount" | "image_url" | "campaign_type">;
+}
+
+// PUT /api/campaigns/{id}  – admin only
+export interface UpdateCampaignRequest {
+  title?: string;
+  description?: string;
+  target_amount?: number;
+  image_url?: string;
+  campaign_type?: CampaignType;
+}
+
+export interface UpdateCampaignResponse {
+  message: string;
+  campaign: Pick<ApiCampaign, "id" | "title" | "target_amount" | "image_url" | "campaign_type">;
+}
+
+// DELETE /api/campaigns/{id}  – admin only
+export interface DeleteCampaignResponse {
+  message: string;
+}

@@ -58,8 +58,32 @@ public class CertificateController {
             @PathVariable String id,
             HttpServletRequest request) {
         try {
-            UUID userId = (UUID) request.getAttribute("currentUserId");
-            certificates cert = certificateService.getCertificateById(id, userId.toString());
+            UUID currentUserId = (UUID) request.getAttribute("currentUserId");
+            
+            // Smart Multi-Stage Search
+            certificates cert = null;
+            try {
+                UUID searchUuid = UUID.fromString(id);
+                cert = certificateService.getCertificateByUuid(searchUuid);
+                if (cert == null) {
+                    cert = certificateService.getLatestCertificateByUserId(searchUuid);
+                }
+            } catch (Exception e) {
+                cert = certificateService.getCertificateByNumber(id);
+            }
+            
+            // Access Control
+            if (cert != null) {
+                org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                boolean isPrivileged = auth != null && auth.getAuthorities().stream()
+                    .anyMatch(a -> !a.getAuthority().equals("DONOR") && !a.getAuthority().equals("USER"));
+                
+                boolean isOwner = cert.getUser().getId().equals(currentUserId);
+                
+                if (!isPrivileged && !isOwner) {
+                    cert = null;
+                }
+            }
 
             if (cert == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
@@ -97,8 +121,32 @@ public class CertificateController {
             @PathVariable String id,
             HttpServletRequest request) {
         try {
-            UUID userId = (UUID) request.getAttribute("currentUserId");
-           certificates cert = certificateService.getCertificateById(id, userId.toString());
+            UUID currentUserId = (UUID) request.getAttribute("currentUserId");
+            
+            // Smart Multi-Stage Search
+            certificates cert = null;
+            try {
+                UUID searchUuid = UUID.fromString(id);
+                cert = certificateService.getCertificateByUuid(searchUuid);
+                if (cert == null) {
+                    cert = certificateService.getLatestCertificateByUserId(searchUuid);
+                }
+            } catch (Exception e) {
+                cert = certificateService.getCertificateByNumber(id);
+            }
+            
+            // Access Control
+            if (cert != null) {
+                org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                boolean isPrivileged = auth != null && auth.getAuthorities().stream()
+                    .anyMatch(a -> !a.getAuthority().equals("DONOR") && !a.getAuthority().equals("USER"));
+                
+                boolean isOwner = cert.getUser().getId().equals(currentUserId);
+                
+                if (!isPrivileged && !isOwner) {
+                    cert = null;
+                }
+            }
 
             if (cert == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
@@ -126,8 +174,32 @@ public class CertificateController {
             @PathVariable String id,
             HttpServletRequest request) {
         try {
-            UUID userId = (UUID) request.getAttribute("currentUserId");
-           certificates cert = certificateService.getCertificateById(id, userId.toString());
+            UUID currentUserId = (UUID) request.getAttribute("currentUserId");
+            
+            // Smart Multi-Stage Search
+            certificates cert = null;
+            try {
+                UUID searchUuid = UUID.fromString(id);
+                cert = certificateService.getCertificateByUuid(searchUuid);
+                if (cert == null) {
+                    cert = certificateService.getLatestCertificateByUserId(searchUuid);
+                }
+            } catch (Exception e) {
+                cert = certificateService.getCertificateByNumber(id);
+            }
+            
+            // Access Control
+            if (cert != null) {
+                org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                boolean isPrivileged = auth != null && auth.getAuthorities().stream()
+                    .anyMatch(a -> !a.getAuthority().equals("DONOR") && !a.getAuthority().equals("USER"));
+                
+                boolean isOwner = cert.getUser().getId().equals(currentUserId);
+                
+                if (!isPrivileged && !isOwner) {
+                    cert = null;
+                }
+            }
 
             if (cert == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(

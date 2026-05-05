@@ -44,7 +44,7 @@ export default function LocationPage() {
         hubType: index % 2 === 0 ? 'MAIN CAMPUS' : 'MOBILE HUB',
         status: loc.status || 'OPERATIONAL',
         lastActivity: `${Math.floor(Math.random() * 60)} mins ago`,
-        imageUrl: `https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800&sig=${loc.id}`
+        paymentQrUrl: loc.payment_qr_url
       }));
       
       setLocations(mappedLocations);
@@ -72,8 +72,9 @@ export default function LocationPage() {
       await deleteLocationApi(id);
       message.success('Location deleted successfully');
       fetchLocations();
-    } catch (error) {
-      message.error('Failed to delete location');
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || 'Failed to delete location';
+      message.error(errorMsg);
     }
   };
 

@@ -26,8 +26,13 @@ export interface UserItem {
   phone: string;
   address?: string;
   bloodType?: string;
-  role: "Admin" | "Donor" | "Organization";
+  role: "ADMIN" | "DONOR" | "RECIPIENT" | "STAFF" | "USER";
   joinedDate: string;
+  dateOfBirth?: string;
+  locationId?: string;
+  isActive?: boolean;
+  emailVerified?: boolean;
+  phoneVerified?: boolean;
   donationHistory?: { type: string; location: string; date: string }[];
   badges?: { label: string; sub: string; icon: string }[];
 }
@@ -36,6 +41,17 @@ const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
   Admin: { bg: "#ffdad6", color: "#ba1a1a" },
   Donor: { bg: "#dbeafe", color: "#1d4ed8" },
   Organization: { bg: "#dcfce7", color: "#15803d" },
+};
+
+const BLOOD_LABELS: Record<string, string> = {
+  "O_POSITIVE": "O+",
+  "O_NEGATIVE": "O-",
+  "A_POSITIVE": "A+",
+  "A_NEGATIVE": "A-",
+  "B_POSITIVE": "B+",
+  "B_NEGATIVE": "B-",
+  "AB_POSITIVE": "AB+",
+  "AB_NEGATIVE": "AB-",
 };
 
 interface UserDetailDrawerProps {
@@ -217,6 +233,78 @@ export default function UserDetailDrawer({
             </div>
           ))}
         </Space>
+
+        {/* Health Info */}
+        <Text
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+            color: "#94a3b8",
+            display: "block",
+            marginBottom: 14,
+          }}
+        >
+          Health Information
+        </Text>
+
+        <div
+          style={{
+            background: "#f8fafc",
+            borderRadius: 12,
+            padding: "16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 24,
+            border: "1px solid #f1f3ff",
+          }}
+        >
+          <Space size={12}>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                background: "#fee2e2",
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16,
+              }}
+            >
+              🩸
+            </div>
+            <div>
+              <Text style={{ fontSize: 10, color: "#94a3b8", display: "block" }}>
+                Blood Type
+              </Text>
+              <Text style={{ fontSize: 13, fontWeight: 700, color: "#ef4444" }}>
+                {user.bloodType ? (BLOOD_LABELS[user.bloodType] || user.bloodType) : "Not Specified"}
+              </Text>
+            </div>
+          </Space>
+          {user.dateOfBirth && (
+            <div>
+              <Text
+                style={{
+                  fontSize: 10,
+                  color: "#94a3b8",
+                  display: "block",
+                  textAlign: "right",
+                }}
+              >
+                Birth Date
+              </Text>
+              <Text
+                style={{ fontSize: 13, fontWeight: 600, display: "block" }}
+              >
+                {user.dateOfBirth}
+              </Text>
+            </div>
+          )}
+        </div>
 
         {/* Donation History */}
         {user.donationHistory && user.donationHistory.length > 0 && (

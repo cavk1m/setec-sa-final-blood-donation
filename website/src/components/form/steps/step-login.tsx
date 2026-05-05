@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useLogin } from "@/hooks/use-auth";
+import { useLogin, useGetProfile } from "@/hooks/use-auth";
 
 import { INPUT_CLS } from "@/definitions/register";
 import { getUserInfo, useAuthStore } from "@/hooks/zustand/use-auth-store";
@@ -44,7 +44,9 @@ export function StepLogin({
   const [password, setPassword] = useState("");
 
   const { mutate: login, isPending, error: loginError } = useLogin();
+  const { mutate: fetchProfile } = useGetProfile();
   const setUser = useAuthStore((s) => s.setUser);
+  const setProfile = useAuthStore((s) => s.setProfile);
 
   const handleSubmit = () => {
     if (!email || !password) return;
@@ -53,13 +55,15 @@ export function StepLogin({
       { email, password },
       {
         onSuccess: (response) => {
-          // LoginResponse: { userId, email, token, role }
-          // Store the user auth data
+          // 1. Store the basic auth data
           setUser(response);
 
-          // TODO: Fetch full profile using /api/auth/profile endpoint with the token
-          // For now, basic auth is stored. Profile endpoint should be called separately
-          // if additional fields like full_name, phone, profile_picture_url are needed.
+          // 2. Fetch full profile immediately so name shows in Navbar
+          fetchProfile(response.token, {
+            onSuccess: (profileRes) => {
+              setProfile(profileRes.user as any);
+            }
+          });
 
           onLoginSuccess();
         },

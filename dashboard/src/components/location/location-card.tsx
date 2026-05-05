@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Typography, Tag, Space } from "antd";
+import { Card, Typography, Tag, Space, Popconfirm } from "antd";
 import {
   EnvironmentOutlined,
   EditOutlined,
@@ -22,7 +22,7 @@ export interface LocationItem {
   hubType: "MAIN CAMPUS" | "MOBILE HUB";
   status: "OPERATIONAL" | "MAINTENANCE" | "OFFLINE";
   lastActivity: string;
-  imageUrl: string;
+  paymentQrUrl?: string | null;
 }
 
 const STATUS_CONFIG: Record<LocationItem["status"], { bg: string; color: string }> = {
@@ -58,7 +58,7 @@ export default function LocationCard({
       {/* Image Section */}
       <div style={{ position: 'relative', height: 180, overflow: 'hidden' }}>
         <img 
-          src={data.imageUrl} 
+          src={data.paymentQrUrl || 'https://via.placeholder.com/400x300?text=No+QR+Code'} 
           alt={data.name} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
         />
@@ -107,16 +107,24 @@ export default function LocationCard({
             >
               <EditOutlined style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14 }} />
             </div>
-            <div 
-              onClick={() => onDelete?.(data.id)}
-              style={{ 
-                width: 32, height: 32, borderRadius: 8, 
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(239, 68, 68, 0.05)', cursor: 'pointer', transition: 'all 0.2s'
-              }}
+            <Popconfirm
+              title="Delete location?"
+              description="Are you sure you want to delete this center?"
+              onConfirm={() => onDelete?.(data.id)}
+              okText="Yes, Delete"
+              cancelText="No"
+              okButtonProps={{ danger: true }}
             >
-              <DeleteOutlined style={{ color: '#ef4444', fontSize: 14 }} />
-            </div>
+              <div 
+                style={{ 
+                  width: 32, height: 32, borderRadius: 8, 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(239, 68, 68, 0.05)', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                <DeleteOutlined style={{ color: '#ef4444', fontSize: 14 }} />
+              </div>
+            </Popconfirm>
           </Space>
         </div>
 

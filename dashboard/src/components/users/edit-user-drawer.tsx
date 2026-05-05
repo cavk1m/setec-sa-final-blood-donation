@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
-import { Drawer, Form, Input, Select, Typography, Avatar } from "antd";
+import { useEffect, useState } from "react";
+import { Drawer, Form, Input, Select, Typography, Avatar, DatePicker, Switch, Divider } from "antd";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 import type { UserItem } from "./user-detail-drawer";
 import AppButton from "@/src/components/ui/app-button";
 import CircleButton from "@/src/components/ui/circle-button";
+import { getLocations, LocationData } from "@/src/features/location/location.api";
+import dayjs from "dayjs";
 
 const { Text, Title } = Typography;
 
@@ -21,7 +23,7 @@ interface EditUserDrawerProps {
   open: boolean;
   user: UserItem | null;
   onCancel: () => void;
-  onSave: (updated: UserItem) => void;
+  onSave: (updated: UserItem) => Promise<void>;
 }
 
 export default function EditUserDrawer({
@@ -31,6 +33,20 @@ export default function EditUserDrawer({
   onSave,
 }: EditUserDrawerProps) {
   const [form] = Form.useForm();
+  const [locations, setLocations] = useState<LocationData[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const data = await getLocations();
+        setLocations(data);
+      } catch (err) {
+        console.error("Failed to fetch locations", err);
+      }
+    };
+    fetchLocations();
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -41,31 +57,46 @@ export default function EditUserDrawer({
         address: user.address ?? "",
         role: user.role,
         bloodType: user.bloodType ?? undefined,
+        dateOfBirth: user.dateOfBirth ? dayjs(user.dateOfBirth) : undefined,
+        locationId: user.locationId,
+        isActive: user.isActive ?? true,
+        emailVerified: user.emailVerified ?? false,
+        phoneVerified: user.phoneVerified ?? false,
       });
     }
   }, [user, form]);
 
   if (!user) return null;
 
-  const handleSave = () => {
-    form.validateFields().then((values) => {
-      onSave({
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      if (!user) return;
+      
+      setLoading(true);
+
+      const updatedUser: UserItem = {
         ...user,
         fullName: values.fullName,
         email: values.email,
         phone: values.phone,
         address: values.address,
-        role: values.role,
         bloodType: values.bloodType,
-        initials: values.fullName
-          .split(" ")
-          .map((n: string) => n[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 2),
-      });
+        role: values.role,
+        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : undefined,
+        locationId: values.locationId,
+        isActive: values.isActive,
+        emailVerified: values.emailVerified,
+        phoneVerified: values.phoneVerified,
+      };
+
+      await onSave(updatedUser);
       onCancel();
-    });
+    } catch (error: any) {
+      console.error("Failed to save user:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -197,15 +228,52 @@ export default function EditUserDrawer({
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
           >
             <Form.Item
+              name="dateOfBirth"
+              label={<Text style={labelStyle}>Date of Birth</Text>}
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <DatePicker
+                placeholder="YYYY-MM-DD"
+                style={{
+                  width: "100%",
+                  borderRadius: 999,
+                  background: "#f8fafc",
+                  border: "1px solid #e3e8f9",
+                  height: 44,
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="locationId"
+              label={<Text style={labelStyle}>Assigned Location</Text>}
+            >
+              <Select
+                placeholder="Select location"
+                allowClear
+                options={locations.map((loc) => ({
+                  value: loc.id,
+                  label: loc.name,
+                }))}
+              />
+            </Form.Item>
+          </div>
+
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+          >
+            <Form.Item
               name="role"
               label={<Text style={labelStyle}>Role</Text>}
               rules={[{ required: true, message: "Required" }]}
             >
               <Select
                 options={[
-                  { value: "Donor", label: "Donor" },
-                  { value: "Admin", label: "Admin" },
-                  { value: "Organization", label: "Organization" },
+                  { value: "ADMIN", label: "Admin" },
+                  { value: "DONOR", label: "Donor" },
+                  { value: "RECIPIENT", label: "Recipient" },
+                  { value: "STAFF", label: "Staff" },
+                  { value: "USER", label: "User" },
                 ]}
               />
             </Form.Item>
@@ -217,9 +285,16 @@ export default function EditUserDrawer({
               <Select
                 placeholder="N/A"
                 allowClear
-                options={["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map(
-                  (t) => ({ value: t, label: t }),
-                )}
+                options={[
+                  { value: "A_POSITIVE", label: "A+" },
+                  { value: "A_NEGATIVE", label: "A-" },
+                  { value: "B_POSITIVE", label: "B+" },
+                  { value: "B_NEGATIVE", label: "B-" },
+                  { value: "O_POSITIVE", label: "O+" },
+                  { value: "O_NEGATIVE", label: "O-" },
+                  { value: "AB_POSITIVE", label: "AB+" },
+                  { value: "AB_NEGATIVE", label: "AB-" },
+                ]}
               />
             </Form.Item>
           </div>
@@ -240,6 +315,31 @@ export default function EditUserDrawer({
               }}
             />
           </Form.Item>
+
+          <Divider style={{ margin: "24px 0 16px" }} />
+          
+          <Text style={{ ...labelStyle, display: 'block', marginBottom: 16 }}>Account Status & Verification</Text>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+            <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 12, border: '1px solid #f1f3ff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 13, fontWeight: 600 }}>Account Active</Text>
+              <Form.Item name="isActive" valuePropName="checked" noStyle>
+                <Switch size="small" />
+              </Form.Item>
+            </div>
+            <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 12, border: '1px solid #f1f3ff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 13, fontWeight: 600 }}>Email Verified</Text>
+              <Form.Item name="emailVerified" valuePropName="checked" noStyle>
+                <Switch size="small" />
+              </Form.Item>
+            </div>
+            <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: 12, border: '1px solid #f1f3ff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gridColumn: 'span 2' }}>
+              <Text style={{ fontSize: 13, fontWeight: 600 }}>Phone Verified</Text>
+              <Form.Item name="phoneVerified" valuePropName="checked" noStyle>
+                <Switch size="small" />
+              </Form.Item>
+            </div>
+          </div>
 
           {/* Read-only system info */}
           <div

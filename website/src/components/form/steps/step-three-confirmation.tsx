@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { RegisterResponse } from "@/definitions/register";
+import { DonationRegisterResponse } from "@/definitions/donation";
 
 interface Step3ConfirmationProps {
-  result: RegisterResponse;
+  result: DonationRegisterResponse;
   onReset: () => void;
 }
 
@@ -23,11 +23,13 @@ function formatDate(iso: string) {
 
 export function Step3Confirmation({ result, onReset }: Step3ConfirmationProps) {
   const { queue } = result;
-  const queueLabel = `Q-${String(queue.queue_number).padStart(3, "0")}`;
+  const queueLabel = queue.queue_number;
+  const locationName = queue.location?.name ?? "—";
+  const locationAddress = queue.location?.address ?? "—";
 
   const details = [
-    { label: "Location", value: queue.location.name },
-    { label: "Address", value: queue.location.address },
+    { label: "Location", value: locationName },
+    { label: "Address", value: locationAddress },
     { label: "Date", value: formatDate(queue.created_at) },
     {
       label: "Status",
@@ -91,7 +93,7 @@ export function Step3Confirmation({ result, onReset }: Step3ConfirmationProps) {
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          {queue.location.name} · {formatDate(queue.created_at)}
+          {locationName} · {formatDate(queue.created_at)}
         </div>
       </div>
 

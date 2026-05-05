@@ -30,14 +30,20 @@ export const deleteUser = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/api/users/${id}`);
 };
 
-/** PUT /api/users/{id} */
+/** PUT /api/admin/users/{id} */
 export const updateUser = async (id: string, data: any): Promise<any> => {
-  const response = await axiosInstance.put(`/api/users/${id}`, data);
+  const response = await axiosInstance.put(`/api/admin/users/${id}`, data);
   return response.data.user;
 };
 
-/** POST /api/users */
+/** PUT /api/admin/users/create */
 export const createUser = async (data: any): Promise<any> => {
-  const response = await axiosInstance.post("/api/users", data);
+  const response = await axiosInstance.post("/api/admin/users/create", data);
   return response.data.user;
+};
+
+/** PUT /api/admin/users/{id}/role */
+export const updateUserRole = async (id: string, role: string): Promise<any> => {
+  const response = await axiosInstance.put(`/api/admin/users/${id}/role`, { role });
+  return response.data;
 };

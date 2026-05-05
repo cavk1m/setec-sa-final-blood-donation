@@ -1,26 +1,26 @@
-// components/campaigns-page/CampaignsGrid.tsx
-
-import { Campaign } from "@/definitions/campaign";
+import { ApiCampaign } from "@/definitions/campaign";
 import { CampaignCard } from "./campaign-card";
-// import { Campaign } from "@/definitions/campaigns";
 
 interface CampaignsGridProps {
-  campaigns: Campaign[];
+  campaigns: ApiCampaign[];
   onDonate: (id: string) => void;
-  onVolunteer: (id: string) => void;
   onShare: (id: string) => void;
 }
 
-export function CampaignsGrid({
-  campaigns,
-  onDonate,
-  onVolunteer,
-  onShare,
-}: CampaignsGridProps) {
+export function CampaignsGrid({ campaigns, onDonate, onShare }: CampaignsGridProps) {
   if (campaigns.length === 0) {
     return (
-      <div className="text-center py-24 text-[#584141] font-sans">
-        <p className="text-lg font-medium">
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#e0bfbf"
+          strokeWidth="1.5"
+          className="w-16 h-16 mb-4"
+        >
+          <path d="M12 2C8.5 7 4 10.5 4 15a8 8 0 0 0 16 0c0-4.5-4.5-8-8-13z" />
+        </svg>
+        <p className="text-lg font-medium text-[#584141] font-sans">
           No campaigns found for this filter.
         </p>
       </div>
@@ -34,7 +34,6 @@ export function CampaignsGrid({
           key={campaign.id}
           campaign={campaign}
           onDonate={onDonate}
-          onVolunteer={onVolunteer}
           onShare={onShare}
         />
       ))}

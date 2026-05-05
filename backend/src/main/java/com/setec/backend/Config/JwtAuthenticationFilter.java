@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -68,22 +70,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 var user = userService.getUserByEmail(userEmail);
 
                 if (user != null && jwtService.validateToken(jwt, user)) {
-                    // Map role to SimpleGrantedAuthority (Spring expects ROLE_ prefix for hasRole)
-                    String roleName = user.getRole() != null ? user.getRole().toString() : "USER";
-                    var authorities = java.util.List.of(
-                            new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + roleName));
-
-                    // Create UserDetails-like object for Spring Security
-                    UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                            .username(user.getEmail())
-                            .password(user.getPasswordHash() != null ? user.getPasswordHash() : "")
-                            .authorities(authorities)
-                            .accountExpired(false)
-                            .accountLocked(!user.getIsActive())
-                            .credentialsExpired(false)
-                            .disabled(!user.getIsActive())
-                            .build();
-
+                     // Create UserDetails-like object for Spring Security
+                     UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+                             .username(user.getEmail())
+                             .password(user.getPasswordHash() != null ? user.getPasswordHash() : "")
+                            //  .authorities(new ArrayList<>()) // You can add roles here if needed
+                                    .authorities(user.getRole() != null ? 
+            List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(user.getRole().name())) : 
+            new ArrayList<>())
+                             .accountExpired(false)
+                             .accountLocked(!user.getIsActive())
+                             .credentialsExpired(false)
+                             .disabled(!user.getIsActive())
+                             .build();
+                    
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

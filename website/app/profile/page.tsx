@@ -8,707 +8,328 @@ import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { getUserInfo, useAuthStore } from "@/hooks/zustand/use-auth-store";
+import { useAuthStore } from "@/hooks/zustand/use-auth-store";
 import {
   useUpdateProfile,
   useGetProfile,
   useUploadProfilePicture,
   useChangePassword,
 } from "@/hooks/use-auth";
-import { cn } from "@/lib/utils";
+
+// Helper to resolve profile picture URLs
+const resolveImageUrl = (path: string | null | undefined) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  if (path.startsWith("data:")) return path; 
+  
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8081";
+  
+  let cleanPath = path;
+  if (cleanPath.startsWith("/uploads/")) {
+    cleanPath = cleanPath.substring(9);
+  }
+  if (cleanPath.startsWith("profiles/")) {
+    cleanPath = cleanPath.substring(9);
+  }
+  
+  return `${baseUrl}/api/users/uploads/${cleanPath}`;
+};
 
 export default function ProfilePage() {
   const router = useRouter();
+  
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
   const setProfile = useAuthStore((s) => s.setProfile);
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  // Form state
   const [isEditing, setIsEditing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Form state
-  const [fullName, setFullName] = useState(profile?.full_name || "");
-  const [phone, setPhone] = useState(profile?.phone || "");
-  const [bloodType, setBloodType] = useState(profile?.blood_type || "");
-  const [dateOfBirth, setDateOfBirth] = useState(profile?.date_of_birth || "");
-  const [profilePictureUrl, setProfilePictureUrl] = useState(
-    profile?.profile_picture_url || "",
-  );
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bloodType, setBloodType] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [profilePictureUrl, setProfilePictureUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // API mutation
   const { mutate: updateProfileMutation, isPending } = useUpdateProfile();
-  const { mutate: fetchProfile, isPending: isFetchingProfile } =
-    useGetProfile();
-  const { mutate: uploadPictureMutation, isPending: isUploadingPicture } =
-    useUploadProfilePicture();
+  const { mutate: fetchProfile, isPending: isFetching } = useGetProfile();
+  const { mutate: uploadPictureMutation, isPending: isUploadingPicture } = useUploadProfilePicture();
 
-  // Profile picture upload state
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>(profilePictureUrl);
+  // Sync local state when profile changes (e.g. after hydration or update)
+  useEffect(() => {
+    if (profile) {
+      const combinedName = profile.full_name || `${profile.first_name || ""} ${profile.last_name || ""}`.trim();
+      setFullName(combinedName || "");
+      setPhone(profile.phone || "");
+      setBloodType(profile.blood_type || "");
+      setDateOfBirth(profile.date_of_birth || "");
+      setProfilePictureUrl(profile.profile_picture_url || "");
+      setPreviewUrl(resolveImageUrl(profile.profile_picture_url));
+    }
+  }, [profile]);
 
-  // Password change state
+  // Handle Hydration
+  useEffect(() => {
+    const unsub = useAuthStore.persist.onFinishHydration(() => setHasHydrated(true));
+    if (useAuthStore.persist.hasHydrated()) setHasHydrated(true);
+    return () => unsub();
+  }, []);
+
+  // Auth Redirect
+  useEffect(() => {
+    if (hasHydrated && !user) router.push("/");
+  }, [hasHydrated, user, router]);
+
+  // Initial Fetch
+  useEffect(() => {
+    if (user?.token) {
+      fetchProfile(user.token, {
+        onSuccess: (res) => {
+          const freshProfile = {
+            full_name: res.user.full_name,
+            first_name: res.user.first_name,
+            last_name: res.user.last_name,
+            email: res.user.email,
+            phone: res.user.phone,
+            date_of_birth: res.user.date_of_birth,
+            blood_type: res.user.blood_type,
+            profile_picture_url: res.user.profile_picture_url,
+          };
+          setProfile(freshProfile as any);
+        },
+      });
+    }
+  }, [user?.token]);
+
+  // Account security
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
+  const { mutate: changePasswordMutation, isPending: isChangingPasswordPending } = useChangePassword();
 
-  const {
-    mutate: changePasswordMutation,
-    isPending: isChangingPasswordPending,
-  } = useChangePassword();
-
-  const handleChangePassword = () => {
-    setPasswordError(null);
-    setPasswordSuccess(null);
-
-    if (!currentPassword.trim()) {
-      setPasswordError("Current password is required.");
-      return;
-    }
-    if (!newPassword.trim()) {
-      setPasswordError("New password is required.");
-      return;
-    }
-    if (newPassword.length < 6) {
-      setPasswordError("New password must be at least 6 characters.");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match.");
-      return;
-    }
-
-    const userToken = user?.token;
-    if (!userToken) {
-      setPasswordError("Authentication token missing.");
-      return;
-    }
-
-    changePasswordMutation(
-      {
-        data: {
-          current_password: currentPassword,
-          new_password: newPassword,
-        },
-        token: userToken,
-      },
-      {
-        onSuccess: (response) => {
-          setPasswordSuccess(
-            response.message || "Password changed successfully!",
-          );
-          setCurrentPassword("");
-          setNewPassword("");
-          setConfirmPassword("");
-          setIsChangingPassword(false);
-
-          setTimeout(() => {
-            setPasswordSuccess(null);
-          }, 3000);
-        },
-        onError: (error: any) => {
-          const errorMsg =
-            error?.response?.data?.message ||
-            error?.message ||
-            "Failed to change password.";
-          setPasswordError(errorMsg);
-        },
-      },
-    );
-  };
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/");
-      return;
-    }
-
-    // Fetch the full profile data when user changes (login/registration)
-    if (user.token) {
-      fetchProfile(user.token, {
-        onSuccess: (response) => {
-          console.log("Profile fetched:", response);
-
-          // ✅ FIX: Extract from response.user and use snake_case
-          const mappedProfile = {
-            full_name: response.user.full_name,
-            email: response.user.email,
-            phone: response.user.phone,
-            date_of_birth: response.user.date_of_birth,
-            profile_picture_url: response.user.profile_picture_uri, // ← Note: backend uses profile_picture_uri
-          };
-
-          setProfile(mappedProfile as any);
-          setFullName(response.user.full_name || "");
-          setPhone(response.user.phone || "");
-          setDateOfBirth(response.user.date_of_birth || "");
-
-          setPreviewUrl(response.user.profile_picture_uri || "");
-        },
-        onError: (error: any) => {
-          console.error("Failed to fetch profile:", error);
-        },
-      });
-    }
-  }, [user, router]); // ← Remove fetchProfile and setProfile
-
-  useEffect(() => {
-    if (profile?.profile_picture_url) {
-      setProfilePictureUrl(profile.profile_picture_url);
-      setPreviewUrl(profile.profile_picture_url);
-    }
-  }, [profile?.profile_picture_url]);
-
-  // const handleSaveProfile = () => {
-  //   setErrorMessage(null);
-  //   setSuccessMessage(null);
-
-  //   const userToken = user?.token;
-  //   if (!userToken) {
-  //     setErrorMessage("Authentication token missing. Please log in again.");
-  //     return;
-  //   }
   const handleSaveProfile = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    // ✅ ADD THIS VALIDATION
-    if (!fullName.trim()) {
-      setErrorMessage("Full name is required.");
+    if (!fullName.trim() || !phone.trim() || !bloodType) {
+      setErrorMessage("Please fill in all required fields.");
       return;
     }
 
-    if (!phone.trim()) {
-      setErrorMessage("Phone number is required.");
-      return;
-    }
+    if (!user?.token) return;
 
-    // ✅ ADD THIS VALIDATION FOR BLOOD TYPE
-    if (!bloodType || bloodType === "") {
-      setErrorMessage("Please select a blood type.");
-      return;
-    }
-
-    const userToken = user?.token;
-    if (!userToken) {
-      setErrorMessage("Authentication token missing. Please log in again.");
-      return;
-    }
-
-    // If there's a file to upload, upload it first
-    if (selectedFile) {
-      uploadPictureMutation(
-        { file: selectedFile, token: userToken },
-        {
-          onSuccess: (response) => {
-            // Update profile picture URL
-            setProfilePictureUrl(response.profilePictureUrl);
-            setPreviewUrl(response.profilePictureUrl);
-
-            if (user?.token) {
-              fetchProfile(user.token, {
-                onSuccess: (profileResponse) => {
-                  console.log("🔍 fetchProfile response:", profileResponse);
-                  console.log(
-                    "🔍 profile_picture_uri:",
-                    profileResponse.user.profile_picture_uri,
-                  );
-                  const updatedProfile = {
-                    full_name: profileResponse.user.full_name,
-                    email: profileResponse.user.email,
-                    phone: profileResponse.user.phone,
-                    date_of_birth: profileResponse.user.date_of_birth,
-                    profile_picture_url:
-                      profileResponse.user.profile_picture_uri,
-                  };
-                  // ✅ Make sure this updates the store (triggers localStorage)
-                  setProfile(updatedProfile as any);
-
-                  // ✅ Also sync local state
-                  setPreviewUrl(profileResponse.user.profile_picture_uri || "");
-                  setProfilePictureUrl(
-                    profileResponse.user.profile_picture_uri || "",
-                  );
-                },
-              });
-            }
-
-            // Then update other profile fields
-            updateProfileMutation(
-              {
-                data: {
-                  full_name: fullName,
-                  phone: phone,
-                  blood_type: bloodType as any,
-                },
-                token: userToken,
-              },
-              {
-                onSuccess: (response) => {
-                  setSuccessMessage(
-                    response.message || "Profile updated successfully!",
-                  );
-                  setIsEditing(false);
-                  setSelectedFile(null);
-
-                  setTimeout(() => {
-                    setSuccessMessage(null);
-                  }, 3000);
-                },
-                onError: (error: any) => {
-                  const errorMsg =
-                    error?.response?.data?.message ||
-                    error?.message ||
-                    "Failed to update profile. Please try again.";
-                  setErrorMessage(errorMsg);
-                },
-              },
-            );
-          },
-          onError: (error: any) => {
-            const errorMsg =
-              error?.response?.data?.message ||
-              error?.message ||
-              "Failed to upload profile picture. Please try again.";
-            setErrorMessage(errorMsg);
-          },
-        },
-      );
-    } else {
-      // No file upload, just update profile fields
+    const performUpdate = (picPath?: string) => {
       updateProfileMutation(
         {
-          data: {
-            full_name: fullName,
-            phone: phone,
-            blood_type: bloodType as any,
-          },
-          token: userToken,
+          data: { full_name: fullName, phone: phone, blood_type: bloodType as any },
+          token: user.token,
         },
         {
-          onSuccess: (response) => {
+          onSuccess: (res) => {
+            // Update store with new values
             setProfile({
               ...profile,
               full_name: fullName,
               phone: phone,
               blood_type: bloodType,
+              profile_picture_url: picPath || profilePictureUrl,
             } as any);
-
-            setSuccessMessage(
-              response.message || "Profile updated successfully!",
-            );
+            
+            setSuccessMessage("Profile updated successfully!");
             setIsEditing(false);
-
-            setTimeout(() => {
-              setSuccessMessage(null);
-            }, 3000);
+            setTimeout(() => setSuccessMessage(null), 3000);
           },
-          onError: (error: any) => {
-            const errorMsg =
-              error?.response?.data?.message ||
-              error?.message ||
-              "Failed to update profile. Please try again.";
-            setErrorMessage(errorMsg);
-          },
-        },
+          onError: (err: any) => setErrorMessage(err?.response?.data?.message || "Failed to update profile."),
+        }
       );
-    }
-  };
+    };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const fileInput = document.getElementById("profile-upload") as HTMLInputElement;
+    const file = fileInput?.files?.[0];
+
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        setErrorMessage("Please select a valid image file.");
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrorMessage("File size must be less than 5MB.");
-        return;
-      }
-
-      setSelectedFile(file);
-      setErrorMessage(null);
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewUrl(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      uploadPictureMutation(
+        { file, token: user.token },
+        {
+          onSuccess: (res) => {
+            const uploadedUrl = res.profile_picture_url;
+            setProfilePictureUrl(uploadedUrl);
+            setPreviewUrl(resolveImageUrl(uploadedUrl));
+            performUpdate(uploadedUrl);
+          },
+          onError: (err: any) => setErrorMessage(err?.response?.data?.message || "Image upload failed."),
+        }
+      );
+    } else {
+      performUpdate();
     }
   };
+
+  if (!hasHydrated) return null; // Wait for hydration silently
+
+  if (!user) return null;
 
   const handleLogout = () => {
     clearAuth();
     router.push("/");
   };
 
-  if (!user) {
-    return null;
-  }
-
-  const displayName = profile?.full_name || user.email || "User";
-  const initials = profile?.full_name
-    ? profile.full_name
-        .split(" ")
-        .slice(0, 2)
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-    : user.email?.[0]?.toUpperCase() || "U";
+  const displayName = fullName || user.email || "User";
+  const initials = displayName.split(" ").slice(0, 2).map(n => n[0]).join("").toUpperCase() || "U";
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-[#f5f1f3] via-white to-[#faf7f9]">
-      {/* Header spacing for fixed navbar */}
-      <div className="h-24" />
-
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Profile Header Card */}
-        <Card className="border-0 shadow-lg mb-6 bg-white/80 backdrop-blur-sm">
-          <CardHeader className="pb-0">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-6">
-                {/* Avatar with upload overlay */}
+    <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="h-20" />
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <Card className="border-none shadow-sm overflow-hidden rounded-3xl bg-white/80 backdrop-blur-md">
+          <div className="h-32 bg-linear-to-r from-[#670017] to-[#a0112c]" />
+          <CardContent className="relative pt-0 pb-8 px-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between -mt-16 mb-8 gap-6">
+              <div className="flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
                 <div className="relative group">
-                  {previewUrl ? (
-                    <img
-                      src={previewUrl}
-                      alt={displayName}
-                      className="w-24 h-24 rounded-full object-cover border-4 border-[#670017]"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-linear-to-br from-[#670017] to-[#8c1127] flex items-center justify-center border-4 border-[#670017]">
-                      <span className="text-3xl font-black text-white">
-                        {initials}
-                      </span>
-                    </div>
-                  )}
-
-                  <label className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="2"
-                      className="w-6 h-6"
-                    >
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="17 8 12 3 7 8" />
-                      <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-
-                <div>
-                  <h1 className="text-3xl font-serif italic font-bold text-[#670017] mb-1">
-                    {displayName}
-                  </h1>
-                  <p className="text-gray-600 mb-3">{user.email}</p>
-                  {selectedFile && isEditing && (
-                    <p className="text-xs text-green-600 mb-2 font-medium">
-                      ✓ New image selected: {selectedFile.name}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span className="inline-block text-xs font-bold uppercase tracking-wider bg-[#670017]/10 text-[#670017] px-3 py-1 rounded-full">
-                      {user.role || "DONOR"}
-                    </span>
+                  <div className="w-32 h-32 rounded-full border-4 border-white bg-[#f7f2f8] shadow-lg overflow-hidden flex items-center justify-center">
+                    {previewUrl ? (
+                      <img src={previewUrl} alt={displayName} className="w-full h-full object-cover" onError={() => setPreviewUrl(null)} />
+                    ) : (
+                      <span className="text-4xl font-black text-[#670017]">{initials}</span>
+                    )}
                   </div>
+                  {isEditing && (
+                    <label className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center cursor-pointer hover:bg-[#f8f9fa] transition-all border border-gray-100 transform hover:scale-110">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#670017" strokeWidth="2.5" className="w-5 h-5">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                      <input id="profile-upload" type="file" className="hidden" accept="image/*" onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => setPreviewUrl(ev.target?.result as string);
+                          reader.readAsDataURL(file);
+                        }
+                      }} />
+                    </label>
+                  )}
+                </div>
+                <div className="pb-2">
+                  <h1 className="text-3xl font-serif font-bold text-[#1c1b1f] tracking-tight">{displayName}</h1>
+                  <p className="text-[#8c7070] font-sans font-medium">{user.email}</p>
                 </div>
               </div>
-
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 {!isEditing ? (
-                  <Button
-                    onClick={() => setIsEditing(true)}
-                    className="bg-[#670017] hover:bg-[#8c1127] text-white rounded-full font-bold"
-                  >
+                  <Button onClick={() => setIsEditing(true)} className="rounded-full bg-[#670017] hover:bg-[#4d0011] px-8 font-bold shadow-lg shadow-[#670017]/20 transition-all h-12">
                     Edit Profile
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      onClick={handleSaveProfile}
-                      disabled={isPending || isUploadingPicture}
-                      className="bg-green-600 hover:bg-green-700 text-white rounded-full font-bold"
-                    >
-                      {isPending || isUploadingPicture
-                        ? "Saving..."
-                        : "Save Changes"}
+                    <Button onClick={handleSaveProfile} disabled={isPending || isUploadingPicture} className="rounded-full bg-green-600 hover:bg-green-700 px-8 font-bold shadow-lg shadow-green-600/20 transition-all h-12">
+                      {isPending || isUploadingPicture ? "Saving..." : "Save Changes"}
                     </Button>
-                    <Button
-                      onClick={() => {
-                        setIsEditing(false);
-                        setErrorMessage(null);
-                        setSuccessMessage(null);
-                        setSelectedFile(null);
-                        setPreviewUrl(profilePictureUrl);
-                      }}
-                      variant="outline"
-                      className="rounded-full font-bold"
-                      disabled={isPending || isUploadingPicture}
-                    >
+                    <Button variant="outline" onClick={() => { setIsEditing(false); setPreviewUrl(resolveImageUrl(profilePictureUrl)); }} className="rounded-full border-[#e0bfbf] text-[#8c7070] px-8 font-bold h-12">
                       Cancel
                     </Button>
                   </>
                 )}
               </div>
             </div>
-          </CardHeader>
-        </Card>
 
-        {/* Error Message */}
-        {errorMessage && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 font-medium">
-            {errorMessage}
-          </div>
-        )}
-
-        {/* Success Message */}
-        {successMessage && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 font-medium">
-            ✓ {successMessage}
-          </div>
-        )}
-
-        {/* Profile Details Card */}
-        <Card className="border-0 shadow-lg mb-6 bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-[#670017]">
-              Profile Information
-            </CardTitle>
-            <CardDescription>
-              {isEditing
-                ? "Edit your profile details below"
-                : "View your profile information"}
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Full Name */}
-              <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">
-                  Full Name
-                </Label>
-                {isEditing ? (
-                  <Input
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="border-[#e0bfbf] focus:border-[#670017]"
-                  />
-                ) : (
-                  <div className="p-3 bg-gray-50 rounded-lg text-gray-700">
-                    {fullName || "Not set"}
-                  </div>
-                )}
-              </div>
-
-              {/* Email */}
-              <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">
-                  Email Address
-                </Label>
-                <div className="p-3 bg-gray-50 rounded-lg text-gray-700">
-                  {user.email}
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">
-                  Phone Number
-                </Label>
-                {isEditing ? (
-                  <Input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Enter your phone number"
-                    className="border-[#e0bfbf] focus:border-[#670017]"
-                  />
-                ) : (
-                  <div className="p-3 bg-gray-50 rounded-lg text-gray-700">
-                    {phone || "Not set"}
-                  </div>
-                )}
-              </div>
-
-              {/* Blood Type */}
-              <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">
-                  Blood Type
-                </Label>
-                {isEditing ? (
-                  <select
-                    value={bloodType}
-                    onChange={(e) => setBloodType(e.target.value)}
-                    className="w-full px-3 py-2 border border-[#e0bfbf] rounded-lg focus:outline-none focus:border-[#670017] focus:ring-1 focus:ring-[#670017]"
-                  >
-                    <option value="">Select blood type</option>
-                    <option value="O_POSITIVE">O+</option>
-                    <option value="O_NEGATIVE">O-</option>
-                    <option value="A_POSITIVE">A+</option>
-                    <option value="A_NEGATIVE">A-</option>
-                    <option value="B_POSITIVE">B+</option>
-                    <option value="B_NEGATIVE">B-</option>
-                    <option value="AB_POSITIVE">AB+</option>
-                    <option value="AB_NEGATIVE">AB-</option>
-                  </select>
-                ) : (
-                  <div className="p-3 bg-gray-50 rounded-lg text-gray-700">
-                    {bloodType ? bloodType.replace("_", "") : "Not set"}
-                  </div>
-                )}
-              </div>
-
-              {/* Date of Birth */}
-              <div className="space-y-2">
-                <Label className="text-sm font-bold text-[#584141]">
-                  Date of Birth
-                </Label>
-                {isEditing ? (
-                  <Input
-                    type="date"
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    className="border-[#e0bfbf] focus:border-[#670017]"
-                  />
-                ) : (
-                  <div className="p-3 bg-gray-50 rounded-lg text-gray-700">
-                    {dateOfBirth
-                      ? new Date(dateOfBirth).toLocaleDateString()
-                      : "Not set"}
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Account Actions Card */}
-        {/* Account Actions Card */}
-        <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-[#670017]">Account Actions</CardTitle>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            {/* Change Password Section */}
-            {!isChangingPassword ? (
-              <Button
-                onClick={() => setIsChangingPassword(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full font-bold w-full"
-              >
-                Change Password
-              </Button>
-            ) : (
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-sm font-bold text-[#584141]">
-                    Current Password
-                  </Label>
-                  <Input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="Enter current password"
-                    className="border-[#e0bfbf] focus:border-[#670017]"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-sm font-bold text-[#584141]">
-                    New Password
-                  </Label>
-                  <Input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Enter new password"
-                    className="border-[#e0bfbf] focus:border-[#670017]"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-sm font-bold text-[#584141]">
-                    Confirm New Password
-                  </Label>
-                  <Input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm new password"
-                    className="border-[#e0bfbf] focus:border-[#670017]"
-                  />
-                </div>
-
-                {passwordError && (
-                  <p className="text-sm text-red-600 font-medium">
-                    {passwordError}
-                  </p>
-                )}
-                {passwordSuccess && (
-                  <p className="text-sm text-green-600 font-medium">
-                    ✓ {passwordSuccess}
-                  </p>
-                )}
-
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleChangePassword}
-                    disabled={isChangingPasswordPending}
-                    className="bg-green-600 hover:bg-green-700 text-white rounded-full font-bold flex-1"
-                  >
-                    {isChangingPasswordPending
-                      ? "Changing..."
-                      : "Change Password"}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setIsChangingPassword(false);
-                      setCurrentPassword("");
-                      setNewPassword("");
-                      setConfirmPassword("");
-                      setPasswordError(null);
-                      setPasswordSuccess(null);
-                    }}
-                    variant="outline"
-                    className="rounded-full font-bold flex-1"
-                    disabled={isChangingPasswordPending}
-                  >
-                    Cancel
-                  </Button>
-                </div>
+            {(errorMessage || successMessage) && (
+              <div className={`mb-8 p-4 rounded-2xl text-sm font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-2 ${errorMessage ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+                {errorMessage ? "⚠️ " : "✅ "}
+                {errorMessage || successMessage}
               </div>
             )}
 
-            {/* Sign Out Button */}
-            <Button
-              onClick={handleLogout}
-              variant="destructive"
-              className="bg-red-600 hover:bg-red-700 text-white rounded-full font-bold w-full"
-            >
-              Sign Out
-            </Button>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+              <div className="lg:col-span-2 space-y-8">
+                <div className="flex items-center gap-3 border-b border-[#f1ecf2] pb-4">
+                  <div className="w-1.5 h-6 bg-[#670017] rounded-full" />
+                  <h3 className="text-xl font-serif font-bold text-[#670017]">Personal Details</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8c7070] px-1">Full Name</Label>
+                    {isEditing ? (
+                      <Input value={fullName} onChange={(e) => setFullName(e.target.value)} className="rounded-xl border-[#e0bfbf] h-12 bg-white/50 focus:bg-white transition-all shadow-xs" />
+                    ) : (
+                      <p className="text-[#1c1b1f] font-bold text-lg px-1">{fullName || "—"}</p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8c7070] px-1">Phone Number</Label>
+                    {isEditing ? (
+                      <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="rounded-xl border-[#e0bfbf] h-12 bg-white/50 focus:bg-white transition-all shadow-xs" />
+                    ) : (
+                      <p className="text-[#1c1b1f] font-bold text-lg px-1">{phone || "—"}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8c7070] px-1">Blood Type</Label>
+                    {isEditing ? (
+                      <select value={bloodType} onChange={(e) => setBloodType(e.target.value)} className="w-full h-12 rounded-xl border border-[#e0bfbf] px-4 font-sans font-bold bg-white/50 focus:bg-white outline-none focus:ring-2 focus:ring-[#670017] transition-all shadow-xs">
+                        <option value="">Select Blood Type</option>
+                        {["A_POSITIVE", "A_NEGATIVE", "B_POSITIVE", "B_NEGATIVE", "AB_POSITIVE", "AB_NEGATIVE", "O_POSITIVE", "O_NEGATIVE"].map(bt => (
+                          <option key={bt} value={bt}>{bt.replace("_", " ")}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="flex items-center gap-2 px-1">
+                         <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-50 text-red-600">🩸</span>
+                         <p className="text-[#1c1b1f] font-bold text-lg">{bloodType ? bloodType.replace("_", " ") : "Not set"}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-8">
+                <div className="flex items-center gap-3 border-b border-[#f1ecf2] pb-4">
+                  <div className="w-1.5 h-6 bg-[#670017] rounded-full" />
+                  <h3 className="text-xl font-serif font-bold text-[#670017]">Security</h3>
+                </div>
+
+                <div className="bg-[#fdf8fd] rounded-3xl p-6 border border-[#f1ecf2] space-y-4">
+                  {!isChangingPassword ? (
+                    <div className="text-center space-y-4 py-2">
+                      <p className="text-xs text-[#8c7070] font-sans font-medium px-4 leading-relaxed">Update your account password to keep your data secure.</p>
+                      <Button onClick={() => setIsChangingPassword(true)} variant="outline" className="w-full rounded-full border-[#e0bfbf] text-[#670017] font-black uppercase text-[10px] tracking-widest h-12 hover:bg-white">
+                        Change Password
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                      <Input type="password" placeholder="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="rounded-xl border-[#e0bfbf] bg-white h-11" />
+                      <Input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="rounded-xl border-[#e0bfbf] bg-white h-11" />
+                      <Input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="rounded-xl border-[#e0bfbf] bg-white h-11" />
+                      {passwordError && <p className="text-[10px] text-red-600 font-black uppercase px-1">{passwordError}</p>}
+                      <div className="flex gap-2">
+                        <Button onClick={() => setIsChangingPassword(false)} variant="ghost" className="flex-1 rounded-full font-bold text-xs h-10">Cancel</Button>
+                        <Button onClick={() => {}} className="flex-1 rounded-full bg-[#670017] font-bold text-xs h-10">Save</Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <Button onClick={handleLogout} variant="ghost" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full font-black uppercase text-[10px] tracking-[0.2em] h-12 transition-all">
+                  Sign Out Account
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

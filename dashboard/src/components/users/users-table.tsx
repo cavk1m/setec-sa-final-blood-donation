@@ -24,7 +24,7 @@ import CreateUserDrawer from "./create-user-drawer";
 import EditUserDrawer from "./edit-user-drawer";
 import { message, Popconfirm } from "antd";
 
-import { fetchUsers, deleteUser, createUser, updateUser, UserItem as ApiUser } from "@/src/features/users/users.api";
+import { fetchUsers, deleteUser, createUser, updateUser, updateUserRole, UserItem as ApiUser } from "@/src/features/users/users.api";
 import dayjs from "dayjs";
 
 const { Text } = Typography;
@@ -42,6 +42,8 @@ export interface UserItem {
   bloodType?: string;
   role: "Admin" | "Donor" | "Organization";
   joinedDate: string;
+  dateOfBirth?: string;
+  locationId?: string;
   donationHistory?: { type: string; location: string; date: string }[];
   badges?: { label: string; sub: string; icon: string }[];
 }
@@ -67,8 +69,9 @@ const mapApiToUserItem = (apiUser: ApiUser): UserItem => {
   // Map roles from backend (USER, ADMIN) to frontend labels
   const roleMap: Record<string, "Admin" | "Donor" | "Organization"> = {
     ADMIN: "Admin",
+    DONOR: "Donor",
+    STAFF: "Organization",
     USER: "Donor",
-    HOSPITAL_ADMIN: "Organization",
   };
 
   return {
@@ -83,18 +86,32 @@ const mapApiToUserItem = (apiUser: ApiUser): UserItem => {
     bloodType: apiUser.blood_type,
     role: roleMap[apiUser.role] || "Donor",
     joinedDate: dayjs(apiUser.created_at).format("MMM DD, YYYY"),
+    dateOfBirth: apiUser.date_of_birth ? dayjs(apiUser.date_of_birth).format("YYYY-MM-DD") : undefined,
+    locationId: apiUser.location_id,
+    address: apiUser.address,
   };
 };
 
 const BLOOD_STYLE: Record<string, { bg: string; color: string }> = {
-  "O+": { bg: "#d1fae5", color: "#047857" },
-  "O-": { bg: "#d1fae5", color: "#047857" },
-  "A+": { bg: "#fee2e2", color: "#b91c1c" },
-  "A-": { bg: "#fee2e2", color: "#b91c1c" },
-  "B+": { bg: "#dbeafe", color: "#1d4ed8" },
-  "B-": { bg: "#dbeafe", color: "#1d4ed8" },
-  "AB+": { bg: "#ede9fe", color: "#6d28d9" },
-  "AB-": { bg: "#ede9fe", color: "#6d28d9" },
+  "O_POSITIVE": { bg: "#d1fae5", color: "#047857" },
+  "O_NEGATIVE": { bg: "#d1fae5", color: "#047857" },
+  "A_POSITIVE": { bg: "#fee2e2", color: "#b91c1c" },
+  "A_NEGATIVE": { bg: "#fee2e2", color: "#b91c1c" },
+  "B_POSITIVE": { bg: "#dbeafe", color: "#1d4ed8" },
+  "B_NEGATIVE": { bg: "#dbeafe", color: "#1d4ed8" },
+  "AB_POSITIVE": { bg: "#ede9fe", color: "#6d28d9" },
+  "AB_NEGATIVE": { bg: "#ede9fe", color: "#6d28d9" },
+};
+
+const BLOOD_LABELS: Record<string, string> = {
+  "O_POSITIVE": "O+",
+  "O_NEGATIVE": "O-",
+  "A_POSITIVE": "A+",
+  "A_NEGATIVE": "A-",
+  "B_POSITIVE": "B+",
+  "B_NEGATIVE": "B-",
+  "AB_POSITIVE": "AB+",
+  "AB_NEGATIVE": "AB-",
 };
 
 type RoleFilter = "all" | "Donor" | "Admin" | "Organization";
@@ -136,12 +153,6 @@ export default function UsersTable() {
 
   const handleCreate = async (data: any) => {
     try {
-      const roleMap: Record<string, string> = {
-        Admin: "ADMIN",
-        Donor: "USER",
-        Organization: "HOSPITAL_ADMIN",
-      };
-
       await createUser({
         full_name: data.fullName,
         email: data.email,
@@ -149,7 +160,9 @@ export default function UsersTable() {
         password: data.password,
         address: data.address,
         blood_type: data.bloodType,
-        role: roleMap[data.role] || "USER",
+        date_of_birth: data.dateOfBirth,
+        location_id: data.locationId,
+        role: data.role,
       });
 
       message.success("User created successfully");
@@ -162,20 +175,22 @@ export default function UsersTable() {
 
   const handleUpdate = async (updated: UserItem) => {
     try {
-      const roleMap: Record<string, string> = {
-        Admin: "ADMIN",
-        Donor: "USER",
-        Organization: "HOSPITAL_ADMIN",
-      };
-
+      // 1. Update general info
       await updateUser(updated.id, {
         full_name: updated.fullName,
         email: updated.email,
         phone: updated.phone,
         address: updated.address,
         blood_type: updated.bloodType,
-        role: roleMap[updated.role] || "USER",
+        date_of_birth: updated.dateOfBirth,
+        location_id: updated.locationId,
+        is_active: updated.isActive,
+        email_verified: updated.emailVerified,
+        phone_verified: updated.phoneVerified,
       });
+
+      // 2. Explicitly update role using specific endpoint
+      await updateUserRole(updated.id, updated.role);
 
       message.success("User updated successfully");
       setIsEditOpen(false);
@@ -267,7 +282,7 @@ export default function UsersTable() {
               borderRadius: 6,
             }}
           >
-            {r.bloodType}
+            {BLOOD_LABELS[r.bloodType] || r.bloodType}
           </Tag>
         );
       },

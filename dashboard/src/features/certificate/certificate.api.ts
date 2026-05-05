@@ -14,7 +14,7 @@ export interface CertificateData {
 
 export const getDashboardCertificates = async (): Promise<CertificateData[]> => {
   try {
-    const response = await axiosInstance.get('/api/certificates');
+    const response = await axiosInstance.get('/api/dashboard/certificates');
     return response.data.certificates;
   } catch (error) {
     console.error('Error fetching dashboard certificates:', error);

@@ -51,6 +51,8 @@ export default function CampaignGrid({ filter = 'all', searchQuery = '', refresh
           donorCount: 0,
           createdAt: new Date(c.created_at).toLocaleDateString(),
           status: c.current_amount >= c.target_amount ? 'completed' : 'active',
+          image_url: c.image_url,
+          campaign_type: c.campaign_type,
         }));
         setCampaigns(mapped);
       } else {

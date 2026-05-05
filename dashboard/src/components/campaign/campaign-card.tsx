@@ -15,6 +15,8 @@ export interface CampaignItem {
   donorCount: number;
   createdAt: string;
   status: 'active' | 'completed';
+  image_url?: string;
+  campaign_type?: string;
 }
 
 interface CampaignCardProps {
@@ -38,9 +40,53 @@ export default function CampaignCard({ data, onEdit, onView, onDelete }: Campaig
         opacity: isCompleted ? 0.85 : 1,
         transition: 'box-shadow 0.2s, transform 0.2s',
       }}
-      styles={{ body: { padding: 28 } }}
       hoverable
     >
+      {/* Banner Image */}
+      <div style={{ 
+        height: 160, 
+        margin: '-28px -28px 24px', 
+        overflow: 'hidden',
+        background: '#f1f3ff',
+        position: 'relative'
+      }}>
+        {data.image_url ? (
+          <img 
+            src={data.image_url} 
+            alt={data.name}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1615461066841-6116ecaaba30?auto=format&fit=crop&q=80&w=800'; // Fallback
+            }}
+          />
+        ) : (
+          <div style={{ 
+            width: '100%', 
+            height: '100%', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            fontSize: 40
+          }}>
+            ❤️
+          </div>
+        )}
+        <div style={{
+          position: 'absolute',
+          top: 12,
+          right: 12,
+          background: 'rgba(255,255,255,0.9)',
+          padding: '4px 10px',
+          borderRadius: 8,
+          fontSize: 10,
+          fontWeight: 800,
+          textTransform: 'uppercase',
+          color: '#ef4444'
+        }}>
+          {data.campaign_type || 'Blood Drive'}
+        </div>
+      </div>
+
       {/* Top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
         <div style={{ maxWidth: '75%' }}>

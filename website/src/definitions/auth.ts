@@ -74,7 +74,7 @@ export interface ProfileResponse {
     phone?: string;
     date_of_birth?: string;
     blood_type?: string;
-    profile_picture_uri?: string;
+    profile_picture_url?: string;
     is_active?: boolean;
     last_login_date?: string | null;
     created_at?: string;
@@ -104,14 +104,16 @@ export interface UpdateProfileResponse {
     fullName: string;
     email: string;
     phone?: string;
-    bloodType?: string;
+    blood_type?: string;
+    profile_picture_url?: string;
   };
 }
 
 export interface UploadProfilePictureResponse {
   success: boolean;
   message: string;
-  profilePictureUrl: string;
+  message: string;
+  profile_picture_url: string;
 }
 
 // Delete profile picture
