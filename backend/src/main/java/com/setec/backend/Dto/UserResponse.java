@@ -13,42 +13,64 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
-    @JsonProperty("id")
     private UUID id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private Boolean emailVerified;
+    private String phone;
+    private Boolean phoneVerified;
+    private String avatarUrl;
+    private Date dateOfBirth;
+    private String address;
+    private String role;
+    private Boolean isActive;
+    private LocalDateTime lastLoginAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    @JsonProperty("full_name")
-    private String fullName;
+    @JsonProperty("id")
+    public UUID getId() { return id; }
+
+    @JsonProperty("first_name")
+    public String getFirstName() { return firstName; }
+
+    @JsonProperty("last_name")
+    public String getLastName() { return lastName; }
 
     @JsonProperty("email")
-    private String email;
+    public String getEmail() { return email; }
+
+    @JsonProperty("email_verified")
+    public Boolean getEmailVerified() { return emailVerified; }
 
     @JsonProperty("phone")
-    private String phone;
-    
-    @JsonProperty("address")
-    private String address;
-    
-    @JsonProperty("date_of_birth")
-    private Date dateOfBirth;
+    public String getPhone() { return phone; }
 
-    @JsonProperty("blood_type")
-    private String bloodType;
+    @JsonProperty("phone_verified")
+    public Boolean getPhoneVerified() { return phoneVerified; }
+
+    @JsonProperty("avatar_url")
+    public String getAvatarUrl() { return avatarUrl; }
+
+    @JsonProperty("date_of_birth")
+    public Date getDateOfBirth() { return dateOfBirth; }
+
+    @JsonProperty("address")
+    public String getAddress() { return address; }
 
     @JsonProperty("role")
-    private String role;
-    
+    public String getRole() { return role; }
+
     @JsonProperty("is_active")
-    private Boolean isActive;
-    
-    @JsonProperty("last_login_date")
-    private LocalDateTime lastLoginDate;
+    public Boolean getIsActive() { return isActive; }
 
-    @JsonProperty("created_date")
-    private LocalDateTime createdDate;
+    @JsonProperty("last_login_at")
+    public LocalDateTime getLastLoginAt() { return lastLoginAt; }
 
-    @JsonProperty("updated_date")
-    private LocalDateTime updatedDate;
-    
-    @JsonProperty("profile_picture_url")
-    private String profilePictureUrl;
+    @JsonProperty("created_at")
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    @JsonProperty("updated_at")
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

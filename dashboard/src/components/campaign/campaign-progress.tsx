@@ -1,8 +1,7 @@
 'use client';
 
-import { Card, Progress, Typography, Space } from 'antd';
-import { EnvironmentOutlined } from '@ant-design/icons';
-import ActionButton from '@/src/components/ui/action-button';
+import { Card, Progress, Typography } from 'antd';
+import { RocketOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -15,9 +14,9 @@ interface Campaign {
 }
 
 const MOCK_CAMPAIGNS: Campaign[] = [
-  { id: '1', name: 'City Hospital Drive',    location: 'Downtown',   raised: 3200,  goal: 5000  },
-  { id: '2', name: 'University Blood Week',  location: 'North Campus', raised: 1850, goal: 3000  },
-  { id: '3', name: 'Community Health Fair',  location: 'Westside',   raised: 4700,  goal: 6000  },
+  { id: '1', name: 'City Hospital Drive',    location: 'Target: 1,500 Units',   raised: 1380,  goal: 1500  },
+  { id: '2', name: 'University Blood Week',  location: 'Target: 800 Units',    raised: 512,   goal: 800   },
+  { id: '3', name: 'Community Health Fair',  location: 'Target: 2,000 Units',   raised: 820,   goal: 2000  },
 ];
 
 interface CampaignProgressProps {
@@ -25,51 +24,83 @@ interface CampaignProgressProps {
   onViewAll?: () => void;
 }
 
-export default function CampaignProgress({ data = MOCK_CAMPAIGNS, onViewAll }: CampaignProgressProps) {
+export default function CampaignProgress({ data = MOCK_CAMPAIGNS }: CampaignProgressProps) {
   return (
-    <Card style={{ borderRadius: 12, border: '1px solid #e3e8f9', height: '100%' }} styles={{ body: { padding: 24 } }}>
+    <Card 
+      style={{ 
+        borderRadius: "var(--premium-card-radius)", 
+        border: "var(--premium-card-border)",
+        boxShadow: "var(--premium-card-shadow)",
+        background: '#fff',
+        height: '100%',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+      }} 
+      styles={{ body: { padding: 32 } }}
+      hoverable
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <Title level={5} style={{ margin: 0, fontWeight: 700 }}>Campaign Progress</Title>
-        <ActionButton
-          variant="custom"
-          size="sm"
-          label="View all →"
-          onClick={onViewAll}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            height: 'auto',
-            padding: 0,
-            boxShadow: 'none',
-            color: '#b51822',
-            fontWeight: 700,
-          }}
-        />
+        <Title level={4} style={{ margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.02em' }}>Active Campaigns</Title>
       </div>
 
-      <Space orientation="vertical" size={24} style={{ width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {data.map((c) => {
           const pct = Math.round((c.raised / c.goal) * 100);
           return (
             <div key={c.id}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
                 <div>
-                  <Text style={{ fontWeight: 700, fontSize: 14, display: 'block' }}>{c.name}</Text>
-                  <Space size={4} align="center">
-                    <EnvironmentOutlined style={{ fontSize: 11, color: '#94a3b8' }} />
-                    <Text style={{ fontSize: 11, color: '#94a3b8' }}>{c.location}</Text>
-                  </Space>
+                  <Text style={{ fontWeight: 700, fontSize: 14, display: 'block', color: '#161c27' }}>{c.name}</Text>
+                  <Text style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', fontWeight: 600 }}>{c.location}</Text>
                 </div>
-                <Text style={{ fontSize: 12, fontWeight: 900, whiteSpace: 'nowrap' }}>
-                  ${c.raised.toLocaleString()}
-                  <Text style={{ fontWeight: 400, color: '#94a3b8' }}> / {(c.goal / 1000).toFixed(0)}k</Text>
-                </Text>
+                <div style={{ 
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  background: 'rgba(239, 68, 68, 0.08)', 
+                  padding: '2px 10px', 
+                  borderRadius: 99,
+                  border: '1px solid rgba(239, 68, 68, 0.15)'
+                }}>
+                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef4444' }} />
+                  <Text style={{ fontWeight: 800, fontSize: 12, color: '#ef4444' }}>{pct}%</Text>
+                </div>
               </div>
-              <Progress percent={pct} showInfo={false} strokeColor="#b51822" railColor="#f1f3ff" size={['100%', 6]} />
+              <Progress 
+                percent={pct} 
+                showInfo={false} 
+                strokeColor="#ef4444"
+                railColor="rgba(0,0,0,0.04)"
+                size={['100%', 8]}
+                strokeLinecap="round"
+              />
             </div>
           );
         })}
-      </Space>
+      </div>
+
+      <div style={{ 
+        marginTop: 32, 
+        padding: '20px', 
+        background: '#f8fafc', 
+        borderRadius: 16, 
+        border: '1px solid rgba(0,0,0,0.02)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 16
+      }}>
+        <div style={{ 
+          width: 44, height: 44, 
+          background: '#fff', 
+          borderRadius: 12, 
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+        }}>
+          <RocketOutlined style={{ fontSize: 20, color: '#ef4444' }} />
+        </div>
+        <div>
+          <Text style={{ display: 'block', fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Next Drive</Text>
+          <Text style={{ display: 'block', fontSize: 14, fontWeight: 800, color: '#161c27' }}>National Heroes Day</Text>
+          <Text style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'rgba(0,0,0,0.35)' }}>Starts in 4 days</Text>
+        </div>
+      </div>
     </Card>
   );
 }

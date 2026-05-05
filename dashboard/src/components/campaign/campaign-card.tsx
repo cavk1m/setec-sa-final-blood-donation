@@ -38,7 +38,7 @@ export default function CampaignCard({ data, onEdit, onView, onDelete }: Campaig
         opacity: isCompleted ? 0.85 : 1,
         transition: 'box-shadow 0.2s, transform 0.2s',
       }}
-      bodyStyle={{ padding: 28 }}
+      styles={{ body: { padding: 28 } }}
       hoverable
     >
       {/* Top row */}
@@ -53,7 +53,7 @@ export default function CampaignCard({ data, onEdit, onView, onDelete }: Campaig
         </div>
         <span style={{
           background: isCompleted ? '#d4e4fa' : pct >= 80 ? '#ffdad7' : '#f1f3ff',
-          color: isCompleted ? '#39485a' : pct >= 80 ? '#b51822' : '#5d5c74',
+          color: isCompleted ? '#39485a' : pct >= 80 ? '#ef4444' : '#5d5c74',
           fontSize: 12,
           fontWeight: 900,
           padding: '4px 12px',
@@ -83,8 +83,8 @@ export default function CampaignCard({ data, onEdit, onView, onDelete }: Campaig
         <Progress
           percent={pct}
           showInfo={false}
-          strokeColor={isCompleted ? '#677689' : '#b51822'}
-          trailColor="#f1f3ff"
+          strokeColor={isCompleted ? '#677689' : '#ef4444'}
+          railColor="#f1f3ff"
           size={['100%', 8]}
           style={{ margin: 0 }}
         />
@@ -119,7 +119,7 @@ export default function CampaignCard({ data, onEdit, onView, onDelete }: Campaig
             variant="ghost"
             size="sm"
             tooltip="Delete"
-            icon={<DeleteOutlined style={{ color: '#b51822' }} />}
+            icon={<DeleteOutlined style={{ color: '#ef4444' }} />}
             onClick={() => onDelete?.(data.id)}
           />
         </Space>

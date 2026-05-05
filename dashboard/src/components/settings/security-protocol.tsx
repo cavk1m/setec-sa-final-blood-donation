@@ -1,8 +1,10 @@
 "use client";
 
-import { Card, Form, Input, Typography } from "antd";
+import { useState } from "react";
+import { Card, Form, Input, Typography, message } from "antd";
 import { SafetyOutlined, SyncOutlined } from "@ant-design/icons";
 import AppButton from "@/src/components/ui/app-button";
+import { changePassword } from "@/src/features/auth/profile.api";
 
 const { Text, Title } = Typography;
 
@@ -14,24 +16,40 @@ const labelStyle = {
   color: "#64748b",
 };
 
-export default function SecurityProtocol() {
+export default function SecurityProtocol({ onSaveSuccess }: { onSaveSuccess?: () => void }) {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      console.log("password update", values);
-    });
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      setLoading(true);
+      await changePassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
+      message.success("Password changed successfully.");
+      form.resetFields();
+      if (onSaveSuccess) onSaveSuccess();
+    } catch (err: any) {
+      // Validation errors are handled by antd – only handle API errors here
+      if (err?.response) {
+        const msg = err?.response?.data?.message ?? "Failed to change password.";
+        message.error(msg);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Card
       id="security"
       style={{
-        borderRadius: 20,
-        border: "1px solid #e3e8f9",
-        marginBottom: 24,
+        borderRadius: 0,
+        border: "none",
       }}
-      bodyStyle={{ padding: 32 }}
+      styles={{ body: { padding: 32 } }}
     >
       {/* Header */}
       <div
@@ -54,7 +72,7 @@ export default function SecurityProtocol() {
             flexShrink: 0,
           }}
         >
-          <SafetyOutlined style={{ fontSize: 22, color: "#b51822" }} />
+          <SafetyOutlined style={{ fontSize: 22, color: "#ef4444" }} />
         </div>
         <div>
           <Title level={5} style={{ margin: "0 0 2px", fontWeight: 700 }}>
@@ -90,12 +108,6 @@ export default function SecurityProtocol() {
         </Form.Item>
 
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 20,
-            marginBottom: 8,
-          }}
         >
           <Form.Item
             name="newPassword"
@@ -116,7 +128,7 @@ export default function SecurityProtocol() {
             />
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             name="confirmPassword"
             label={<Text style={labelStyle}>Confirm New Password</Text>}
             rules={[
@@ -139,7 +151,7 @@ export default function SecurityProtocol() {
                 paddingLeft: 16,
               }}
             />
-          </Form.Item>
+          </Form.Item> */}
         </div>
 
         <AppButton
@@ -147,11 +159,12 @@ export default function SecurityProtocol() {
           size="lg"
           label="Update Password"
           icon={<SyncOutlined />}
+          loading={loading}
           onClick={handleSubmit}
           style={{
             borderRadius: 10,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
             fontWeight: 700,
             height: 48,
             paddingInline: 32,

@@ -28,8 +28,8 @@ const VARIANT_STYLE: Record<
 > = {
   primary: {
     color: "#ffffff",
-    bg: "#b51822",
-    border: "#b51822",
+    bg: "#ef4444",
+    border: "#ef4444",
     shadow: "0 4px 12px rgba(181,24,34,0.25)",
   },
   secondary: { color: "#161c27", bg: "#f1f3ff", border: "#e3e8f9" },
@@ -51,8 +51,8 @@ const VARIANT_STYLE: Record<
     border: "#fbc02d",
     shadow: "0 4px 12px rgba(251,192,45,0.25)",
   },
-  ghost: { color: "#b51822", bg: "transparent", border: "transparent" },
-  outline: { color: "#b51822", bg: "transparent", border: "#b51822" },
+  ghost: { color: "#ef4444", bg: "transparent", border: "transparent" },
+  outline: { color: "#ef4444", bg: "transparent", border: "#ef4444" },
 };
 
 const SIZE_STYLE: Record<

@@ -416,6 +416,127 @@ public ResponseEntity<?> deleteUser(
     }
 }
 
+
+// POST /api/admin/users/create
+@PostMapping("/users/create")
+@SecurityRequirement(name = "bearer-jwt")
+public ResponseEntity<?> createUser(@RequestBody Map<String, Object> request) {
+    try {
+        // Validate required fields
+        if (request.get("email") == null || request.get("password") == null ||
+            request.get("full_name") == null || request.get("phone") == null) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "email, password, full_name, phone are required",
+                "code", 400
+            ));
+        }
+
+        // Check if email already exists
+        if (userRepository.existsByEmail((String) request.get("email"))) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Email already registered",
+                "code", 400
+            ));
+        }
+
+        // Check if phone already exists
+        if (userRepository.existsByPhone((String) request.get("phone"))) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "Phone already registered",
+                "code", 400
+            ));
+        }
+
+        users user = new users();
+        user.setFullName((String) request.get("full_name"));
+        user.setEmail((String) request.get("email"));
+        user.setPhone((String) request.get("phone"));
+        user.setPasswordHash(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode(
+            (String) request.get("password")
+        ));
+        user.setIsActive(true);
+        user.setEmailVerified(true); // admin created accounts skip OTP
+
+        if (request.get("address") != null) user.setAddress((String) request.get("address"));
+        if (request.get("date_of_birth") != null) {
+            user.setDateOfBirth(java.sql.Date.valueOf((String) request.get("date_of_birth")));
+        }
+        if (request.get("blood_type") != null) {
+            user.setBloodType(com.setec.backend.Enum.BloodType.valueOf(request.get("blood_type").toString()));
+        }
+        if (request.get("role") != null) {
+            user.setRole(Role.valueOf(request.get("role").toString().toUpperCase()));
+        } else {
+            user.setRole(Role.USER);
+        }
+        if (request.get("location_id") != null) {
+            user.setLocationId(UUID.fromString(request.get("location_id").toString()));
+        }
+
+        users saved = userRepository.save(user);
+
+        return ResponseEntity.status(201).body(Map.of(
+            "message", "User created successfully",
+            "user", Map.of(
+                "id", saved.getId(),
+                "full_name", saved.getFullName(),
+                "email", saved.getEmail(),
+                "phone", saved.getPhone(),
+                "role", saved.getRole(),
+                "location_id", saved.getLocationId() != null ? saved.getLocationId() : ""
+            )
+        ));
+
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(Map.of(
+            "success", false,
+            "message", "Failed to create user: " + e.getMessage()
+        ));
+    }
+}
+
+// PUT /api/admin/users/{id}/location
+@PutMapping("/users/{id}/location")
+@SecurityRequirement(name = "bearer-jwt")
+public ResponseEntity<?> updateUserLocation(
+        @PathVariable String id,
+        @RequestBody Map<String, Object> request) {
+    try {
+        users user = userRepository.findById(UUID.fromString(id)).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(404).body(Map.of(
+                "error", "User not found",
+                "code", 404
+            ));
+        }
+
+        if (request.get("location_id") == null) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "error", "location_id is required",
+                "code", 400
+            ));
+        }
+
+        user.setLocationId(UUID.fromString(request.get("location_id").toString()));
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of(
+            "message", "User location updated successfully",
+            "user", Map.of(
+                "id", user.getId(),
+                "full_name", user.getFullName(),
+                "location_id", user.getLocationId()
+            )
+        ));
+
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(Map.of(
+            "success", false,
+            "message", "Failed to update location: " + e.getMessage()
+        ));
+    }
+}
+
     // Helper methods
     private HospitalResponse convertToHospitalResponse(Hospital hospital) {
         return new HospitalResponse(

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Drawer, Form, Input, Select, Typography, Avatar } from "antd";
+import { useState, useEffect } from "react";
+import { Drawer, Form, Input, Select, Typography, Avatar, DatePicker } from "antd";
 import { CloseOutlined, UserAddOutlined } from "@ant-design/icons";
 import AppButton from "@/src/components/ui/app-button";
 import CircleButton from "@/src/components/ui/circle-button";
+import { getLocations, LocationData } from "@/src/features/location/location.api";
+import dayjs from "dayjs";
 
 const { Text, Title } = Typography;
 
@@ -39,6 +41,19 @@ export default function CreateUserDrawer({
   const [form] = Form.useForm();
   const [selectedAvatar, setSelectedAvatar] = useState(0);
   const [nameValue, setNameValue] = useState("");
+  const [locations, setLocations] = useState<LocationData[]>([]);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const data = await getLocations();
+        setLocations(data);
+      } catch (err) {
+        console.error("Failed to fetch locations", err);
+      }
+    };
+    fetchLocations();
+  }, []);
 
   const getInitials = (name: string) =>
     name
@@ -53,6 +68,8 @@ export default function CreateUserDrawer({
       const preset = AVATAR_PRESETS[selectedAvatar];
       onSave({
         ...values,
+        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : undefined,
+        locationId: values.locationId,
         initials: getInitials(values.fullName),
         avatarBg: preset.bg,
         avatarColor: preset.color,
@@ -261,6 +278,42 @@ export default function CreateUserDrawer({
             </Form.Item>
           </div>
 
+          {/* Date of Birth + Location */}
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+          >
+            <Form.Item
+              name="dateOfBirth"
+              label={<Text style={labelStyle}>Date of Birth</Text>}
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <DatePicker
+                placeholder="YYYY-MM-DD"
+                style={{
+                  width: "100%",
+                  borderRadius: 999,
+                  background: "#f8fafc",
+                  border: "1px solid #e3e8f9",
+                  height: 44,
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="locationId"
+              label={<Text style={labelStyle}>Assigned Location</Text>}
+            >
+              <Select
+                placeholder="Select location"
+                allowClear
+                options={locations.map((loc) => ({
+                  value: loc.id,
+                  label: loc.name,
+                }))}
+              />
+            </Form.Item>
+          </div>
+
           {/* Role + Blood Type */}
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
@@ -287,9 +340,16 @@ export default function CreateUserDrawer({
               <Select
                 placeholder="Select type"
                 allowClear
-                options={["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map(
-                  (t) => ({ value: t, label: t }),
-                )}
+                options={[
+                  { value: "A_POSITIVE", label: "A+" },
+                  { value: "A_NEGATIVE", label: "A-" },
+                  { value: "B_POSITIVE", label: "B+" },
+                  { value: "B_NEGATIVE", label: "B-" },
+                  { value: "O_POSITIVE", label: "O+" },
+                  { value: "O_NEGATIVE", label: "O-" },
+                  { value: "AB_POSITIVE", label: "AB+" },
+                  { value: "AB_NEGATIVE", label: "AB-" },
+                ]}
               />
             </Form.Item>
           </div>

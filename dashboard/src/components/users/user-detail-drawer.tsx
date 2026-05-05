@@ -28,6 +28,8 @@ export interface UserItem {
   bloodType?: string;
   role: "Admin" | "Donor" | "Organization";
   joinedDate: string;
+  dateOfBirth?: string;
+  locationId?: string;
   donationHistory?: { type: string; location: string; date: string }[];
   badges?: { label: string; sub: string; icon: string }[];
 }
@@ -38,16 +40,29 @@ const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
   Organization: { bg: "#dcfce7", color: "#15803d" },
 };
 
+const BLOOD_LABELS: Record<string, string> = {
+  "O_POSITIVE": "O+",
+  "O_NEGATIVE": "O-",
+  "A_POSITIVE": "A+",
+  "A_NEGATIVE": "A-",
+  "B_POSITIVE": "B+",
+  "B_NEGATIVE": "B-",
+  "AB_POSITIVE": "AB+",
+  "AB_NEGATIVE": "AB-",
+};
+
 interface UserDetailDrawerProps {
   open: boolean;
   user: UserItem | null;
   onClose: () => void;
+  onEdit?: () => void;
 }
 
 export default function UserDetailDrawer({
   open,
   user,
   onClose,
+  onEdit,
 }: UserDetailDrawerProps) {
   if (!user) return null;
 
@@ -146,7 +161,7 @@ export default function UserDetailDrawer({
         </Text>
 
         <Space
-          direction="vertical"
+          orientation="vertical"
           size={10}
           style={{ width: "100%", marginBottom: 24 }}
         >
@@ -216,6 +231,78 @@ export default function UserDetailDrawer({
           ))}
         </Space>
 
+        {/* Health Info */}
+        <Text
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+            color: "#94a3b8",
+            display: "block",
+            marginBottom: 14,
+          }}
+        >
+          Health Information
+        </Text>
+
+        <div
+          style={{
+            background: "#f8fafc",
+            borderRadius: 12,
+            padding: "16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 24,
+            border: "1px solid #f1f3ff",
+          }}
+        >
+          <Space size={12}>
+            <div
+              style={{
+                width: 32,
+                height: 32,
+                background: "#fee2e2",
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16,
+              }}
+            >
+              🩸
+            </div>
+            <div>
+              <Text style={{ fontSize: 10, color: "#94a3b8", display: "block" }}>
+                Blood Type
+              </Text>
+              <Text style={{ fontSize: 13, fontWeight: 700, color: "#ef4444" }}>
+                {user.bloodType ? (BLOOD_LABELS[user.bloodType] || user.bloodType) : "Not Specified"}
+              </Text>
+            </div>
+          </Space>
+          {user.dateOfBirth && (
+            <div>
+              <Text
+                style={{
+                  fontSize: 10,
+                  color: "#94a3b8",
+                  display: "block",
+                  textAlign: "right",
+                }}
+              >
+                Birth Date
+              </Text>
+              <Text
+                style={{ fontSize: 13, fontWeight: 600, display: "block" }}
+              >
+                {user.dateOfBirth}
+              </Text>
+            </div>
+          )}
+        </div>
+
         {/* Donation History */}
         {user.donationHistory && user.donationHistory.length > 0 && (
           <>
@@ -248,14 +335,14 @@ export default function UserDetailDrawer({
                   padding: 0,
                   height: "auto",
                   boxShadow: "none",
-                  color: "#b51822",
+                  color: "#ef4444",
                   fontWeight: 700,
                 }}
               />
             </div>
 
             <Space
-              direction="vertical"
+              orientation="vertical"
               size={10}
               style={{ width: "100%", marginBottom: 24 }}
             >
@@ -367,7 +454,7 @@ export default function UserDetailDrawer({
                     style={{
                       width: 48,
                       height: 48,
-                      background: i === 0 ? "#b51822" : "#475569",
+                      background: i === 0 ? "#ef4444" : "#475569",
                       borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
@@ -413,6 +500,7 @@ export default function UserDetailDrawer({
           variant="ghost"
           label="Edit Details"
           icon={<EditOutlined />}
+          onClick={onEdit}
           style={{
             fontWeight: 700,
             borderRadius: 999,
@@ -430,8 +518,8 @@ export default function UserDetailDrawer({
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
           }}
         />
       </div>

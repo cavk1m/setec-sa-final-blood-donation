@@ -5,7 +5,7 @@ import { FilePdfOutlined, PrinterOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import ActionButton from "@/src/components/ui/action-button";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export interface CertificateEntry {
   id: string;
@@ -123,20 +123,20 @@ export default function CertificateTable({
         return (
           <Space size={8} align="center">
             <Text style={{ fontWeight: 700, fontSize: 14 }}>{r.donorName}</Text>
-            <Tag
+            <div
               style={{
-                background: s.bg,
-                color: s.color,
-                border: "none",
-                fontWeight: 900,
-                fontSize: 10,
-                borderRadius: 4,
-                padding: "1px 6px",
-                margin: 0,
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: `${s.color}12`, 
+                padding: '2px 10px', 
+                borderRadius: 99,
+                border: `1px solid ${s.color}20`
               }}
             >
-              {r.bloodType}
-            </Tag>
+              <div style={{ width: 4, height: 4, borderRadius: '50%', background: s.color, boxShadow: `0 0 6px ${s.color}` }} />
+              <span style={{ fontSize: 10, fontWeight: 900, color: s.color }}>
+                {r.bloodType}
+              </span>
+            </div>
           </Space>
         );
       },
@@ -191,24 +191,26 @@ export default function CertificateTable({
   return (
     <Card
       style={{
-        borderRadius: 20,
-        border: "1px solid #e3e8f9",
+        borderRadius: "var(--premium-card-radius)",
+        border: "var(--premium-card-border)",
+        boxShadow: "var(--premium-card-shadow)",
         overflow: "hidden",
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}
-      bodyStyle={{ padding: 0 }}
+      styles={{ body: { padding: 0 } }}
     >
       {/* Card header */}
       <div
         style={{
-          padding: "20px 32px",
-          borderBottom: "1px solid #f1f3ff",
+          padding: "24px 32px",
+          borderBottom: "1px solid rgba(15, 23, 42, 0.05)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          background: "rgba(241,243,255,0.3)",
+          background: "rgba(241,243,255,0.4)",
         }}
       >
-        <Text style={{ fontWeight: 700, fontSize: 16 }}>Recent Issuances</Text>
+        <Title level={4} style={{ margin: 0, fontWeight: 800, fontSize: 20, letterSpacing: '-0.02em' }}>Recent Issuances</Title>
         <Space size={8}>
           <ActionButton
             variant="download"

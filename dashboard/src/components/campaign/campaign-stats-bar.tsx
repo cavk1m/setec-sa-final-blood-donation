@@ -17,7 +17,7 @@ export default function CampaignStatsBar({ onSearch }: CampaignStatsBarProps) {
         {/* Total Active */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{ borderRadius: 16, border: "1px solid #e3e8f9" }}
           >
             <Text
@@ -54,7 +54,7 @@ export default function CampaignStatsBar({ onSearch }: CampaignStatsBarProps) {
               <span
                 style={{
                   background: "#ffdad7",
-                  color: "#b51822",
+                  color: "#ef4444",
                   fontSize: 10,
                   fontWeight: 700,
                   padding: "3px 8px",
@@ -70,7 +70,7 @@ export default function CampaignStatsBar({ onSearch }: CampaignStatsBarProps) {
         {/* Total Donors */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{ borderRadius: 16, border: "1px solid #e3e8f9" }}
           >
             <Text
@@ -107,7 +107,7 @@ export default function CampaignStatsBar({ onSearch }: CampaignStatsBarProps) {
               <span
                 style={{
                   background: "#ffdad7",
-                  color: "#b51822",
+                  color: "#ef4444",
                   fontSize: 10,
                   fontWeight: 700,
                   padding: "3px 8px",
@@ -123,7 +123,7 @@ export default function CampaignStatsBar({ onSearch }: CampaignStatsBarProps) {
         {/* Supplies Secured */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{ borderRadius: 16, border: "1px solid #e3e8f9" }}
           >
             <Text
@@ -176,7 +176,7 @@ export default function CampaignStatsBar({ onSearch }: CampaignStatsBarProps) {
         {/* Total Raised */}
         <Col xs={24} sm={12} lg={6}>
           <Card
-            bodyStyle={{ padding: "20px 24px" }}
+            styles={{ body: { padding: "20px 24px" } }}
             style={{ borderRadius: 16, border: "1px solid #e3e8f9" }}
           >
             <Text
@@ -213,7 +213,7 @@ export default function CampaignStatsBar({ onSearch }: CampaignStatsBarProps) {
               <span
                 style={{
                   background: "#ffdad7",
-                  color: "#b51822",
+                  color: "#ef4444",
                   fontSize: 10,
                   fontWeight: 700,
                   padding: "3px 8px",

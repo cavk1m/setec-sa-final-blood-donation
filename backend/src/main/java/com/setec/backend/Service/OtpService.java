@@ -14,25 +14,25 @@ import java.util.Optional;
 
 @Service
 public class OtpService {
-    
+
     private static final Logger log = LoggerFactory.getLogger(OtpService.class);
-    
+
     private final OtpRepository otpRepository;
     private final EmailServiceInterface emailService;
     private final SecureRandom secureRandom;
-    
+
     // OTP Configuration
     private static final int OTP_LENGTH = 6;
     private static final int OTP_EXPIRY_MINUTES = 10;
     private static final int MAX_OTP_REQUESTS_PER_HOUR = 5;
-    
+
     @Autowired
     public OtpService(OtpRepository otpRepository, EmailServiceInterface emailService) {
         this.otpRepository = otpRepository;
         this.emailService = emailService;
         this.secureRandom = new SecureRandom();
     }
-    
+
     /**
      * Generate and send OTP for email verification
      */
@@ -42,20 +42,20 @@ public class OtpService {
         if (isRateLimited(email)) {
             throw new RuntimeException("Too many OTP requests. Please wait before requesting again.");
         }
-        
+
         // Generate OTP
         String otpCode = generateOtpCode();
         LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES);
-        
+
         // Save OTP to database
         otp_codes otpEntity = new otp_codes();
         otpEntity.setContact(email);
         otpEntity.setOtp_code(otpCode);
         otpEntity.setExpires_at(expiryTime);
         otpEntity.setVerified(false);
-        
+
         otpRepository.save(otpEntity);
-        
+
         // Send OTP via email
         try {
             emailService.sendOtpEmail(email, otpCode, purpose);
@@ -65,7 +65,7 @@ public class OtpService {
             throw new RuntimeException("Failed to send OTP email", e);
         }
     }
-    
+
     /**
      * Verify OTP code using native SQL to bypass UUID casting issues
      */
@@ -73,18 +73,17 @@ public class OtpService {
     public boolean verifyOtp(String email, String otpCode) {
         try {
             log.info("Attempting to verify OTP for email: {} with code: {}", email, otpCode);
-            
+
             // Use native SQL to avoid UUID casting issues
             Optional<otp_codes> otpOptional = otpRepository.findValidOtpNative(
-                email, otpCode, LocalDateTime.now()
-            );
-            
+                    email, otpCode, LocalDateTime.now());
+
             if (otpOptional.isPresent()) {
                 log.info("Found valid OTP for email: {}", email);
-                
+
                 // Mark as verified using native SQL to avoid UUID casting issues
                 int updatedRows = otpRepository.markOtpAsVerifiedNative(email, otpCode);
-                
+
                 if (updatedRows > 0) {
                     log.info("OTP verified successfully for email: {}, updated {} rows", email, updatedRows);
                     return true;
@@ -94,36 +93,36 @@ public class OtpService {
             } else {
                 log.warn("No valid OTP found for email: {} with code: {}", email, otpCode);
             }
-            
+
         } catch (Exception e) {
             log.error("Error during OTP verification for email {}: {}", email, e.getMessage(), e);
             throw new RuntimeException("OTP verification failed: " + e.getMessage());
         }
-        
+
         log.warn("Invalid or expired OTP provided for email: {}", email);
         return false;
     }
-    
+
     /**
      * Check if the latest unverified OTP is still valid
      */
     public boolean hasValidUnverifiedOtp(String email) {
         Optional<otp_codes> otpOptional = otpRepository.findLatestUnverifiedByContact(email);
-        
+
         if (otpOptional.isPresent()) {
             otp_codes otp = otpOptional.get();
             return otp.getExpires_at().isAfter(LocalDateTime.now());
         }
-        
+
         return false;
     }
-    
+
     /**
      * Get remaining time for current OTP in minutes
      */
     public long getOtpRemainingTimeMinutes(String email) {
         Optional<otp_codes> otpOptional = otpRepository.findLatestUnverifiedByContact(email);
-        
+
         if (otpOptional.isPresent()) {
             otp_codes otp = otpOptional.get();
             LocalDateTime now = LocalDateTime.now();
@@ -131,10 +130,10 @@ public class OtpService {
                 return java.time.Duration.between(now, otp.getExpires_at()).toMinutes();
             }
         }
-        
+
         return 0;
     }
-    
+
     /**
      * Clean up expired OTPs (should be called periodically)
      */
@@ -144,7 +143,7 @@ public class OtpService {
         log.info("Cleaned up {} expired OTPs", deletedCount);
         return deletedCount;
     }
-    
+
     /**
      * Invalidate all OTPs for a contact
      */
@@ -153,7 +152,7 @@ public class OtpService {
         otpRepository.deleteByContact(email);
         log.info("Invalidated all OTPs for email: {}", email);
     }
-    
+
     /**
      * Generate random OTP code
      */
@@ -164,7 +163,7 @@ public class OtpService {
         }
         return otp.toString();
     }
-    
+
     /**
      * Check if user is rate limited for OTP requests
      */
