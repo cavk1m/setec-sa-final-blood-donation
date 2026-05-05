@@ -15,7 +15,7 @@ import CampaignStatsBar from "@/src/components/campaign/campaign-stats-bar";
 import CampaignGrid from "@/src/components/campaign/campaign-grid";
 
 const { Header, Content } = Layout;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 type FilterTab = "all" | "active" | "completed";
 
@@ -25,96 +25,39 @@ const TABS: { key: FilterTab; label: string }[] = [
   { key: "completed", label: "Completed" },
 ];
 
+import TopAppBar from "@/src/components/top-bar";
+import EditCampaignDrawer from "@/src/components/campaign/edit-campaign-drawer";
+
 export default function CampaignsPage() {
-  const [activeMenu, setActiveMenu] = useState("campaigns");
   const [filter, setFilter] = useState<FilterTab>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const router = useRouter();
+  const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#b51822",
-          colorBgContainer: "#ffffff",
-          colorBgLayout: "#f9f9ff",
-          colorBorder: "#e3e8f9",
-          colorText: "#161c27",
-          colorTextSecondary: "#5d5c74",
-          borderRadius: 8,
-          fontFamily: "Inter, sans-serif",
-        },
-      }}
-    >
-      <Layout style={{ minHeight: "100vh" }}>
-        <SideNavBar
-          activeKey={activeMenu}
-          onMenuClick={(key) => {
-            if (key === "overview") {
-              router.push("/");
-              return;
-            }
-            if (key === "queue") {
-              router.push("/queue");
-              return;
-            }
-            if (key === "locations") {
-              router.push("/locations");
-              return;
-            }
-            if (key === "certificates") {
-              router.push("/certificates");
-              return;
-            }
-            if (key === "campaigns") {
-              router.push("/campaigns");
-              return;
-            }
-            if (key === "users") {
-              router.push("/users");
-              return;
-            }
-            if (key === "settings") {
-              router.push("/settings");
-              return;
-            }
-            setActiveMenu(key);
-          }}
-        />
-
-        <Layout style={{ marginLeft: 260 }}>
-          {/* Top bar */}
-          <Header
-            style={{
-              background: "rgba(249,249,255,0.85)",
-              backdropFilter: "blur(12px)",
-              borderBottom: "1px solid #e3e8f9",
-              padding: "0 32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "sticky",
-              top: 0,
-              zIndex: 100,
-              height: 64,
-            }}
-          >
-            {/* Left — title + tab filter */}
-            <Space size={16} align="center">
-              <Title
-                level={4}
-                style={{ margin: 0, fontWeight: 800, letterSpacing: "-0.5px" }}
-              >
-                Campaigns
+    <Layout style={{ minHeight: "100vh", background: "#f8fafc" }}>
+      <SideNavBar activeKey="campaigns" />
+      <Layout style={{ marginLeft: 280, background: 'transparent' }}>
+        <TopAppBar />
+        <Content style={{ padding: '32px 48px', minHeight: 280 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+            <div>
+              <Title level={1} style={{ margin: 0, fontWeight: 800, fontSize: 36, letterSpacing: '-0.04em', color: '#0f172a' }}>
+                Fundraising Campaigns
               </Title>
-              <div style={{ width: 1, height: 20, background: "#e3e8f9" }} />
+              <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 16, fontWeight: 500 }}>
+                Track and manage charity drives and donation goals.
+              </Text>
+            </div>
+
+            <Space size={16}>
               {/* Tab pills */}
               <div
                 style={{
                   display: "flex",
                   gap: 4,
-                  background: "#f1f3ff",
-                  borderRadius: 10,
+                  background: "rgba(0,0,0,0.04)",
+                  borderRadius: 12,
                   padding: 4,
                 }}
               >
@@ -123,18 +66,15 @@ export default function CampaignsPage() {
                     key={tab.key}
                     onClick={() => setFilter(tab.key)}
                     style={{
-                      padding: "6px 16px",
-                      borderRadius: 8,
+                      padding: "8px 24px",
+                      borderRadius: 9,
                       border: "none",
                       cursor: "pointer",
                       fontWeight: 700,
                       fontSize: 13,
                       background: filter === tab.key ? "#fff" : "transparent",
-                      color: filter === tab.key ? "#b51822" : "#5d5c74",
-                      borderBottom:
-                        filter === tab.key
-                          ? "2px solid #b51822"
-                          : "2px solid transparent",
+                      color: filter === tab.key ? "#ef4444" : "rgba(0,0,0,0.45)",
+                      boxShadow: filter === tab.key ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
                       transition: "all 0.15s",
                     }}
                   >
@@ -142,36 +82,39 @@ export default function CampaignsPage() {
                   </button>
                 ))}
               </div>
-            </Space>
 
-            {/* Right — Create Campaign (circle FAB style like overview) */}
-            <Space size={12}>
               <Button
                 type="primary"
-                shape="circle"
-                size="large"
-                icon={<PlusOutlined style={{ fontSize: 20 }} />}
-                title="Create Campaign"
+                icon={<PlusOutlined />}
+                onClick={() => setCreateDrawerOpen(true)}
                 style={{
-                  background: "#b51822",
-                  borderColor: "#b51822",
-                  width: 44,
                   height: 44,
-                  boxShadow: "0 4px 12px rgba(181,24,34,0.3)",
+                  borderRadius: 12,
+                  background: "#ef4444",
+                  borderColor: "#ef4444",
+                  fontWeight: 700,
+                  paddingInline: 24,
                 }}
-              />
+              >
+                New Campaign
+              </Button>
             </Space>
-          </Header>
+          </div>
 
-          <Content style={{ padding: 32, background: "#f9f9ff" }}>
-            {/* Stats + search */}
-            <CampaignStatsBar onSearch={setSearchQuery} />
+          <CampaignStatsBar onSearch={setSearchQuery} />
+          <CampaignGrid filter={filter} searchQuery={searchQuery} refreshTrigger={refreshTrigger} />
 
-            {/* Campaign cards */}
-            <CampaignGrid filter={filter} searchQuery={searchQuery} />
-          </Content>
-        </Layout>
+          <EditCampaignDrawer
+            open={createDrawerOpen}
+            campaign={null}
+            onCancel={() => setCreateDrawerOpen(false)}
+            onSave={() => {
+              setCreateDrawerOpen(false);
+              setRefreshTrigger(prev => prev + 1);
+            }}
+          />
+        </Content>
       </Layout>
-    </ConfigProvider>
+    </Layout>
   );
 }

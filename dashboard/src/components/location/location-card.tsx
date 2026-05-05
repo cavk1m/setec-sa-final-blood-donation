@@ -1,264 +1,170 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { Card, Typography, Tag, Space } from "antd";
 import {
   EnvironmentOutlined,
   EditOutlined,
   DeleteOutlined,
-  QrcodeOutlined,
+  TeamOutlined,
+  MedicineBoxOutlined,
+  ArrowRightOutlined,
 } from "@ant-design/icons";
-import ActionButton from "@/src/components/ui/action-button";
 
-const { Text, Title } = Typography;
+const { Text, Title, Link } = Typography;
 
 export interface LocationItem {
   id: string;
   name: string;
   address: string;
-  donationType: "WHOLE BLOOD" | "PLASMA ONLY" | "PLATELETS";
+  donationType: string[]; // Support multiple
   queueCount: number;
-  hasQR: boolean;
+  staffCount: number;
+  hubType: "MAIN CAMPUS" | "MOBILE HUB";
+  status: "OPERATIONAL" | "MAINTENANCE" | "OFFLINE";
+  lastActivity: string;
+  imageUrl: string;
 }
 
-const DONATION_TYPE_STYLE: Record<string, { color: string; bg: string }> = {
-  "WHOLE BLOOD": { color: "#b51822", bg: "#fff1f2" },
-  "PLASMA ONLY": { color: "#2563eb", bg: "#eff6ff" },
-  PLATELETS: { color: "#7c3aed", bg: "#f5f3ff" },
+const STATUS_CONFIG: Record<LocationItem["status"], { bg: string; color: string }> = {
+  OPERATIONAL: { bg: "#16a34a", color: "#ffffff" },
+  MAINTENANCE: { bg: "#f59e0b", color: "#ffffff" },
+  OFFLINE: { bg: "#ef4444", color: "#ffffff" },
 };
-
-const TYPE_ICON: Record<string, ReactNode> = {
-  "WHOLE BLOOD": (
-    <div
-      style={{
-        width: 44,
-        height: 44,
-        background: "#fff1f2",
-        borderRadius: 10,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <span style={{ fontSize: 22 }}>🩸</span>
-    </div>
-  ),
-  "PLASMA ONLY": (
-    <div
-      style={{
-        width: 44,
-        height: 44,
-        background: "#eff6ff",
-        borderRadius: 10,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <span style={{ fontSize: 22, color: "#2563eb", fontWeight: 900 }}>✦</span>
-    </div>
-  ),
-  PLATELETS: (
-    <div
-      style={{
-        width: 44,
-        height: 44,
-        background: "#f5f3ff",
-        borderRadius: 10,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <span style={{ fontSize: 22 }}>✳️</span>
-    </div>
-  ),
-};
-
-interface LocationCardProps {
-  data: LocationItem;
-  onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
-}
 
 export default function LocationCard({
   data,
   onEdit,
   onDelete,
-}: LocationCardProps) {
-  const typeStyle = DONATION_TYPE_STYLE[data.donationType] ?? {
-    color: "#475569",
-    bg: "#f1f5f9",
-  };
+}: {
+  data: LocationItem;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
+}) {
+  const status = STATUS_CONFIG[data.status] || STATUS_CONFIG.OPERATIONAL;
 
   return (
     <Card
-      style={{
-        borderRadius: 16,
-        border: "1px solid #e3e8f9",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-        overflow: "hidden",
-      }}
-      bodyStyle={{ padding: 24 }}
       hoverable
+      style={{
+        borderRadius: "var(--premium-card-radius)",
+        border: "var(--premium-card-border)",
+        overflow: "hidden",
+        boxShadow: "var(--premium-card-shadow)",
+        height: '100%',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+      }}
+      styles={{ body: { padding: 0 } }}
     >
-      {/* Top row — icon + type badge */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 16,
-        }}
-      >
-        {TYPE_ICON[data.donationType]}
-        <Tag
-          style={{
-            background: typeStyle.bg,
-            color: typeStyle.color,
-            border: "none",
-            fontWeight: 700,
-            fontSize: 10,
-            borderRadius: 999,
-            padding: "3px 10px",
-            letterSpacing: "0.06em",
-          }}
-        >
-          {data.donationType}
-        </Tag>
+      {/* Image Section */}
+      <div style={{ position: 'relative', height: 180, overflow: 'hidden' }}>
+        <img 
+          src={data.imageUrl} 
+          alt={data.name} 
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+        />
+        <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6 }}>
+          <div style={{ 
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(0,0,0,0.5)', 
+            backdropFilter: 'blur(4px)',
+            padding: '4px 10px', 
+            borderRadius: 99,
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: status.bg, boxShadow: `0 0 8px ${status.bg}` }} />
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {data.status}
+            </span>
+          </div>
+          <div style={{ 
+            background: 'rgba(0,0,0,0.5)', 
+            backdropFilter: 'blur(4px)',
+            color: '#fff', 
+            padding: '4px 10px', 
+            borderRadius: 99,
+            fontSize: 10, fontWeight: 800,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}>
+            {data.hubType}
+          </div>
+        </div>
       </div>
 
-      {/* Name + address */}
-      <Title
-        level={5}
-        style={{ margin: "0 0 4px", fontWeight: 700, fontSize: 16 }}
-      >
-        {data.name}
-      </Title>
-      <Space size={4} align="center" style={{ marginBottom: 20 }}>
-        <EnvironmentOutlined style={{ fontSize: 12, color: "#94a3b8" }} />
-        <Text style={{ fontSize: 12, color: "#94a3b8" }}>{data.address}</Text>
-      </Space>
-
-      {/* QR + Queue info box */}
-      <div
-        style={{
-          background: "#f8fafc",
-          borderRadius: 10,
-          padding: "12px 16px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 20,
-          border: "1px solid #f1f3ff",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              background: "#fff",
-              borderRadius: 8,
-              border: "1px solid #e3e8f9",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <QrcodeOutlined
-              style={{
-                fontSize: 18,
-                color: data.hasQR ? "#161c27" : "#94a3b8",
+      <div style={{ padding: 24 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+          <Title level={4} style={{ margin: 0, fontWeight: 800, fontSize: 18, letterSpacing: '-0.02em' }}>
+            {data.name}
+          </Title>
+          <Space size={12}>
+            <div 
+              onClick={() => onEdit?.(data.id)}
+              style={{ 
+                width: 32, height: 32, borderRadius: 8, 
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,0.03)', cursor: 'pointer', transition: 'all 0.2s'
               }}
-            />
+            >
+              <EditOutlined style={{ color: 'rgba(0,0,0,0.45)', fontSize: 14 }} />
+            </div>
+            <div 
+              onClick={() => onDelete?.(data.id)}
+              style={{ 
+                width: 32, height: 32, borderRadius: 8, 
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(239, 68, 68, 0.05)', cursor: 'pointer', transition: 'all 0.2s'
+              }}
+            >
+              <DeleteOutlined style={{ color: '#ef4444', fontSize: 14 }} />
+            </div>
+          </Space>
+        </div>
+
+        <Space size={6} style={{ marginBottom: 16 }}>
+          <EnvironmentOutlined style={{ color: '#ef4444' }} />
+          <Text style={{ color: 'rgba(0,0,0,0.45)', fontSize: 13, fontWeight: 500 }}>{data.address}</Text>
+        </Space>
+
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+          {data.donationType.map(type => (
+            <Tag key={type} style={{ 
+              borderRadius: 99, fontWeight: 700, fontSize: 11, 
+              background: type === 'BLOOD' || type === 'WHOLE BLOOD' ? '#fff1f2' : 
+                         type === 'MONEY' ? '#f0fdf4' : '#eff6ff',
+              color: type === 'BLOOD' || type === 'WHOLE BLOOD' ? '#ef4444' : 
+                     type === 'MONEY' ? '#16a34a' : '#3b82f6',
+              border: 'none', padding: '2px 12px'
+            }}>
+              • {type === 'BLOOD' ? 'WHOLE BLOOD' : type}
+            </Tag>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, padding: '16px 0', borderTop: '1px solid rgba(0,0,0,0.04)', borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
+          <div>
+            <Text style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginBottom: 8 }}>Current Queue</Text>
+            <Space size={8}>
+              <TeamOutlined style={{ color: '#f59e0b', fontSize: 18 }} />
+              <Text style={{ fontWeight: 800, fontSize: 15 }}>{data.queueCount} waiting</Text>
+            </Space>
           </div>
           <div>
-            <Text
-              style={{
-                fontSize: 9,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                color: "#94a3b8",
-                display: "block",
-              }}
-            >
-              Payment QR
-            </Text>
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: 600,
-                color: data.hasQR ? "#16a34a" : "#94a3b8",
-              }}
-            >
-              {data.hasQR ? "Active Terminal" : "Not Configured"}
-            </Text>
+            <Text style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', marginBottom: 8 }}>Available Staff</Text>
+            <Space size={8}>
+              <MedicineBoxOutlined style={{ color: '#64748b', fontSize: 18 }} />
+              <Text style={{ fontWeight: 800, fontSize: 15 }}>{data.staffCount} on-site</Text>
+            </Space>
           </div>
         </div>
 
-        <div style={{ textAlign: "right" }}>
-          <Text
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              color: "#94a3b8",
-              display: "block",
-            }}
-          >
-            Queue
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
+          <Text style={{ fontSize: 12, color: 'rgba(0,0,0,0.35)', fontWeight: 500 }}>
+            Last activity {data.lastActivity}
           </Text>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: 900,
-              color: "#b51822",
-              lineHeight: 1,
-            }}
-          >
-            {data.queueCount}
-          </Text>
-          <Text style={{ fontSize: 10, color: "#64748b", display: "block" }}>
-            waiting
-          </Text>
+          <Link style={{ color: '#ef4444', fontWeight: 700, fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+            View Dashboard <ArrowRightOutlined style={{ fontSize: 10 }} />
+          </Link>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div style={{ display: "flex", gap: 10 }}>
-        <ActionButton
-          variant="edit"
-          size="sm"
-          icon={<EditOutlined />}
-          label="Edit"
-          onClick={() => onEdit?.(data.id)}
-          style={{
-            display: "flex",
-            width: "100%",
-            flex: 1,
-            justifyContent: "center",
-            borderRadius: 999,
-            fontWeight: 600,
-          }}
-        />
-        <ActionButton
-          variant="delete"
-          size="sm"
-          icon={<DeleteOutlined />}
-          label="Delete"
-          onClick={() => onDelete?.(data.id)}
-          style={{
-            display: "flex",
-            width: "100%",
-            flex: 1,
-            justifyContent: "center",
-            borderRadius: 999,
-            fontWeight: 600,
-          }}
-        />
       </div>
     </Card>
   );

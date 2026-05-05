@@ -127,7 +127,7 @@ export default function TwoFactorCard() {
             <LockOutlined
               style={{
                 fontSize: 48,
-                color: "#b51822",
+                color: "#ef4444",
                 display: "block",
                 marginBottom: 8,
               }}

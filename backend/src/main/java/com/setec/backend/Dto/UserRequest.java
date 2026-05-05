@@ -9,21 +9,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
-    @JsonProperty("full_name")
     private String fullName;
+    private String email;
+    private String phone;
+    private String password;
+    private String bloodType;
+    private String role;
+
+    @JsonProperty("full_name")
+    public String getFullName() { return fullName; }
 
     @JsonProperty("email")
-    private String email;
+    public String getEmail() { return email; }
 
     @JsonProperty("phone")
-    private String phone;
+    public String getPhone() { return phone; }
 
     @JsonProperty("password")
-    private String password;
+    public String getPassword() { return password; }
 
     @JsonProperty("blood_type")
-    private String bloodType;
+    public String getBloodType() { return bloodType; }
 
     @JsonProperty("role")
-    private String role;
+    public String getRole() { return role; }
 }

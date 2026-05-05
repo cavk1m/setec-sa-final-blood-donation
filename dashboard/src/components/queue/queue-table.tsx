@@ -55,12 +55,12 @@ const getInitials = (name: string) =>
 
 const STATUS_BADGE: Record<
   string,
-  { label: string; color: string; bg: string }
+  { label: string; color: string; bg: string; dot: string }
 > = {
-  waiting: { label: "WAITING", color: "#d97706", bg: "#fffbeb" },
-  "in-progress": { label: "IN PROCESS", color: "#2563eb", bg: "#eff6ff" },
-  completed: { label: "COMPLETED", color: "#16a34a", bg: "#f0fdf4" },
-  skip: { label: "SKIP", color: "#dc2626", bg: "#fef2f2" },
+  waiting: { label: "Waiting", color: "#d97706", bg: "#fffbeb", dot: "#f59e0b" },
+  "in-progress": { label: "In Process", color: "#2563eb", bg: "#eff6ff", dot: "#3b82f6" },
+  completed: { label: "Completed", color: "#16a34a", bg: "#f0fdf4", dot: "#22c55e" },
+  skip: { label: "Skipped", color: "#dc2626", bg: "#fef2f2", dot: "#ef4444" },
 };
 
 interface QueueTableProps {
@@ -68,6 +68,7 @@ interface QueueTableProps {
   loading?: boolean;
   onComplete?: (id: string) => void;
   onSkip?: (id: string) => void;
+  onRefresh?: () => void;
 }
 
 export default function QueueTable({
@@ -75,6 +76,7 @@ export default function QueueTable({
   loading,
   onComplete,
   onSkip,
+  onRefresh,
 }: QueueTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -97,10 +99,11 @@ export default function QueueTable({
       render: (_, r) => (
         <Text
           style={{
-            fontWeight: 900,
-            fontSize: 20,
-            color: "#b51822",
-            opacity: r.status !== "waiting" ? 0.3 : 1,
+            fontWeight: 800,
+            fontSize: 18,
+            color: r.status === 'waiting' ? "#ef4444" : "rgba(0,0,0,0.25)",
+            fontFamily: 'JetBrains Mono, monospace',
+            letterSpacing: '-1px'
           }}
         >
           {String(r.queue_number).padStart(2, "0")}
@@ -122,6 +125,7 @@ export default function QueueTable({
                 fontWeight: 700,
                 fontSize: 12,
                 flexShrink: 0,
+                borderRadius: 10
               }}
             >
               {getInitials(r.user.full_name)}
@@ -129,15 +133,16 @@ export default function QueueTable({
             <div>
               <Text
                 style={{
-                  fontWeight: 600,
+                  fontWeight: 700,
                   fontSize: 14,
                   display: "block",
                   opacity: r.status !== "waiting" ? 0.5 : 1,
+                  color: '#0f172a'
                 }}
               >
                 {r.user.full_name}
               </Text>
-              <Text style={{ fontSize: 11, color: "#94a3b8" }}>
+              <Text style={{ fontSize: 11, color: "#94a3b8", fontWeight: 700 }}>
                 ID: #BC-{r.id.slice(-5).toUpperCase()}
               </Text>
             </div>
@@ -162,7 +167,7 @@ export default function QueueTable({
               border: "none",
               fontWeight: 900,
               fontSize: 11,
-              borderRadius: 999,
+              borderRadius: 6,
               padding: "3px 12px",
               opacity: r.status !== "waiting" ? 0.5 : 1,
             }}
@@ -185,14 +190,14 @@ export default function QueueTable({
           <StarFilled style={{ color: "#f59e0b", fontSize: 13 }} />
           <Text
             style={{
-              fontWeight: 700,
+              fontWeight: 800,
               fontSize: 13,
               color: getSurveyColor(r.survey_score),
             }}
           >
             {r.survey_score}.0
           </Text>
-          <Text style={{ fontSize: 12, color: "#94a3b8" }}>/5</Text>
+          <Text style={{ fontSize: 11, color: "#94a3b8", fontWeight: 800 }}>/ 5</Text>
         </Space>
       ),
     },
@@ -204,6 +209,7 @@ export default function QueueTable({
           style={{
             fontSize: 13,
             color: "#64748b",
+            fontWeight: 500,
             opacity: r.status !== "waiting" ? 0.5 : 1,
           }}
         >
@@ -218,20 +224,24 @@ export default function QueueTable({
       render: (_, r) => {
         const s = STATUS_BADGE[r.status];
         return (
-          <span
+          <div
             style={{
               background: s.bg,
               color: s.color,
-              fontSize: 10,
-              fontWeight: 700,
-              padding: "4px 10px",
-              borderRadius: 6,
-              textTransform: "uppercase",
-              letterSpacing: "0.08em",
+              fontSize: 11,
+              fontWeight: 800,
+              padding: "4px 14px",
+              borderRadius: 8,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
             }}
           >
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot }} />
             {s.label}
-          </span>
+          </div>
         );
       },
     },
@@ -243,7 +253,7 @@ export default function QueueTable({
       render: (_, r) => {
         if (r.status === "completed") {
           return (
-            <Text style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>
+            <Text style={{ fontSize: 11, color: "#94a3b8", fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Recorded
             </Text>
           );
@@ -254,6 +264,7 @@ export default function QueueTable({
               variant="restore"
               size="sm"
               label="Restore"
+              style={{ borderRadius: 8, fontWeight: 700 }}
               onClick={() => onComplete?.(r.id)}
             />
           );
@@ -266,6 +277,7 @@ export default function QueueTable({
               label="Complete"
               tooltip="Mark as completed"
               icon={<CheckCircleOutlined />}
+              style={{ borderRadius: 8, fontWeight: 700 }}
               onClick={() => setCompleteTarget(r)}
             />
             <ActionButton
@@ -274,6 +286,7 @@ export default function QueueTable({
               label="Skip"
               tooltip="Skip donor"
               icon={<FastForwardOutlined />}
+              style={{ borderRadius: 8, fontWeight: 700 }}
               onClick={() => setSkipTarget(r)}
             />
           </Space>
@@ -284,44 +297,47 @@ export default function QueueTable({
 
   return (
     <>
-     <Card
-  style={{
-    borderRadius: 16,
-    border: "1px solid #e3e8f9",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-  }}
-  styles={{ body: { padding: 0 } }}
->
+      <Card
+        style={{
+          borderRadius: 24,
+          border: "1px solid rgba(0,0,0,0.06)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.02)",
+          background: "#fff",
+          overflow: "hidden"
+        }}
+        styles={{ body: { padding: 0 } }}
+      >
         {/* Header */}
         <div
           style={{
-            padding: "18px 24px",
+            padding: "24px 32px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderBottom: "1px solid #f1f3ff",
+            borderBottom: "1px solid rgba(0,0,0,0.04)",
+            background: "rgba(248, 250, 252, 0.5)"
           }}
         >
-          <Space size={10} align="center">
-            <Text style={{ fontWeight: 700, fontSize: 16 }}>
-              Active Queue List
+          <Space size={12} align="center">
+            <Text style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.01em' }}>
+              Real-time Donor Queue
             </Text>
             <span
               style={{
                 background: "#fee2e2",
-                color: "#b51822",
+                color: "#ef4444",
                 fontSize: 10,
-                fontWeight: 800,
-                padding: "2px 8px",
-                borderRadius: 999,
+                fontWeight: 900,
+                padding: "2px 10px",
+                borderRadius: 6,
                 textTransform: "uppercase",
-                letterSpacing: "0.08em",
+                letterSpacing: "0.1em",
               }}
             >
               LIVE
             </span>
           </Space>
-          <Space size={4}>
+          <Space size={8}>
             <CircleButton
               variant="ghost"
               size="sm"
@@ -333,6 +349,7 @@ export default function QueueTable({
               size="sm"
               tooltip="Refresh"
               icon={<ReloadOutlined style={{ color: "#64748b" }} />}
+              onClick={onRefresh}
             />
           </Space>
         </div>
@@ -340,32 +357,38 @@ export default function QueueTable({
         {/* Filters */}
         <div
           style={{
-            padding: "12px 24px",
-            borderBottom: "1px solid #f1f3ff",
+            padding: "20px 32px",
+            borderBottom: "1px solid rgba(0,0,0,0.04)",
             display: "flex",
-            gap: 12,
+            gap: 16,
+            alignItems: 'center'
           }}
         >
           <Input
-            placeholder="Search donor names..."
+            placeholder="Search by donor name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
-              maxWidth: 280,
-              borderRadius: 8,
-              background: "#f1f3ff",
-              border: "none",
+              maxWidth: 320,
+              borderRadius: 12,
+              background: "#f8fafc",
+              border: "1px solid rgba(0,0,0,0.04)",
+              height: 44,
+              paddingInline: 16,
+              fontSize: 14,
+              fontWeight: 500
             }}
           />
           <Select
             value={statusFilter}
             onChange={setStatusFilter}
-            style={{ width: 150 }}
+            style={{ width: 180 }}
+            className="premium-select"
             options={[
-              { value: "all", label: "Status: All" },
-              { value: "waiting", label: "Waiting" },
-              { value: "completed", label: "Completed" },
-              { value: "skip", label: "Skip" },
+              { value: "all", label: "STATUS: ALL" },
+              { value: "waiting", label: "STATUS: WAITING" },
+              { value: "completed", label: "STATUS: COMPLETED" },
+              { value: "skip", label: "STATUS: SKIP" },
             ]}
           />
         </div>
@@ -379,13 +402,45 @@ export default function QueueTable({
           size="middle"
           pagination={{
             pageSize: 10,
+            style: { padding: '16px 32px', margin: 0, borderTop: '1px solid rgba(0,0,0,0.04)' },
             showTotal: (total, range) => (
-              <Text style={{ fontSize: 12, color: "#64748b" }}>
-                Showing {range[0]}–{range[1]} of {total} donors
+              <Text style={{ fontSize: 11, color: "#94a3b8", fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                Showing {range[0]}-{range[1]} of {total} records
               </Text>
             ),
           }}
         />
+
+        <style jsx global>{`
+          .ant-table-thead > tr > th {
+            background: #f8fafc !important;
+            color: #64748b !important;
+            font-size: 11px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.1em !important;
+            border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+            padding: 20px 32px !important;
+          }
+          .ant-table-tbody > tr > td {
+            border-bottom: 1px solid rgba(0,0,0,0.04) !important;
+            padding: 18px 32px !important;
+          }
+          .ant-table-tbody > tr:hover > td {
+            background: rgba(0,0,0,0.01) !important;
+          }
+          .premium-select .ant-select-selector {
+            border-radius: 12px !important;
+            background: #f8fafc !important;
+            border: 1px solid rgba(0,0,0,0.04) !important;
+            height: 44px !important;
+            display: flex !important;
+            alignItems: center !important;
+            font-size: 11px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.05em !important;
+          }
+        `}</style>
       </Card>
 
       <CompleteDrawer

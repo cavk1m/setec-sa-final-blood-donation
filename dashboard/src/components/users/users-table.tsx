@@ -16,108 +16,74 @@ import {
   EyeOutlined,
   UserAddOutlined,
   SearchOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import UserDetailDrawer, { UserItem } from "./user-detail-drawer";
+import UserDetailDrawer from "./user-detail-drawer";
+import CreateUserDrawer from "./create-user-drawer";
+import EditUserDrawer from "./edit-user-drawer";
+import { message, Popconfirm } from "antd";
+
+import { fetchUsers, deleteUser, createUser, updateUser, UserItem as ApiUser } from "@/src/features/users/users.api";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 
-const MOCK_USERS: UserItem[] = [
-  {
-    id: "1",
-    initials: "SM",
-    avatarBg: "#ffdad6",
-    avatarColor: "#ba1a1a",
-    fullName: "Sarah Mitchell",
-    systemId: "#AP-4491",
-    email: "sarah.m@clinicalpulse.com",
-    phone: "+1 (555) 902-3481",
-    address: "4521 Medical Center Blvd, Suite 200, Austin, TX",
-    bloodType: "O+",
-    role: "Admin",
-    joinedDate: "Oct 12, 2023",
-    donationHistory: [
-      {
-        type: "Whole Blood Donation",
-        location: "St. Jude Regional Center",
-        date: "Feb 24, 2024",
-      },
-      {
-        type: "Plasma Donation",
-        location: "Central Blood Bank",
-        date: "Jan 12, 2024",
-      },
-    ],
-    badges: [
-      { label: "Life Saver Silver", sub: "10+ Donations", icon: "🩸" },
-      { label: "Identity Verified", sub: "Clinical Check", icon: "✓" },
-    ],
-  },
-  {
-    id: "2",
-    initials: "RJ",
-    avatarBg: "#e0f2fe",
-    avatarColor: "#0369a1",
-    fullName: "Robert Jenkins",
-    systemId: "#DO-8821",
-    email: "r.jenkins@gmail.com",
-    phone: "+1 (555) 128-4490",
-    bloodType: "A-",
-    role: "Donor",
-    joinedDate: "Jan 05, 2024",
-    donationHistory: [
-      {
-        type: "Whole Blood Donation",
-        location: "Downtown Plaza Center",
-        date: "Mar 10, 2024",
-      },
-    ],
-    badges: [{ label: "First Donor", sub: "1 Donation", icon: "⭐" }],
-  },
-  {
-    id: "3",
-    initials: "CH",
-    avatarBg: "#dcfce7",
-    avatarColor: "#15803d",
-    fullName: "City Hospital North",
-    systemId: "#OR-1022",
-    email: "contact@cityhosp.org",
-    phone: "+1 (555) 880-1122",
-    role: "Organization",
-    joinedDate: "Mar 22, 2024",
-  },
-  {
-    id: "4",
-    initials: "AL",
-    avatarBg: "#e0f2fe",
-    avatarColor: "#0369a1",
-    fullName: "Amanda Lee",
-    systemId: "#DO-9923",
-    email: "a.lee@yahoo.com",
-    phone: "+1 (555) 332-9012",
-    bloodType: "B+",
-    role: "Donor",
-    joinedDate: "Apr 15, 2024",
-  },
-  {
-    id: "5",
-    initials: "TC",
-    avatarBg: "#e0f2fe",
-    avatarColor: "#0369a1",
-    fullName: "Thomas Chen",
-    systemId: "#DO-7741",
-    email: "t.chen88@outlook.com",
-    phone: "+1 (555) 776-5541",
-    bloodType: "AB+",
-    role: "Donor",
-    joinedDate: "Feb 28, 2024",
-  },
-];
+export interface UserItem {
+  id: string;
+  initials: string;
+  avatarBg: string;
+  avatarColor: string;
+  fullName: string;
+  systemId: string;
+  email: string;
+  phone: string;
+  address?: string;
+  bloodType?: string;
+  role: "Admin" | "Donor" | "Organization";
+  joinedDate: string;
+  donationHistory?: { type: string; location: string; date: string }[];
+  badges?: { label: string; sub: string; icon: string }[];
+}
 
 const ROLE_STYLE: Record<string, { bg: string; color: string }> = {
   Admin: { bg: "#ffdad6", color: "#ba1a1a" },
   Donor: { bg: "#dbeafe", color: "#1d4ed8" },
   Organization: { bg: "#dcfce7", color: "#15803d" },
+};
+
+const AVATAR_PALETTE = [
+  { bg: "#ffdad6", color: "#ba1a1a" },
+  { bg: "#e0f2fe", color: "#0369a1" },
+  { bg: "#dcfce7", color: "#15803d" },
+  { bg: "#ede9fe", color: "#6d28d9" },
+  { bg: "#fef3c7", color: "#92400e" },
+];
+
+const mapApiToUserItem = (apiUser: ApiUser): UserItem => {
+  const paletteIndex = apiUser.id.charCodeAt(0) % AVATAR_PALETTE.length;
+  const palette = AVATAR_PALETTE[paletteIndex];
+  
+  // Map roles from backend (USER, ADMIN) to frontend labels
+  const roleMap: Record<string, "Admin" | "Donor" | "Organization"> = {
+    ADMIN: "Admin",
+    USER: "Donor",
+    HOSPITAL_ADMIN: "Organization",
+  };
+
+  return {
+    id: apiUser.id,
+    initials: `${apiUser.first_name?.[0] || ""}${apiUser.last_name?.[0] || ""}`.toUpperCase() || "?",
+    avatarBg: palette.bg,
+    avatarColor: palette.color,
+    fullName: `${apiUser.first_name} ${apiUser.last_name}`.trim(),
+    systemId: `#US-${apiUser.id.substring(0, 4)}`.toUpperCase(),
+    email: apiUser.email,
+    phone: apiUser.phone,
+    bloodType: apiUser.blood_type,
+    role: roleMap[apiUser.role] || "Donor",
+    joinedDate: dayjs(apiUser.created_at).format("MMM DD, YYYY"),
+  };
 };
 
 const BLOOD_STYLE: Record<string, { bg: string; color: string }> = {
@@ -134,11 +100,92 @@ const BLOOD_STYLE: Record<string, { bg: string; color: string }> = {
 type RoleFilter = "all" | "Donor" | "Admin" | "Organization";
 
 export default function UsersTable() {
+  const [users, setUsers] = useState<UserItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
-  const filtered = MOCK_USERS.filter((u) => {
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const apiUsers = await fetchUsers();
+      setUsers(apiUsers.map(mapApiToUserItem));
+    } catch (err) {
+      message.error("Failed to load users directory.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteUser(id);
+      message.success("User deleted successfully.");
+      loadUsers();
+    } catch (err) {
+      message.error("Failed to delete user.");
+    }
+  };
+
+  const handleCreate = async (data: any) => {
+    try {
+      const roleMap: Record<string, string> = {
+        Admin: "ADMIN",
+        Donor: "USER",
+        Organization: "HOSPITAL_ADMIN",
+      };
+
+      await createUser({
+        full_name: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        address: data.address,
+        blood_type: data.bloodType,
+        role: roleMap[data.role] || "USER",
+      });
+
+      message.success("User created successfully");
+      setIsCreateOpen(false);
+      loadUsers();
+    } catch (err: any) {
+      message.error(err.response?.data?.message || "Failed to create user");
+    }
+  };
+
+  const handleUpdate = async (updated: UserItem) => {
+    try {
+      const roleMap: Record<string, string> = {
+        Admin: "ADMIN",
+        Donor: "USER",
+        Organization: "HOSPITAL_ADMIN",
+      };
+
+      await updateUser(updated.id, {
+        full_name: updated.fullName,
+        email: updated.email,
+        phone: updated.phone,
+        address: updated.address,
+        blood_type: updated.bloodType,
+        role: roleMap[updated.role] || "USER",
+      });
+
+      message.success("User updated successfully");
+      setIsEditOpen(false);
+      loadUsers();
+    } catch (err: any) {
+      message.error(err.response?.data?.message || "Failed to update user");
+    }
+  };
+
+  const filtered = users.filter((u) => {
     const matchSearch =
       u.fullName.toLowerCase().includes(search.toLowerCase()) ||
       u.email.toLowerCase().includes(search.toLowerCase());
@@ -262,14 +309,40 @@ export default function UsersTable() {
       key: "actions",
       align: "right",
       render: (_, r) => (
-        <Tooltip title="View details">
-          <Button
-            type="text"
-            shape="circle"
-            icon={<EyeOutlined style={{ color: "#b51822", fontSize: 18 }} />}
-            onClick={() => setSelectedUser(r)}
-          />
-        </Tooltip>
+        <Space size={4}>
+          <Tooltip title="View details">
+            <Button
+              type="text"
+              shape="circle"
+              icon={<EyeOutlined style={{ color: "#ef4444", fontSize: 18 }} />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedUser(r);
+              }}
+            />
+          </Tooltip>
+          <Popconfirm
+            title="Delete user"
+            description="Are you sure you want to delete this user? This action cannot be undone."
+            onConfirm={(e) => {
+              e?.stopPropagation();
+              handleDelete(r.id);
+            }}
+            onCancel={(e) => e?.stopPropagation()}
+            okText="Yes, Delete"
+            cancelText="No"
+            okButtonProps={{ danger: true, style: { fontWeight: 600 } }}
+          >
+            <Tooltip title="Delete user">
+              <Button
+                type="text"
+                shape="circle"
+                icon={<DeleteOutlined style={{ color: "#94a3b8", fontSize: 18 }} />}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Tooltip>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
@@ -320,7 +393,7 @@ export default function UsersTable() {
                   fontSize: 11,
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
-                  background: roleFilter === tab.key ? "#b51822" : "#e3e8f9",
+                  background: roleFilter === tab.key ? "#ef4444" : "#e3e8f9",
                   color: roleFilter === tab.key ? "#fff" : "#5d5c74",
                   boxShadow:
                     roleFilter === tab.key
@@ -338,11 +411,12 @@ export default function UsersTable() {
         <Button
           type="primary"
           icon={<UserAddOutlined />}
+          onClick={() => setIsCreateOpen(true)}
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
             height: 40,
             paddingInline: 24,
             boxShadow: "0 4px 12px rgba(181,24,34,0.25)",
@@ -376,13 +450,14 @@ export default function UsersTable() {
           border: "1px solid #e3e8f9",
           overflow: "hidden",
         }}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
       >
         <Table
           columns={columns}
           dataSource={filtered}
           rowKey="id"
           size="middle"
+          loading={loading}
           pagination={{
             pageSize: 10,
             showTotal: (total, range) => (
@@ -407,9 +482,23 @@ export default function UsersTable() {
       </Card>
 
       <UserDetailDrawer
-        open={!!selectedUser}
+        open={!!selectedUser && !isEditOpen}
         user={selectedUser}
         onClose={() => setSelectedUser(null)}
+        onEdit={() => setIsEditOpen(true)}
+      />
+
+      <CreateUserDrawer
+        open={isCreateOpen}
+        onCancel={() => setIsCreateOpen(false)}
+        onSave={handleCreate}
+      />
+
+      <EditUserDrawer
+        open={isEditOpen}
+        user={selectedUser}
+        onCancel={() => setIsEditOpen(false)}
+        onSave={handleUpdate}
       />
     </>
   );

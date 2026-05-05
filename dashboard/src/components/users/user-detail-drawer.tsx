@@ -42,12 +42,14 @@ interface UserDetailDrawerProps {
   open: boolean;
   user: UserItem | null;
   onClose: () => void;
+  onEdit?: () => void;
 }
 
 export default function UserDetailDrawer({
   open,
   user,
   onClose,
+  onEdit,
 }: UserDetailDrawerProps) {
   if (!user) return null;
 
@@ -146,7 +148,7 @@ export default function UserDetailDrawer({
         </Text>
 
         <Space
-          direction="vertical"
+          orientation="vertical"
           size={10}
           style={{ width: "100%", marginBottom: 24 }}
         >
@@ -248,14 +250,14 @@ export default function UserDetailDrawer({
                   padding: 0,
                   height: "auto",
                   boxShadow: "none",
-                  color: "#b51822",
+                  color: "#ef4444",
                   fontWeight: 700,
                 }}
               />
             </div>
 
             <Space
-              direction="vertical"
+              orientation="vertical"
               size={10}
               style={{ width: "100%", marginBottom: 24 }}
             >
@@ -367,7 +369,7 @@ export default function UserDetailDrawer({
                     style={{
                       width: 48,
                       height: 48,
-                      background: i === 0 ? "#b51822" : "#475569",
+                      background: i === 0 ? "#ef4444" : "#475569",
                       borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
@@ -413,6 +415,7 @@ export default function UserDetailDrawer({
           variant="ghost"
           label="Edit Details"
           icon={<EditOutlined />}
+          onClick={onEdit}
           style={{
             fontWeight: 700,
             borderRadius: 999,
@@ -430,8 +433,8 @@ export default function UserDetailDrawer({
           style={{
             fontWeight: 700,
             borderRadius: 999,
-            background: "#b51822",
-            borderColor: "#b51822",
+            background: "#ef4444",
+            borderColor: "#ef4444",
           }}
         />
       </div>

@@ -13,11 +13,15 @@ import lombok.NoArgsConstructor;
 public class ChangePasswordRequest {
     
     @NotBlank(message = "Current password is required")
-    @JsonProperty("current_password")
     private String currentPassword;
-    
+
     @NotBlank(message = "New password is required")
     @Size(min = 8, message = "New password must be at least 8 characters long")
-    @JsonProperty("new_password")
     private String newPassword;
+
+    @JsonProperty("current_password")
+    public String getCurrentPassword() { return currentPassword; }
+
+    @JsonProperty("new_password")
+    public String getNewPassword() { return newPassword; }
 }

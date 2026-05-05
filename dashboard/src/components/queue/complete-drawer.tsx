@@ -216,7 +216,7 @@ export default function CompleteDrawer({
               >
                 Queue Number
               </Text>
-              <Text style={{ fontWeight: 700, fontSize: 14, color: "#b51822" }}>
+              <Text style={{ fontWeight: 700, fontSize: 14, color: "#ef4444" }}>
                 #{String(entry.queue_number).padStart(2, "0")}
               </Text>
             </div>
@@ -247,7 +247,7 @@ export default function CompleteDrawer({
           >
             What happens next
           </Text>
-          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+          <Space orientation="vertical" size={8} style={{ width: "100%" }}>
             {[
               "Donor status set to Completed",
               "Blood donation record created",
