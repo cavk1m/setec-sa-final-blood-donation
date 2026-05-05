@@ -36,8 +36,14 @@ export const updateUser = async (id: string, data: any): Promise<any> => {
   return response.data.user;
 };
 
-/** POST /api/admin/users/create */
+/** PUT /api/admin/users/create */
 export const createUser = async (data: any): Promise<any> => {
   const response = await axiosInstance.post("/api/admin/users/create", data);
   return response.data.user;
+};
+
+/** PUT /api/admin/users/{id}/role */
+export const updateUserRole = async (id: string, role: string): Promise<any> => {
+  const response = await axiosInstance.put(`/api/admin/users/${id}/role`, { role });
+  return response.data;
 };

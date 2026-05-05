@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   Drawer,
   Button,
@@ -13,17 +13,14 @@ import {
   Space,
 } from "antd";
 import {
-  CloudUploadOutlined,
+  LinkOutlined,
   PlusCircleOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { LocationItem } from "./location-card";
-// import type { LocationItem } from './LocationCard';
-
-const { Text, Title } = Typography;
-
 import { createLocation, updateLocation, LocationData } from "@/src/features/location/location.api";
 import { message } from "antd";
+
+const { Text, Title } = Typography;
 
 interface AddLocationDrawerProps {
   open: boolean;
@@ -40,9 +37,7 @@ export default function AddLocationDrawer({
 }: AddLocationDrawerProps) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [qrUrlPreview, setQrUrlPreview] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (open && initialData) {
@@ -53,18 +48,14 @@ export default function AddLocationDrawer({
         longitude: initialData.longitude,
         donationType: initialData.donation_type,
         status: initialData.status || 'OPERATIONAL',
+        payment_qr_url: initialData.payment_qr_url,
       });
+      setQrUrlPreview(initialData.payment_qr_url || null);
     } else if (open) {
       form.resetFields();
-      setFileName(null);
+      setQrUrlPreview(null);
     }
   }, [open, initialData, form]);
-
-  const handleFileSelect = (file: File) => {
-    if (file && (file.type === "image/jpeg" || file.type === "image/png")) {
-      setFileName(file.name);
-    }
-  };
 
   const handleSubmit = async () => {
     try {
@@ -81,7 +72,7 @@ export default function AddLocationDrawer({
         longitude: isNaN(lng as number) ? null : lng,
         donation_type: values.donationType,
         status: values.status,
-        payment_qr_url: null,
+        payment_qr_url: values.payment_qr_url, // Just the URL string
       };
 
       if (initialData?.id) {
@@ -93,7 +84,7 @@ export default function AddLocationDrawer({
       }
       
       form.resetFields();
-      setFileName(null);
+      setQrUrlPreview(null);
       onSave();
     } catch (error: any) {
       console.error("Failed to save location:", error);
@@ -334,8 +325,9 @@ export default function AddLocationDrawer({
             />
           </Form.Item>
 
-          {/* QR Upload */}
+          {/* QR URL Input */}
           <Form.Item
+            name="payment_qr_url"
             label={
               <Text
                 style={{
@@ -346,90 +338,35 @@ export default function AddLocationDrawer({
                   color: "#64748b",
                 }}
               >
-                Payment QR Image
+                Payment QR Image URL
               </Text>
             }
           >
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragOver(true);
-              }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setDragOver(false);
-                const file = e.dataTransfer.files[0];
-                if (file) handleFileSelect(file);
-              }}
-              style={{
-                border: `2px dashed ${dragOver ? "#ef4444" : "#e3e8f9"}`,
-                borderRadius: 16,
-                padding: "32px 24px",
-                textAlign: "center",
-                background: dragOver ? "#fff1f2" : "#f8fafc",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              <div
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Input
+                placeholder="Paste Image URL here (e.g. https://...)"
+                prefix={<LinkOutlined style={{ color: '#94a3b8' }} />}
+                onChange={(e) => setQrUrlPreview(e.target.value)}
                 style={{
-                  width: 44,
+                  borderRadius: 999,
+                  background: "#f8fafc",
+                  border: "1px solid #e3e8f9",
                   height: 44,
-                  background: "#f1f3ff",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 12px",
+                  paddingLeft: 18,
                 }}
-              >
-                <CloudUploadOutlined
-                  style={{ fontSize: 22, color: "#5d5c74" }}
-                />
-              </div>
-              {fileName ? (
-                <Text
-                  style={{ fontWeight: 600, color: "#16a34a", fontSize: 14 }}
-                >
-                  {fileName}
-                </Text>
-              ) : (
-                <>
-                  <Text
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 14,
-                      display: "block",
-                      color: "#161c27",
-                    }}
-                  >
-                    Drag & drop or click to upload
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "#94a3b8",
-                      marginTop: 4,
-                      display: "block",
-                    }}
-                  >
-                    Supports JPG, PNG (Max 5MB)
-                  </Text>
-                </>
+              />
+              {qrUrlPreview && (
+                <div style={{ marginTop: 12, textAlign: 'center', background: '#f8fafc', padding: 16, borderRadius: 12, border: '1px solid #e3e8f9' }}>
+                  <Text style={{ display: 'block', fontSize: 10, color: '#94a3b8', marginBottom: 8, textTransform: 'uppercase' }}>Preview</Text>
+                  <img 
+                    src={qrUrlPreview} 
+                    alt="QR Preview" 
+                    style={{ maxWidth: '100%', maxHeight: 150, borderRadius: 8 }} 
+                    onError={() => setQrUrlPreview(null)}
+                  />
+                </div>
               )}
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFileSelect(file);
-              }}
-            />
+            </Space>
           </Form.Item>
         </Form>
       </div>

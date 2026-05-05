@@ -291,12 +291,12 @@ function UserAvatar({ scrolled }: { scrolled: boolean }) {
   // Extract initials from full_name if available, otherwise use email
   const initials = profile?.full_name
     ? profile.full_name
-        .split(" ")
-        .slice(0, 2)
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-    : (user?.email?.[0]?.toUpperCase() ?? "U");
+          .split(" ")
+          .slice(0, 2)
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+      : (user?.email?.[0]?.toUpperCase() ?? "U");
 
   const handleLogout = () => {
     // Always fetch the user token before protected API calls

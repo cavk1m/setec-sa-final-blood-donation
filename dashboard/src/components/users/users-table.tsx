@@ -24,7 +24,7 @@ import CreateUserDrawer from "./create-user-drawer";
 import EditUserDrawer from "./edit-user-drawer";
 import { message, Popconfirm } from "antd";
 
-import { fetchUsers, deleteUser, createUser, updateUser, UserItem as ApiUser } from "@/src/features/users/users.api";
+import { fetchUsers, deleteUser, createUser, updateUser, updateUserRole, UserItem as ApiUser } from "@/src/features/users/users.api";
 import dayjs from "dayjs";
 
 const { Text } = Typography;
@@ -153,12 +153,6 @@ export default function UsersTable() {
 
   const handleCreate = async (data: any) => {
     try {
-      const roleMap: Record<string, string> = {
-        Admin: "ADMIN",
-        Donor: "DONOR",
-        Organization: "STAFF",
-      };
-
       await createUser({
         full_name: data.fullName,
         email: data.email,
@@ -168,7 +162,7 @@ export default function UsersTable() {
         blood_type: data.bloodType,
         date_of_birth: data.dateOfBirth,
         location_id: data.locationId,
-        role: roleMap[data.role] || "USER",
+        role: data.role,
       });
 
       message.success("User created successfully");
@@ -181,22 +175,22 @@ export default function UsersTable() {
 
   const handleUpdate = async (updated: UserItem) => {
     try {
-      const roleMap: Record<string, string> = {
-        Admin: "ADMIN",
-        Donor: "DONOR",
-        Organization: "STAFF",
-      };
-
+      // 1. Update general info
       await updateUser(updated.id, {
         full_name: updated.fullName,
         email: updated.email,
         phone: updated.phone,
         address: updated.address,
         blood_type: updated.bloodType,
-        role: roleMap[updated.role] || "DONOR",
         date_of_birth: updated.dateOfBirth,
         location_id: updated.locationId,
+        is_active: updated.isActive,
+        email_verified: updated.emailVerified,
+        phone_verified: updated.phoneVerified,
       });
+
+      // 2. Explicitly update role using specific endpoint
+      await updateUserRole(updated.id, updated.role);
 
       message.success("User updated successfully");
       setIsEditOpen(false);

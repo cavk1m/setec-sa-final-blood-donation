@@ -26,10 +26,13 @@ export interface UserItem {
   phone: string;
   address?: string;
   bloodType?: string;
-  role: "Admin" | "Donor" | "Organization";
+  role: "ADMIN" | "DONOR" | "RECIPIENT" | "STAFF" | "USER";
   joinedDate: string;
   dateOfBirth?: string;
   locationId?: string;
+  isActive?: boolean;
+  emailVerified?: boolean;
+  phoneVerified?: boolean;
   donationHistory?: { type: string; location: string; date: string }[];
   badges?: { label: string; sub: string; icon: string }[];
 }

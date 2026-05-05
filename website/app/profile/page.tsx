@@ -66,7 +66,8 @@ export default function ProfilePage() {
   // Sync local state when profile changes (e.g. after hydration or update)
   useEffect(() => {
     if (profile) {
-      setFullName(profile.full_name || "");
+      const combinedName = profile.full_name || `${profile.first_name || ""} ${profile.last_name || ""}`.trim();
+      setFullName(combinedName || "");
       setPhone(profile.phone || "");
       setBloodType(profile.blood_type || "");
       setDateOfBirth(profile.date_of_birth || "");
@@ -94,6 +95,8 @@ export default function ProfilePage() {
         onSuccess: (res) => {
           const freshProfile = {
             full_name: res.user.full_name,
+            first_name: res.user.first_name,
+            last_name: res.user.last_name,
             email: res.user.email,
             phone: res.user.phone,
             date_of_birth: res.user.date_of_birth,

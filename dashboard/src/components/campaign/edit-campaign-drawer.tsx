@@ -12,9 +12,15 @@ import {
   InputNumber,
   message,
 } from "antd";
-import { CloseOutlined, SaveOutlined, EditOutlined } from "@ant-design/icons";
-import { CampaignItem } from "./campaign-card";
 import { createCampaign, updateCampaign } from "@/src/features/campaign/campaign.api";
+import { CampaignItem } from "./campaign-card";
+import { 
+  CloseOutlined, 
+  SaveOutlined, 
+  EditOutlined,
+  PictureOutlined, 
+  TagOutlined 
+} from "@ant-design/icons";
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -53,12 +59,15 @@ export default function EditCampaignDrawer({
           goal: campaign.goal,
           status: campaign.status,
           createdAt: campaign.createdAt,
+          image_url: campaign.image_url,
+          campaign_type: campaign.campaign_type || "blood",
         });
       } else {
         form.resetFields();
         form.setFieldsValue({
           status: 'active',
           raised: 0,
+          campaign_type: "blood",
         });
       }
     }
@@ -73,8 +82,8 @@ export default function EditCampaignDrawer({
         title: values.name,
         description: values.description,
         target_amount: values.goal,
-        image_url: "", // Can add upload later
-        campaign_type: "blood", // Default
+        image_url: values.image_url,
+        campaign_type: values.campaign_type,
       };
 
       if (campaign?.id) {
@@ -236,6 +245,41 @@ export default function EditCampaignDrawer({
                 height: 44,
                 paddingLeft: 18,
               }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="image_url"
+            label={<Text style={labelStyle}>Banner Image URL</Text>}
+          >
+            <Input
+              placeholder="https://..."
+              prefix={<PictureOutlined style={{ color: '#94a3b8' }} />}
+              style={{
+                borderRadius: 999,
+                background: "#f8fafc",
+                border: "1px solid #e3e8f9",
+                height: 44,
+                paddingLeft: 18,
+              }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="campaign_type"
+            label={<Text style={labelStyle}>Campaign Type</Text>}
+            rules={[{ required: true, message: "Required" }]}
+          >
+            <Select
+              placeholder="Select Type"
+              style={{ borderRadius: 999 }}
+              suffixIcon={<TagOutlined />}
+              options={[
+                { value: "blood", label: "Blood Drive" },
+                { value: "money", label: "Financial Aid" },
+                { value: "emergency", label: "Emergency Appeal" },
+                { value: "hospital", label: "Hospital Support" },
+              ]}
             />
           </Form.Item>
 
